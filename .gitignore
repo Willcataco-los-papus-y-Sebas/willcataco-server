@@ -1,0 +1,66 @@
+############################
+# 🐍 Python (general)
+############################
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+############################
+# 🧪 Testing & Coverage
+############################
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+
+############################
+# 🧠 Virtual Environments
+############################
+.venv/
+venv/
+env/
+
+############################
+# 📦 Build & Packaging
+############################
+build/
+dist/
+*.egg
+*.egg-info/
+pip-wheel-metadata/
+
+############################
+# 🔐 Environment Variables
+############################
+.env
+.env.*
+!.env.example
+
+############################
+# 🗄 Local Databases
+############################
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+############################
+# 📜 Logs & Temporary Files
+############################
+*.log
+logs/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+############################
+# 🖥 IDEs & Editors
+############################
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
