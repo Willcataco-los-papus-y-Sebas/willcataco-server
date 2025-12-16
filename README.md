@@ -27,7 +27,7 @@ This project uses [uv](https://github.com/astral-sh/uv) for fast package managem
 2. **Install dependencies:**
 
    ```bash
-   uv pip install -r requirements.txt
+   uv sync
    ```
 
 4. **Environment Configuration:**
