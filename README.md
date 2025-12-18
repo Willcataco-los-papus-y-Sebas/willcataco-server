@@ -42,6 +42,38 @@ This project uses [uv](https://github.com/astral-sh/uv) for fast package managem
    DB_PASSWORD=willcataco
    ```
 
+## Database Migrations
+
+This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migrations.
+
+### Initialize Migrations (Already done)
+
+The project is already initialized with async support.
+
+### Create a New Migration
+
+After modifying your SQLAlchemy models, generate a new migration script:
+
+```bash
+alembic revision --autogenerate -m "description_of_changes"
+```
+
+### Apply Migrations
+
+To apply the pending migrations and update your database schema:
+
+```bash
+alembic upgrade head
+```
+
+### Revert Migrations
+
+To undo the last migration:
+
+```bash
+alembic downgrade -1
+```
+
 ## Running the Application
 
 Start the development server using Uvicorn:
