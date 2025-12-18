@@ -6,6 +6,7 @@ from app.modules.members.model.models import Member
 from app.core.enums import ActionStatus
 from app.modules.water_meters.action_payments.model.models import ActionPayment
 from app.modules.water_meters.streets.model.models import Street
+from app.modules.water_meters.water_meters.model.models import WaterMeter
 
 class Action(Base):
     __tablename__ = "actions"
@@ -22,3 +23,4 @@ class Action(Base):
     member: Mapped["Member"] = relationship("Member", back_populates="actions")
     street: Mapped["Street"] = relationship("Street", back_populates="actions")
     payments: Mapped[list["ActionPayment"]] = relationship("ActionPayment", back_populates="action")
+    water_meters: Mapped[list["WaterMeter"]] = relationship("WaterMeter", back_populates="action")

@@ -5,6 +5,7 @@ from app.core.database import Base
 from app.modules.users.model.models import User
 from app.modules.extra_payments.payments.model.models import Payment
 from app.modules.water_meters.actions.model.models import Action
+from app.modules.water_meters.water_payments.model.models import WaterPayment
 
 class Member(Base):
     __tablename__ = "members"
@@ -22,3 +23,4 @@ class Member(Base):
     user: Mapped["User"] = relationship("User", back_populates="member")
     payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="member")
     actions: Mapped[list["Action"]] = relationship("Action", back_populates="member")
+    water_payments: Mapped[list["WaterPayment"]] = relationship("WaterPayment", back_populates="member")
