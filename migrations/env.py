@@ -15,6 +15,15 @@ sys.path.append(os.getcwd())
 from app.core.config import config as app_config
 from app.core.database import Base
 from app.modules.users.model.models import User
+from app.modules.members.model.models import Member
+from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
+from app.modules.extra_payments.payments.model.models import Payment
+from app.modules.water_meters.actions.model.models import Action
+from app.modules.water_meters.streets.model.models import Street
+from app.modules.water_meters.water_meters.model.models import WaterMeter
+from app.modules.water_meters.meters.model.models import Meter
+from app.modules.water_meters.action_payments.model.models import ActionPayment
+from app.modules.water_meters.water_payments.model.models import WaterPayment
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
