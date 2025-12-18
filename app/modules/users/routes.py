@@ -14,7 +14,7 @@ from app.modules.users.model.schemas import (
 router = APIRouter()
 
 
-@router.delete("/admin/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
+@router.delete("/admin/{id}", status_code=status.HTTP_204_NO_CONTENT, response_model=IResponse)
 async def delete_user(id: int, session: SessionDep):
     return await UserController.delete_user(id, session)
 
@@ -35,8 +35,8 @@ async def create_user_mesa(session: SessionDep, user_info: UserBase):
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK,response_model=IResponse)
-async def get_user_by_id(id: int, session: SessionDep):
-    return await UserController.get_user_by_id(id, session)
+async def read_user(id: int, session: SessionDep):
+    return await UserController.read_user(id, session)
 
 
 @router.get("/", status_code=status.HTTP_200_OK,response_model=IResponse)
