@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     role: UserRole = UserRole.MEMBER
 
 
-class UserResp(BaseModel):
+class UserResponse(BaseModel):
     user_id: int
     username: str
     email: EmailStr
