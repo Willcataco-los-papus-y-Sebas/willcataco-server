@@ -74,6 +74,19 @@ To undo the last migration:
 alembic downgrade -1
 ```
 
+## Database Seeding
+
+To populate the database with initial data (default users), run the following command:
+
+```bash
+python seeds.py
+```
+
+This will create the following users if they don't exist:
+- **Admin**: `admin@example.com` / `password123` (Role: ADMIN)
+- **Staff**: `staff@example.com` / `password123` (Role: STAFF)
+- **Member**: `member@example.com` / `password123` (Role: MEMBER)
+
 ## Running the Application
 
 Start the development server using Uvicorn:
