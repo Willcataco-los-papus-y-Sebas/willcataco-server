@@ -46,6 +46,7 @@ pip-wheel-metadata/
 *.sqlite3
 *.db
 *.db-journal
+.database-pg/
 
 ############################
 # 📜 Logs & Temporary Files
