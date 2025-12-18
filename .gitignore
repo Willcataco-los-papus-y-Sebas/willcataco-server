@@ -65,3 +65,8 @@ logs/
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+############################
+# 🍎 macOS
+############################
+.DS_Store
