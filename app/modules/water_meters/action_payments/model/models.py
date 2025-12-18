@@ -2,7 +2,6 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, DateTime, func, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
-from app.modules.water_meters.actions.model.models import Action
 
 class ActionPayment(Base):
     __tablename__ = "action_payments"
@@ -14,4 +13,4 @@ class ActionPayment(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    action: Mapped["Action"] = relationship("Action", back_populates="payments")
+    action: Mapped["Action"] = relationship("app.modules.water_meters.actions.model.models.Action", back_populates="payments")

@@ -2,7 +2,6 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, Numeric, DateTime, func, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
-from app.modules.members.model.models import Member
 from app.core.enums import PaymentStatus
 from app.modules.water_meters.meters.model.models import Meter
 
@@ -19,4 +18,4 @@ class WaterPayment(Base):
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     meter: Mapped["Meter"] = relationship("Meter", back_populates="water_payment")
-    member: Mapped["Member"] = relationship("Member", back_populates="water_payments")
+    member: Mapped["Member"] = relationship("app.modules.members.model.models.Member", back_populates="water_payments")

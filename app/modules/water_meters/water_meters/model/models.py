@@ -2,8 +2,6 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, Numeric, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
-from app.modules.water_meters.actions.model.models import Action
-from app.modules.water_meters.meters.model.models import Meter
 
 class WaterMeter(Base):
     __tablename__ = "water_meters"
@@ -15,5 +13,5 @@ class WaterMeter(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    action: Mapped["Action"] = relationship("Action", back_populates="water_meters")
-    meters: Mapped[list["Meter"]] = relationship("Meter", back_populates="water_meter")
+    action: Mapped["Action"] = relationship("app.modules.water_meters.actions.model.models.Action", back_populates="water_meters")
+    meters: Mapped[list["Meter"]] = relationship("app.modules.water_meters.meters.model.models.Meter", back_populates="water_meter")

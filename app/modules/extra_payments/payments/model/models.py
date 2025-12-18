@@ -1,9 +1,7 @@
 from datetime import datetime
-from sqlalchemy import ForeignKey, String, Boolean, DateTime, func, Enum
+from sqlalchemy import ForeignKey, DateTime, func, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
-from app.modules.members.model.models import Member
-from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
 from app.core.enums import PaymentStatus
 
 class Payment(Base):
@@ -17,5 +15,5 @@ class Payment(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    member: Mapped["Member"] = relationship("Member", back_populates="payments")
-    extra_payment: Mapped["ExtraPayment"] = relationship("ExtraPayment", back_populates="payments")
+    member: Mapped["Member"] = relationship("app.modules.members.model.models.Member", back_populates="payments")
+    extra_payment: Mapped["ExtraPayment"] = relationship("app.modules.extra_payments.extra_payments.model.models.ExtraPayment", back_populates="payments")

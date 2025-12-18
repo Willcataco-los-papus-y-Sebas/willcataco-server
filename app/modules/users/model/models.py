@@ -2,7 +2,6 @@ from datetime import datetime
 from sqlalchemy import String, Boolean, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
-from app.modules.members.model.models import Member
 
 class User(Base):
     __tablename__ = "users"
@@ -16,4 +15,4 @@ class User(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    member: Mapped["Member"] = relationship("Member", back_populates="user", uselist=False)
+    member: Mapped["Member"] = relationship("app.modules.members.model.models.Member", back_populates="user", uselist=False)
