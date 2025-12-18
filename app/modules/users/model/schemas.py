@@ -17,7 +17,7 @@ class UserResponse(BaseModel):
     username: str
     email: EmailStr
     role: UserRole
-    is_active = bool
+    is_active : bool
     created_at: datetime
     updated_at: datetime
     deleted_at: datetime | None = None
