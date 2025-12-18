@@ -8,3 +8,8 @@ class ActionStatus(str, Enum):
     PAID = "paid"
     PENDING = "pending"
     UNPAID = "unpaid"
+
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    STAFF = "staff"
+    MEMBER = "member"
