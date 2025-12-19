@@ -29,13 +29,3 @@ class UserPatch(BaseModel):
     email: EmailStr | None = None
     password: str | None = Field(default=None, min_length=8)
     role: UserRole | None = None
-
-
-class UserUpdateMe(BaseModel):
-    username: str | None = None
-    email: EmailStr | None = None
-
-
-class UserResetPasswordMe(BaseModel):
-    old_password: str = Field(min_length=8)
-    new_password: str = Field(min_length=8)

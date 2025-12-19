@@ -1,6 +1,5 @@
 from pydantic import EmailStr
 
-from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from fastapi import HTTPException
 from app.modules.users.services import UserService
@@ -39,23 +38,6 @@ class UserController:
 
     @staticmethod
     async def create_user(session: SessionDep, user_info: UserBase):
-        user_email = await UserService.get_user_by_email(session, user_info.email)
-        user_username = await UserService.get_user_by_username(
-            session, user_info.username
-        )
-        if user_email or user_username:
-            raise HTTPException(
-                status_code=400, detail="email or username already exist"
-            )
-        user = await UserService.create_user(session, user_info)
-        response = IResponse(detail="User Created", status_code=201, data=user)
-        return response
-
-    #modificar
-    @staticmethod
-    async def create_user_mesa(session: SessionDep, user_info: UserBase):
-        if user_info.role != UserRole.MEMBER:
-            raise HTTPException(status_code=401, detail="Unauthorized")
         user_email = await UserService.get_user_by_email(session, user_info.email)
         user_username = await UserService.get_user_by_username(
             session, user_info.username

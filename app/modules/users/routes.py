@@ -6,9 +6,7 @@ from app.modules.users.controllers import UserController
 from app.core.database import SessionDep
 from app.modules.users.model.schemas import (
     UserBase,
-    UserPatch,
-    UserResetPasswordMe,
-    UserUpdateMe,
+    UserPatch
 )
 
 router = APIRouter()
@@ -30,12 +28,6 @@ async def patch_information_user(id: int, session: SessionDep, user_info: UserPa
 async def create_user(session: SessionDep, user_info: UserBase):
     return await UserController.create_user(session, user_info)
 
-#arreglar
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=IResponse)
-async def create_user_staff(session: SessionDep, user_info: UserBase):
-    return await UserController.create_user_staff(session, user_info)
-
-
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def read_user(id: int, session: SessionDep):
     return await UserController.read_user(id, session)
@@ -48,14 +40,3 @@ async def search_user(
     username: str | None = None,
 ):
     return await UserController.search_user(email, username, session)
-
-#admin y staff
-
-@router.patch("/password", status_code=status.HTTP_200_OK, response_model=IResponse)
-async def change_password(session: SessionDep, info_user: UserResetPasswordMe):
-    return await UserController.change_password(session, info_user)
-
-
-@router.patch("/", status_code=status.HTTP_200_OK, response_model=IResponse)
-async def change_information(session: SessionDep, info_user: UserUpdateMe):
-    return await UserController.change_information(session, info_user)
