@@ -14,32 +14,34 @@ from app.modules.users.model.schemas import (
 router = APIRouter()
 
 
-@router.delete("/admin/{id}", status_code=status.HTTP_204_NO_CONTENT, response_model=IResponse)
+@router.delete(
+    "/admin/{id}", status_code=status.HTTP_200_OK, response_model=IResponse
+)
 async def delete_user(id: int, session: SessionDep):
     return await UserController.delete_user(id, session)
 
 
-@router.patch("/admin/{id}", status_code=status.HTTP_200_OK,response_model=IResponse)
+@router.patch("/admin/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def patch_information_user(id: int, session: SessionDep, user_info: UserPatch):
     return await UserController.patch_information_user(id, session, user_info)
 
 
-@router.post("/admin", status_code=status.HTTP_201_CREATED,response_model=IResponse)
+@router.post("/admin", status_code=status.HTTP_201_CREATED, response_model=IResponse)
 async def create_user(session: SessionDep, user_info: UserBase):
     return await UserController.create_user(session, user_info)
 
 
-@router.post("/mesa", status_code=status.HTTP_201_CREATED,response_model=IResponse)
+@router.post("/mesa", status_code=status.HTTP_201_CREATED, response_model=IResponse)
 async def create_user_mesa(session: SessionDep, user_info: UserBase):
     return await UserController.create_user_mesa(session, user_info)
 
 
-@router.get("/{id}", status_code=status.HTTP_200_OK,response_model=IResponse)
+@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def read_user(id: int, session: SessionDep):
     return await UserController.read_user(id, session)
 
 
-@router.get("/", status_code=status.HTTP_200_OK,response_model=IResponse)
+@router.get("/", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def search_user(
     session: SessionDep,
     email: EmailStr | None = None,
@@ -48,11 +50,11 @@ async def search_user(
     return await UserController.search_user(email, username, session)
 
 
-@router.patch("/password", status_code=status.HTTP_200_OK,response_model=IResponse)
+@router.patch("/password", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def change_password(session: SessionDep, info_user: UserResetPasswordMe):
     return await UserController.change_password(session, info_user)
 
 
-@router.patch("/", status_code=status.HTTP_200_OK,response_model=IResponse)
+@router.patch("/", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def change_information(session: SessionDep, info_user: UserUpdateMe):
     return await UserController.change_information(session, info_user)

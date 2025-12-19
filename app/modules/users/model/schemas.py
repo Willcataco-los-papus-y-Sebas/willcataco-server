@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 from app.core.enums import UserRole
 
@@ -13,7 +13,8 @@ class UserBase(BaseModel):
 
 
 class UserResponse(BaseModel):
-    user_id: int
+    model_config = ConfigDict(from_attributes=True)
+    id: int
     username: str
     email: EmailStr
     role: UserRole
