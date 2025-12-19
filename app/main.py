@@ -1,11 +1,13 @@
-from contextlib import asynccontextmanager
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from sqlalchemy import text
 
+import app.core.mapping_database
+from app.api import routes
 from app.core.config import config
 from app.core.database import engine
-from app.api import routes
 
 logger = logging.getLogger("uvicorn.info")
 

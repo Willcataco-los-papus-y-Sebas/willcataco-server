@@ -1,29 +1,19 @@
 import asyncio
-from logging.config import fileConfig
-import sys
 import os
+import sys
+from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
-
 # Add the project root directory to the python path
 sys.path.append(os.getcwd())
 
+import app.core.mapping_database  # noqa: F401
 from app.core.config import config as app_config
 from app.core.database import Base
-from app.modules.users.model.models import User
-from app.modules.members.model.models import Member
-from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
-from app.modules.extra_payments.payments.model.models import Payment
-from app.modules.water_meters.actions.model.models import Action
-from app.modules.water_meters.streets.model.models import Street
-from app.modules.water_meters.water_meters.model.models import WaterMeter
-from app.modules.water_meters.meters.model.models import Meter
-from app.modules.water_meters.action_payments.model.models import ActionPayment
-from app.modules.water_meters.water_payments.model.models import WaterPayment
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

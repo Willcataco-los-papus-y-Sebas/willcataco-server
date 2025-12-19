@@ -51,6 +51,7 @@ class UserController:
         response = IResponse(detail="User Created", status_code=201, data=user)
         return response
 
+    #modificar
     @staticmethod
     async def create_user_mesa(session: SessionDep, user_info: UserBase):
         if user_info.role != UserRole.MEMBER:
@@ -93,5 +94,3 @@ class UserController:
                 raise HTTPException(status_code=404, detail="user not found")
             response = IResponse(detail="user found", status_code=200, data=user)
             return response
-
-    # TODO change password, change Information in authentication

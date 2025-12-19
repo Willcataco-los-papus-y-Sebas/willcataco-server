@@ -15,25 +15,25 @@ router = APIRouter()
 
 
 @router.delete(
-    "/admin/{id}", status_code=status.HTTP_200_OK, response_model=IResponse
+    "/{id}", status_code=status.HTTP_200_OK, response_model=IResponse
 )
 async def delete_user(id: int, session: SessionDep):
     return await UserController.delete_user(id, session)
 
 
-@router.patch("/admin/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
+@router.patch("/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def patch_information_user(id: int, session: SessionDep, user_info: UserPatch):
     return await UserController.patch_information_user(id, session, user_info)
 
 
-@router.post("/admin", status_code=status.HTTP_201_CREATED, response_model=IResponse)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=IResponse)
 async def create_user(session: SessionDep, user_info: UserBase):
     return await UserController.create_user(session, user_info)
 
-
-@router.post("/mesa", status_code=status.HTTP_201_CREATED, response_model=IResponse)
-async def create_user_mesa(session: SessionDep, user_info: UserBase):
-    return await UserController.create_user_mesa(session, user_info)
+#arreglar
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=IResponse)
+async def create_user_staff(session: SessionDep, user_info: UserBase):
+    return await UserController.create_user_staff(session, user_info)
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
@@ -49,6 +49,7 @@ async def search_user(
 ):
     return await UserController.search_user(email, username, session)
 
+#admin y staff
 
 @router.patch("/password", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def change_password(session: SessionDep, info_user: UserResetPasswordMe):
