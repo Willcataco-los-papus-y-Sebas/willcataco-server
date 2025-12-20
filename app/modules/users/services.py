@@ -1,8 +1,8 @@
-from sqlalchemy import select, func
-
 from pydantic import EmailStr
-from app.modules.auth.hashing import Hasher
+from sqlalchemy import func, select
+
 from app.core.database import SessionDep
+from app.modules.auth.hashing import Hasher
 from app.modules.users.model.models import User
 from app.modules.users.model.schemas import (
     UserBase,
@@ -87,7 +87,7 @@ class UserService:
                 password=Hasher.get_password_hash(user_info.password),
                 role=user_info.role,
             )
-            await session.add(new_user)
+            session.add(new_user)
             await session.commit()
             await session.refresh(new_user)
             return UserResponse.model_validate(new_user)
@@ -96,11 +96,11 @@ class UserService:
             raise
 
     @staticmethod
-    async def authenticate_user(session: SessionDep, email: str, password: str):
+    async def authenticate_user(session: SessionDep, username: str, password: str):
         try:
-            user = await session.execute(select(User).where(User.email == email))
+            user = await session.execute(select(User).where(User.username == username))
             user_orm = user.scalars().one_or_none()
-            if not Hasher.verify_password(password,user_orm.password):
+            if not Hasher.verify_password(password, user_orm.password):
                 return None
             return UserResponse.model_validate(user_orm)
         except Exception:
