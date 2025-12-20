@@ -87,10 +87,22 @@ class UserService:
                 password=Hasher.get_password_hash(user_info.password),
                 role=user_info.role,
             )
-            session.add(new_user)
+            await session.add(new_user)
             await session.commit()
             await session.refresh(new_user)
             return UserResponse.model_validate(new_user)
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def authenticate_user(session: SessionDep, email: str, password: str):
+        try:
+            user = await session.execute(select(User).where(User.email == email))
+            user_orm = user.scalars().one_or_none()
+            if not Hasher.verify_password(password,user_orm.password):
+                return None
+            return UserResponse.model_validate(user_orm)
         except Exception:
             await session.rollback()
             raise
