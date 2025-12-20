@@ -18,6 +18,10 @@ class AuthController:
             raise HTTPException(
                 status_code=400, detail="Incorrect username or password"
             )
+        if not ctrl_user.is_active:
+            raise HTTPException(
+                status_code=404, detail="User not found"
+            )
         user = await UserService.authenticate_user(
             session, username=form_data.username, password=form_data.password
         )
