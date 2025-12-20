@@ -9,6 +9,12 @@ class Config(BaseSettings):
     db_host: str
     db_port: int
 
+    # JWTokens
+
+    token_time_expire: int
+    token_algorithm : str
+    token_key : str
+
     model_config = SettingsConfigDict(env_file=".env")
 
     @property
