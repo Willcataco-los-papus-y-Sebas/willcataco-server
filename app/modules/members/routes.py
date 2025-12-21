@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Query
 
 from app.core.response_schema import IResponse
 from app.modules.members.controllers import MemberController
@@ -26,5 +26,6 @@ async def delete_member(session: SessionDep, id: int):
     return await MemberController.delete_member(session, id)
 
 @router.get("/", status_code= status.HTTP_200_OK, response_model = IResponse)
-async def search_member(session: SessionDep, ci: str | None=None, last_name: str | None=None):
-    return await MemberController.search_member(session, ci, last_name)
+async def search_member(session: SessionDep, ci: str | None=None, last_name: str | None=None, name: str | None=None,
+                        limit: int =Query(10, ge=0, le=10), offset: int=Query(0, ge=0)):
+    return await MemberController.search_member(session, ci, last_name, name, limit, offset)
