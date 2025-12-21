@@ -65,8 +65,8 @@ class MemberController:
     
 
     @staticmethod
-    async def search_member(session: SessionDep, ci: str | None, last_name: str | None):
-        if not ci and not last_name:
+    async def search_member(session: SessionDep, ci: str | None, last_name: str | None, name: str | None, limit: int , offset: int):
+        if not ci and not last_name and not name:
             raise HTTPException(status_code=400, detail="Bad Request")
         if ci:
             member = await MemberService.get_member_by_ci(session, ci)
@@ -75,9 +75,16 @@ class MemberController:
             response =IResponse(detail="Member found", status_code=201, data=member)
             return response
         if last_name:
-            member = await MemberService.get_member_by_last_name(session, last_name)
-            if not last_name:
-                raise HTTPException(status_code=404, detail="Mmeber not found")
-            response = IResponse(detail="Member found", status_code=201, data=member)
+            members = await MemberService.get_members_by_last_name(session, last_name, limit, offset)
+            if not members:
+                raise HTTPException(status_code=404, detail="Member(s) not found")
+            response = IResponse[list[MemberResponse]](detail="Member(s) found", status_code=201, data=members, 
+                                                       page=((offset // limit)+1), offset=offset)
             return response
-    
+        if name:
+            members = await MemberService.get_members_by_name(session, name, limit, offset)
+            if not members:
+                raise HTTPException(status_code=404, detail="Member(s) not found")
+            response = IResponse[list[MemberResponse]](detail= "Member(s) found", status_code=201, data=members, 
+                                                       page=((offset // limit)+1), offset=offset)
+            return response
