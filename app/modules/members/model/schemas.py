@@ -8,6 +8,7 @@ class MemberBase(BaseModel):
     last_name: str
     ci: str
     phone: str
+    email: str
 
 class MemberResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
