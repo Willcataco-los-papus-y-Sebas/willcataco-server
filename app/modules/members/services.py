@@ -85,11 +85,11 @@ class MemberService:
     @staticmethod
     async def delete_member(session: SessionDep, id: int):
         try:
-            member = select(Member).options(selectinload(Member.user).where(Member.id == id))
+            member = await session.execute(select(Member).options(selectinload(Member.user)).where(Member.id == id))
             member_orm = member.scalars().one()
             member_orm.deleted_at = func.now()
-            member.user.is_activate = False
-            member.user.deleted_at = func.now()
+            member_orm.user.is_active = False
+            member_orm.user.deleted_at = func.now()
             await session.commit()
             await session.refresh(member_orm)
             return MemberResponse.model_validate(member_orm)
