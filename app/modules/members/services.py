@@ -30,13 +30,27 @@ class MemberService:
             await session.rollback()
             raise
 
+    @staticmethod
+    async def get_members_by_name(session: SessionDep, name: str, limit: int, offset: int):
+        try:
+            member = await session.execute(
+                select(Member).where(Member.name.ilike(f"%{name}%")).
+                order_by(Member.last_name, Member.name).limit(limit).offset(offset))
+            member_orm = member.scalars().all()
+            return [MemberResponse.model_validate(m) for m in member_orm]
+        except Exception:
+            await session.rollback()
+            raise
+
     
     @staticmethod
-    async def get_member_by_last_name(session: SessionDep, last_name: str):
+    async def get_members_by_last_name(session: SessionDep, last_name: str, limit: int, offset: int):
         try:
-            member = await session.execute(select(Member).where(Member.last_name == last_name))
-            member_orm = member.scalars().one_or_none()
-            return MemberResponse.model_validate(member_orm) if member_orm else None
+            member = await session.execute(
+                select(Member).where(Member.last_name.ilike(f"%{last_name}%")).
+                order_by(Member.last_name, Member.name).limit(limit).offset(offset))
+            member_orm = member.scalars().all()
+            return [MemberResponse.model_validate(m) for m in member_orm]
         except Exception:
             await session.rollback()
             raise
