@@ -99,7 +99,7 @@ class UserService:
     async def authenticate_user(session: SessionDep, username: str, password: str):
         try:
             user = await session.execute(select(User).where(User.username == username))
-            user_orm = user.scalars().one_or_none()
+            user_orm = user.scalars().one()
             if not Hasher.verify_password(password, user_orm.password):
                 return None
             return UserResponse.model_validate(user_orm)
