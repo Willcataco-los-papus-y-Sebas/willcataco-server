@@ -55,5 +55,22 @@ class MemberController:
         member = await MemberService.create_member(session, member_info, user.id)
         response = IResponse(detail="Member Created", status_code=201, data=member)
         return response
+    
 
+    @staticmethod
+    async def search_member(ci: str | None, last_name: str | None, session: SessionDep):
+        if not ci and not last_name:
+            raise HTTPException(status_code=400, detail="Bad Request")
+        if ci:
+            member = await MemberService.get_member_by_ci(session, ci)
+            if not member:
+                raise HTTPException(status_code=404, data="Member not found")
+            response =IResponse(detail="Member found", status_code=201, data=member)
+            return response
+        if last_name:
+            member = await MemberService.get_member_by_last_name(session, last_name)
+            if not last_name:
+                raise HTTPException(status_code=404, detail="Mmeber not found")
+            response = IResponse(detail="Member found", status_code=201, data=member)
+            return response
     
