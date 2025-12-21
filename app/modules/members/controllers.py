@@ -47,11 +47,17 @@ class MemberController:
     
 
     @staticmethod
-    async def create_member(session: SessionDep, member_info: MemberBase, user_info: UserBase):
+    async def create_member(session: SessionDep, member_info: MemberBase):
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
             raise HTTPException(status_code=400, detail="Member already exist")
-        user = await UserController.create_user(session, user_info)
+        generic_user = UserBase(
+            username= f"{member_info.last_name}_{member_info.name}",
+            email=member_info.email,
+            password=member_info.ci,
+            role=UserRole.MEMBER,
+        )
+        user = await UserController.create_user(session, generic_user)
         member = await MemberService.create_member(session, member_info, user.id)
         response = IResponse(detail="Member Created", status_code=201, data=member)
         return response
