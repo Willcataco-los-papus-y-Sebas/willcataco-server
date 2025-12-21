@@ -17,7 +17,7 @@ async def create_member(session: SessionDep, member_info: MemberBase):
 async def read_member(id: int, session: SessionDep):
     return await MemberController.read_member(id, session)
 
-@router.patch("{id}", status_code=status.HTTP_200_OK, response_model = IResponse)
+@router.patch("/{id}", status_code=status.HTTP_200_OK, response_model = IResponse)
 async def patch_info_member(session: SessionDep, id: int, member_info: MemberPatch, user_info: UserPatch):
     return await MemberController.patch_info_member(session, id, member_info, user_info)
 
