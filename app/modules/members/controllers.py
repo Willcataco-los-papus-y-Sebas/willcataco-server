@@ -19,7 +19,6 @@ class MemberController:
         member = await MemberService.get_member_by_id(session, id)
         if not member:
             raise HTTPException(status_code=404, detail="member not found")
-        await UserController.delete_user(member.user_id, session)
         await MemberService.delete_member(session, id)
         response = IResponse(detail="Member deleted", status_code=200)
         return response
