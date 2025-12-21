@@ -58,13 +58,14 @@ class MemberController:
             role=UserRole.MEMBER,
         )
         user = await UserController.create_user(session, generic_user)
-        member = await MemberService.create_member(session, member_info, user.id)
+        user_data = user.data
+        member = await MemberService.create_member(session, member_info, user_data.id)
         response = IResponse(detail="Member Created", status_code=201, data=member)
         return response
     
 
     @staticmethod
-    async def search_member(ci: str | None, last_name: str | None, session: SessionDep):
+    async def search_member(session: SessionDep, ci: str | None, last_name: str | None):
         if not ci and not last_name:
             raise HTTPException(status_code=400, detail="Bad Request")
         if ci:
