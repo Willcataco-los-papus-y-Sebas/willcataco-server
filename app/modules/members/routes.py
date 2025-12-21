@@ -24,3 +24,7 @@ async def patch_info_member(session: SessionDep, id: int, member_info: MemberPat
 @router.delete("/{id}", status_code=status.HTTP_200_OK, response_model= IResponse)
 async def delete_member(session: SessionDep, id: int):
     return await MemberController.delete_member(session, id)
+
+@router.get("/", status_code= status.HTTP_200_OK, response_model = IResponse)
+async def search_member(session: SessionDep, ci: str | None=None, last_name: str | None=None):
+    return await MemberController.search_member(session, ci, last_name)
