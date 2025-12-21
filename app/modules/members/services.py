@@ -1,4 +1,5 @@
-from sqlalchemy import select,func
+from sqlalchemy import select, func
+from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
@@ -84,9 +85,11 @@ class MemberService:
     @staticmethod
     async def delete_member(session: SessionDep, id: int):
         try:
-            member = await session.execute(select(Member).where(Member.id == id))
+            member = select(Member).options(selectinload(Member.user).where(Member.id == id))
             member_orm = member.scalars().one()
             member_orm.deleted_at = func.now()
+            member.user.is_activate = False
+            member.user.deleted_at = func.now()
             await session.commit()
             await session.refresh(member_orm)
             return MemberResponse.model_validate(member_orm)
