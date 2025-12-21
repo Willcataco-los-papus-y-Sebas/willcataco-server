@@ -26,14 +26,13 @@ class MemberController:
     
     
     @staticmethod
-    async def patch_info_member(session: SessionDep, id: int, member_info: MemberPatch, user_info: UserPatch):
+    async def patch_info_member(session: SessionDep, id: int, member_info: MemberPatch):
         member = await MemberService.get_member_by_id(session, id)
         if not member:
             raise HTTPException(status_code=404, detail="Member not found")
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
             raise HTTPException(status_code=400, detail="CI already exists")
-        user_patched = await UserController.patch_information_user(session, member.user_id, user_info)
         member_patched = await MemberService.patch_info_member(session, id, member_info)
         response = IResponse(detail="Member patched", status_code=200, data=member_patched)
         return response
