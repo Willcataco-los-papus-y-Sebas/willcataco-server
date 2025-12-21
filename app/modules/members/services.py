@@ -18,6 +18,7 @@ class MemberService:
             await session.rollback()
             raise
 
+
     @staticmethod
     async def get_member_by_ci(session: SessionDep, ci: str):
         try:
@@ -27,6 +28,18 @@ class MemberService:
         except Exception:
             await session.rollback()
             raise
+
+    
+    @staticmethod
+    async def get_member_by_last_name(session: SessionDep, last_name: str):
+        try:
+            member = await session.execute(select(Member).where(Member.last_name == last_name))
+            member_orm = member.scalars().one_or_none()
+            return MemberResponse.model_validate(member_orm) if member_orm else None
+        except Exception:
+            await session.rollback()
+            raise
+
 
     @staticmethod
     async def create_member(session: SessionDep, member_info: MemberBase, user_ids: int):
@@ -45,6 +58,7 @@ class MemberService:
         except Exception:
             await session.rollback()
             raise
+
     
     @staticmethod
     async def patch_infomation_member(session: SessionDep, id: int, member_info: MemberBase):
@@ -66,6 +80,7 @@ class MemberService:
             await session.rollback()
             raise
     
+
     @staticmethod
     async def delete_member(session: SessionDep, id: int):
         try:
@@ -78,5 +93,4 @@ class MemberService:
         except Exception:
             await session.rollback()
             raise
-
 
