@@ -13,21 +13,12 @@ class AuthController:
     async def login_token(
         session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
     ):
-        ctrl_user = await UserService.get_user_by_username(session, form_data.username)
-        if not ctrl_user:
-            raise HTTPException(
-                status_code=400, detail="Incorrect username or password"
-            )
-        if not ctrl_user.is_active:
-            raise HTTPException(
-                status_code=404, detail="User not found"
-            )
         user = await UserService.authenticate_user(
             session, username=form_data.username, password=form_data.password
         )
         if not user:
             raise HTTPException(
-                status_code=400, detail="Incorrect username or password"
+                status_code=400, detail="Bad request"
             )
         token = JWTokens.create_access_token(user.id)
         return {"access_token": token, "token_type": "bearer"}
