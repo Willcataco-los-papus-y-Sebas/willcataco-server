@@ -79,7 +79,7 @@ class MemberService:
     async def patch_infomation_member(session: SessionDep, id: int, member_info: MemberBase):
         try:
             member = await session.execute(select(Member).where(Member.id == id))
-            member_orm = member.scalars().one()
+            member_orm = member.scalars().one_or_none()
             if member_info.name is not None:
                 member_orm.name = member_info.name
             if member_info.last_name is not None:
@@ -100,7 +100,7 @@ class MemberService:
     async def delete_member(session: SessionDep, id: int):
         try:
             member = await session.execute(select(Member).options(selectinload(Member.user)).where(Member.id == id))
-            member_orm = member.scalars().one()
+            member_orm = member.scalars().one_or_none()
             member_orm.deleted_at = func.now()
             member_orm.user.is_active = False
             member_orm.user.deleted_at = func.now()
