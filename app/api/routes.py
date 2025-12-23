@@ -2,9 +2,11 @@ from fastapi import APIRouter
 from app.modules.health.routes import router as health_router
 from app.modules.users.routes import router as user_router
 from app.modules.auth.routes import router as auth_router
+from app.modules.water_meters.actions.routes import router as actions_router
 
 router = APIRouter()
 
 router.include_router(health_router, prefix="/health", tags=["health"])
 router.include_router(user_router, prefix="/users", tags=["user"])
 router.include_router(auth_router, prefix="/auth", tags=["auth"])
+router.include_router(actions_router, prefix="/actions", tags=["actions"])
