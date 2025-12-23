@@ -9,6 +9,7 @@ class ActionPaymentCreate(ActionPaymentBase):
     pass
 
 class ActionPaymentPatch(BaseModel):
+    action_id: int | None = None
     amount: float | None = None
 
 class ActionPaymentResponse(ActionPaymentBase):
