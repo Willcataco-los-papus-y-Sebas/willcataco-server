@@ -7,8 +7,11 @@ from app.modules.water_meters.actions.services import ActionService
 class ActionController:
     @staticmethod
     async def create_action(session: SessionDep, action_info: ActionCreate):
-        action = await ActionService.create_action(session, action_info)
-        return IResponse(detail="Action created", status_code=201, data=action)
+        try:
+            action = await ActionService.create_action(session, action_info)
+            return IResponse(detail="Action created", status_code=201, data=action)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
     @staticmethod
     async def read_action(id: int, session: SessionDep):

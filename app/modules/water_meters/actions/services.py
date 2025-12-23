@@ -1,4 +1,5 @@
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from app.core.database import SessionDep
 from app.modules.water_meters.actions.model.models import Action
 from app.modules.water_meters.actions.model.schemas import (
@@ -38,6 +39,9 @@ class ActionService:
             await session.commit()
             await session.refresh(new_action)
             return ActionResponse.model_validate(new_action)
+        except IntegrityError:
+            await session.rollback()
+            raise ValueError("Member or Street ID not found")
         except Exception:
             await session.rollback()
             raise
