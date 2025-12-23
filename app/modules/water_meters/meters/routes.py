@@ -3,7 +3,7 @@ from fastapi import APIRouter, status
 from app.core.database import SessionDep
 from app.core.response_schema import IResponse
 from app.modules.water_meters.meters.controllers import MeterController
-from app.modules.water_meters.meters.model.schemas import MetersBase
+from app.modules.water_meters.meters.model.schemas import MeterBase
 
 router = APIRouter()
 
@@ -22,7 +22,7 @@ async def delete_meter(id: int, session: SessionDep):
     status_code=status.HTTP_200_OK,
     response_model=IResponse,
 )
-async def patch_information_meter(id: int, session: SessionDep, meter_info: MetersBase):
+async def patch_information_meter(id: int, session: SessionDep, meter_info: MeterBase):
     return await MeterController.patch_information_meter(id, session, meter_info)
 
 
@@ -32,7 +32,7 @@ async def patch_information_meter(id: int, session: SessionDep, meter_info: Mete
     response_model=IResponse,
 )
 async def create_meter(
-    session: SessionDep, meter_info: MetersBase
+    session: SessionDep, meter_info: MeterBase
 ):
     return await MeterController.create_meter(session, meter_info)
 

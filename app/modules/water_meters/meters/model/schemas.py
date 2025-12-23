@@ -3,13 +3,13 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, NonNegativeFloat
 
 
-class MetersBase(BaseModel):
+class MeterBase(BaseModel):
     water_meter_id : int
     water_reading : NonNegativeFloat = Field(decimal_places=2)
     observation : str | None = None
     photo_path : str
     
-class MetersResponse(MetersBase):
+class MeterResponse(MeterBase):
     model_config = ConfigDict(from_attributes=True)
     
     id: int
