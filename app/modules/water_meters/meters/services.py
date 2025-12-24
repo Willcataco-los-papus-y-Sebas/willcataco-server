@@ -59,4 +59,14 @@ class MeterServices:
 
     @staticmethod
     async def create_meter(session: SessionDep, meter_info: MeterBase):
-        pass
+        try:
+            info_created = meter_info.model_dump()
+            info_created["past_water_reading"] = meter_info.water_reading
+            new_meter = Meter(**info_created)
+            session.add(new_meter)
+            await session.commit()
+            await session.refresh(new_meter)
+            return MeterResponse.model_validate(new_meter)
+        except Exception:
+            await session.rollback()
+            raise
