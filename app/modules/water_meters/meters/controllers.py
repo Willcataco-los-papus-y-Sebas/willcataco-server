@@ -17,11 +17,11 @@ class MeterController:
         return response
 
     @staticmethod
-    async def patch_meter(id: int, session: SessionDep, meter_info: MeterBase):
+    async def update_meter(id: int, session: SessionDep, meter_info: MeterBase):
         meter = await MeterServices.get_meter_by_id(session, id)
         if not meter:
             raise HTTPException(status_code=404, detail="meter not found")
-        meter_patched = await MeterServices.patch_meter(session, id, meter_info)
+        meter_patched = await MeterServices.update_meter(session, id, meter_info)
         response = IResponse(
             detail="meter patched", status_code=200, data=meter_patched
         )

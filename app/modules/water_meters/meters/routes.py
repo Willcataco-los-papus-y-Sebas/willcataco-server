@@ -17,13 +17,13 @@ async def delete_meter(id: int, session: SessionDep):
     return await MeterController.delete_meter(id, session)
 
 
-@router.patch(
+@router.put(
     "/{id}",
     status_code=status.HTTP_200_OK,
     response_model=IResponse,
 )
-async def patch_meter(id: int, session: SessionDep, meter_info: MeterBase):
-    return await MeterController.patch_meter(id, session, meter_info)
+async def update_meter(id: int, session: SessionDep, meter_info: MeterBase):
+    return await MeterController.update_meter(id, session, meter_info)
 
 
 @router.get(
