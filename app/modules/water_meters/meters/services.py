@@ -1,9 +1,11 @@
-from sqlalchemy import Update, func, select
+from pydantic import NonNegativeFloat
+from sqlalchemy import func, select, update
 
 from app.core.database import SessionDep
 from app.modules.water_meters.meters.model.models import Meter
 from app.modules.water_meters.meters.model.schemas import (
     MeterBase,
+    MeterPatch,
     MeterResponse,
 )
 
@@ -31,19 +33,30 @@ class MeterServices:
             raise
 
     @staticmethod
-    async def update_meter(session: SessionDep, id: int, meter_info: MeterBase):
+    async def patch_meter(
+        session: SessionDep,
+        id: int,
+        meter_info: MeterPatch,
+        past_read: NonNegativeFloat,
+    ):
         try:
+            meter_info_update = meter_info.model_dump()
+            meter_info_update["past_water_reading"] = past_read
             meter = await session.execute(
-                Update(Meter)
+                update(Meter)
                 .where(Meter.id == id)
-                .values(**meter_info.model_dump())
+                .values(**meter_info_update)
                 .returning(Meter)
             )
             meter_orm = meter.scalar_one_or_none()
-            await session.commit()
             if not meter_orm:
                 return None
+            await session.commit()
             return MeterResponse.model_validate(meter_orm)
         except Exception:
             await session.rollback()
             raise
+
+    @staticmethod
+    async def create_meter(session: SessionDep, meter_info: MeterBase):
+        pass
