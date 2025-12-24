@@ -39,6 +39,7 @@ async def read_meter(id: int, session: SessionDep):
 
 
 @router.post(
+    "/",
     status_code=status.HTTP_201_CREATED,
     response_model=IResponse,
 )
