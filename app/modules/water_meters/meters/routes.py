@@ -22,19 +22,8 @@ async def delete_meter(id: int, session: SessionDep):
     status_code=status.HTTP_200_OK,
     response_model=IResponse,
 )
-async def patch_information_meter(id: int, session: SessionDep, meter_info: MeterBase):
-    return await MeterController.patch_information_meter(id, session, meter_info)
-
-
-@router.post(
-    "/",
-    status_code=status.HTTP_201_CREATED,
-    response_model=IResponse,
-)
-async def create_meter(
-    session: SessionDep, meter_info: MeterBase
-):
-    return await MeterController.create_meter(session, meter_info)
+async def patch_meter(id: int, session: SessionDep, meter_info: MeterBase):
+    return await MeterController.patch_meter(id, session, meter_info)
 
 
 @router.get(
