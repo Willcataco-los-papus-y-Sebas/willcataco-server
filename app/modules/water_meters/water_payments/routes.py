@@ -5,7 +5,7 @@ from app.core.database import SessionDep
 from app.core.enums import UserRole
 from app.modules.water_meters.water_payments.controllers import WaterPaymentController
 from app.core.response_schema import IResponse
-from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase, WaterPaymentPatch
+from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase
 
 router = APIRouter()
 
@@ -25,9 +25,9 @@ async def create_water_payment(
     response_model=IResponse,
 )
 async def change_status(
-    id: int, session: SessionDep, payment_info: WaterPaymentPatch
+    id: int, session: SessionDep
 ):
-    return await WaterPaymentController.change_status(id, session, payment_info)
+    return await WaterPaymentController.change_status(id, session)
 
 @router.get(
     "/{id}",
