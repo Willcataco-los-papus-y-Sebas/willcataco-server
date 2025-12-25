@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pydantic import BaseModel, Field, NonNegativeFloat, ConfigDict
-
+from app.core.enums import PaymentStatus
 
 class WaterPaymentBase(BaseModel):
     member_id: int
@@ -13,7 +13,7 @@ class WaterPaymentResponse(WaterPaymentBase):
 
     id: int
     amount: NonNegativeFloat = Field(decimal_places=2)
-    status: bool
+    status: PaymentStatus
     created_at: datetime
     updated_at: datetime
     deleted_at: datetime | None = None
