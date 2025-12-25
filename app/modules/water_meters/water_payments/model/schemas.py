@@ -17,7 +17,3 @@ class WaterPaymentResponse(WaterPaymentBase):
     created_at: datetime
     updated_at: datetime
     deleted_at: datetime | None = None
-
-
-class WaterPaymentPatch(BaseModel):
-    amount: NonNegativeFloat = Field(decimal_places=2)
