@@ -33,12 +33,12 @@ class WaterMeterController:
         
         meter_patched = await WaterMeterService.patch_meter(session, id, meter_info)
         return IResponse(detail="Water meter updated", status_code=200, data=meter_patched)
-
+    
     @staticmethod
     async def delete_meter(id: int, session: SessionDep):
-        meter = await WaterMeterService.get_meter_by_id(session, id)
-        if not meter:
+        deleted = await WaterMeterService.delete_meter(session, id)
+        
+        if not deleted:
             raise HTTPException(status_code=404, detail="Water meter not found")
             
-        await WaterMeterService.delete_meter(session, id)
         return IResponse(detail="Water meter deleted", status_code=200)

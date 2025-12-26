@@ -16,8 +16,11 @@ class WaterMeterService:
                 WaterMeter.deleted_at.is_(None)
             )
             result = await session.execute(stmt)
-            meter_orm = result.scalars().one()
-            return WaterMeterResponse.model_validate(meter_orm) if meter_orm else None
+            meter_orm = result.scalars().one_or_none()
+            if not meter_orm:
+                return None
+                
+            return WaterMeterResponse.model_validate(meter_orm)
         except Exception:
             await session.rollback()
             raise
@@ -57,6 +60,8 @@ class WaterMeterService:
             )
             result = await session.execute(stmt)
             meter_orm = result.scalars().one_or_none()
+            if not meter_orm:
+                return None
 
             if meter_info.action_id is not None:
                 meter_orm.action_id = meter_info.action_id
@@ -78,11 +83,14 @@ class WaterMeterService:
                 WaterMeter.deleted_at.is_(None)
             )
             result = await session.execute(stmt)
-            meter_orm = result.scalars().one()
+            meter_orm = result.scalars().one_or_none()
+            if not meter_orm:
+                return None 
             
             meter_orm.deleted_at = func.now()
             
             await session.commit()
+            return True 
         except Exception:
             await session.rollback()
             raise
