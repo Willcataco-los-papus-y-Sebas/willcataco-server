@@ -1,39 +1,97 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
 from datetime import datetime
-from typing import Sequence
 
-from .model.models import ExtraPayment
-from . import schemas
+from sqlalchemy import select, update
+from sqlalchemy.orm import selectinload
 
-async def get_all(db: AsyncSession) -> Sequence[ExtraPayment]:
-    """Obtiene todos los pagos extra (canastones, eventos) que no han sido borrados."""
-    query = select(ExtraPayment).where(ExtraPayment.deleted_at == None)
-    result = await db.execute(query)
-    return result.scalars().all()
+from app.core.database import SessionDep
+from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
+from app.modules.extra_payments.extra_payments.schemas import (
+    ExtraPaymentCreate,
+    ExtraPaymentUpdate,
+    ExtraPaymentResponse,
+)
 
-async def get_by_id(db: AsyncSession, extra_payment_id: int) -> ExtraPayment | None:
-    """Busca un pago extra específico por su ID."""
-    query = select(ExtraPayment).where(
-        ExtraPayment.id == extra_payment_id, 
-        ExtraPayment.deleted_at == None
-    )
-    result = await db.execute(query)
-    return result.scalar_one_or_none()
 
-async def create(db: AsyncSession, data: schemas.ExtraPaymentCreate) -> ExtraPayment:
-    """Crea un nuevo registro de pago extra (ej: Canastón de Navidad)."""
-    new_extra_payment = ExtraPayment(**data.model_dump())
-    db.add(new_extra_payment)
-    await db.commit()
-    await db.refresh(new_extra_payment)
-    return new_extra_payment
+class ExtraPaymentService:
 
-async def delete_logical(db: AsyncSession, payment_id: int):
-    """Realiza un borrado lógico marcando la fecha en deleted_at."""
-    query = update(ExtraPayment).where(ExtraPayment.id == payment_id).values(
-        deleted_at=datetime.now()
-    )
-    await db.execute(query)
-    await db.commit()
-    return {"message": "Registro eliminado con éxito"}
+    @staticmethod
+    async def get_all(session: SessionDep):
+        try:
+            result = await session.execute(
+                select(ExtraPayment)
+                .where(ExtraPayment.deleted_at.is_(None))
+                .order_by(ExtraPayment.created_at.desc())
+            )
+            payments = result.scalars().all()
+            return [ExtraPaymentResponse.model_validate(p) for p in payments]
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def get_by_id(session: SessionDep, payment_id: int):
+        try:
+            result = await session.execute(
+                select(ExtraPayment).where(
+                    ExtraPayment.id == payment_id,
+                    ExtraPayment.deleted_at.is_(None),
+                )
+            )
+            payment = result.scalars().one_or_none()
+            return (
+                ExtraPaymentResponse.model_validate(payment)
+                if payment
+                else None
+            )
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def create(session: SessionDep, data: ExtraPaymentCreate):
+        try:
+            new_payment = ExtraPayment(**data.model_dump())
+            session.add(new_payment)
+            await session.commit()
+            await session.refresh(new_payment)
+            return ExtraPaymentResponse.model_validate(new_payment)
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def update(
+        session: SessionDep,
+        payment_id: int,
+        data: ExtraPaymentUpdate,
+    ):
+        try:
+            await session.execute(
+                update(ExtraPayment)
+                .where(
+                    ExtraPayment.id == payment_id,
+                    ExtraPayment.deleted_at.is_(None),
+                )
+                .values(**data.model_dump(exclude_unset=True))
+            )
+            await session.commit()
+            return await ExtraPaymentService.get_by_id(session, payment_id)
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def delete_logical(session: SessionDep, payment_id: int):
+        try:
+            await session.execute(
+                update(ExtraPayment)
+                .where(
+                    ExtraPayment.id == payment_id,
+                    ExtraPayment.deleted_at.is_(None),
+                )
+                .values(deleted_at=datetime.utcnow())
+            )
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise

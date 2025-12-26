@@ -1,20 +1,77 @@
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db
-from . import schemas, services
+from fastapi import APIRouter, status, Depends
 
-# Definimos el router con el tag para que aparezca agrupado en Swagger
-router = APIRouter(prefix="/extra-payments", tags=["Extra Payments"])
+from app.core.database import SessionDep
+from app.core.dependencies import RequireRoles
+from app.core.enums import UserRole
+from app.core.response_schema import IResponse
 
-@router.get("/", response_model=list[schemas.ExtraPaymentResponse])
-async def read_extra_payments(db: AsyncSession = Depends(get_db)):
-    """Obtiene la lista de todos los pagos extra (canastones, eventos, etc)."""
-    return await services.get_all(db)
+from app.modules.extra_payments.extra_payments.controllers import (
+    ExtraPaymentController
+)
+from app.modules.extra_payments.extra_payments.schemas import (
+    ExtraPaymentCreate,
+    ExtraPaymentUpdate,
+)
 
-@router.post("/", response_model=schemas.ExtraPaymentResponse, status_code=status.HTTP_201_CREATED)
+router = APIRouter()
+
+
+@router.get(
+    "/",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
+)
+async def read_extra_payments(session: SessionDep):
+    return await ExtraPaymentController.read_all(session)
+
+
+@router.get(
+    "/{payment_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
+)
+async def read_extra_payment(payment_id: int, session: SessionDep):
+    return await ExtraPaymentController.read_by_id(session, payment_id)
+
+
+@router.post(
+    "/",
+    status_code=status.HTTP_201_CREATED,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
+)
 async def create_extra_payment(
-    extra_payment: schemas.ExtraPaymentCreate, 
-    db: AsyncSession = Depends(get_db)
+    session: SessionDep,
+    data: ExtraPaymentCreate
 ):
-    """Crea un nuevo concepto de pago extra."""
-    return await services.create(db, extra_payment)
+    return await ExtraPaymentController.create(session, data)
+
+
+@router.patch(
+    "/{payment_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN))]
+)
+async def update_extra_payment(
+    payment_id: int,
+    session: SessionDep,
+    data: ExtraPaymentUpdate
+):
+    return await ExtraPaymentController.update(
+        session,
+        payment_id,
+        data
+    )
+
+
+@router.delete(
+    "/{payment_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN))]
+)
+async def delete_extra_payment(payment_id: int, session: SessionDep):
+    return await ExtraPaymentController.delete(session, payment_id)
