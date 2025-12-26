@@ -40,6 +40,10 @@ This project uses [uv](https://github.com/astral-sh/uv) for fast package managem
    DB_PORT=5432
    DB_USER=willcataco_user
    DB_PASSWORD=willcataco
+
+   TOKEN_KEY="" 
+   TOKEN_ALGORITHM=""
+   TOKEN_TIME_EXPIRE=20
    ```
 
 ## Database Migrations
@@ -86,6 +90,17 @@ This will create the following users if they don't exist:
 - **Admin**: `admin@example.com` / `password123` (Role: ADMIN)
 - **Staff**: `staff@example.com` / `password123` (Role: STAFF)
 - **Member**: `member@example.com` / `password123` (Role: MEMBER)
+
+## JWT config env
+
+you need generate a key for token, copy in your .env
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(64))"
+```
+algorithm could be HS256, HS384, HS512, etc.
+
+token expiration time is in minutes
 
 ## Running the Application
 
