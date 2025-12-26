@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from app.core.response_schema import IResponse
 from app.core.database import SessionDep
-from app.modules.water_meters.water_meters.services import WaterMeterService
-from app.modules.water_meters.water_meters.model.schemas import (
+from app.modules.water_meters.water_meazure.services import WaterMeterService
+from app.modules.water_meters.water_meazure.model.schemas import (
     WaterMeterBase, 
     WaterMeterPatch
 )

@@ -1,7 +1,7 @@
 from sqlalchemy import select, func
 from app.core.database import SessionDep
-from app.modules.water_meters.water_meters.model.models import WaterMeter 
-from app.modules.water_meters.water_meters.model.schemas import (
+from app.modules.water_meters.water_meazure.model.models import WaterMeter
+from app.modules.water_meters.water_meazure.model.schemas import (
     WaterMeterBase,
     WaterMeterPatch,
     WaterMeterResponse,
@@ -16,7 +16,7 @@ class WaterMeterService:
                 WaterMeter.deleted_at.is_(None)
             )
             result = await session.execute(stmt)
-            meter_orm = result.scalars().one_or_none()
+            meter_orm = result.scalars().one()
             return WaterMeterResponse.model_validate(meter_orm) if meter_orm else None
         except Exception:
             await session.rollback()
