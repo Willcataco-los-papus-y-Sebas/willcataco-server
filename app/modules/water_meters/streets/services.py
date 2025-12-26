@@ -74,3 +74,14 @@ class StreetServices():
         except Exception:
             await session.rollback()
             raise
+    
+
+    @staticmethod
+    async def get_all_streets(session: SessionDep):
+        try:
+            streets = await session.execute(select(Street).where(Street.deleted_at.is_(None)).order_by(Street.id))
+            streets_orm = streets.scalars().all()
+            return [StreetResponse.model_validate(s) for s in streets_orm]
+        except Exception:
+            await session.rollback()
+            raise
