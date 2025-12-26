@@ -56,7 +56,7 @@ class WaterMeterService:
                 WaterMeter.deleted_at.is_(None)
             )
             result = await session.execute(stmt)
-            meter_orm = result.scalars().one()
+            meter_orm = result.scalars().one_or_none()
 
             if meter_info.action_id is not None:
                 meter_orm.action_id = meter_info.action_id
