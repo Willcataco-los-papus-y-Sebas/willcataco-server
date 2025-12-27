@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Query
 
 from app.core.database import SessionDep
 from app.core.dependencies import RequireRoles
@@ -22,8 +22,12 @@ router = APIRouter()
     response_model=IResponse,
     dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
 )
-async def read_extra_payments(session: SessionDep):
-    return await ExtraPaymentController.read_all(session)
+async def read_extra_payments(
+    session: SessionDep,
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
+    return await ExtraPaymentController.read_all(session, limit, offset)
 
 
 @router.get(

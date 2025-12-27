@@ -1,8 +1,4 @@
-from datetime import datetime
-
-from sqlalchemy import select, update
-from sqlalchemy.orm import selectinload
-
+from sqlalchemy import select, update, func
 from app.core.database import SessionDep
 from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
 from app.modules.extra_payments.extra_payments.schemas import (
@@ -15,12 +11,18 @@ from app.modules.extra_payments.extra_payments.schemas import (
 class ExtraPaymentService:
 
     @staticmethod
-    async def get_all(session: SessionDep):
+    async def get_all(
+        session: SessionDep,
+        limit: int,
+        offset: int
+    ):
         try:
             result = await session.execute(
                 select(ExtraPayment)
                 .where(ExtraPayment.deleted_at.is_(None))
                 .order_by(ExtraPayment.created_at.desc())
+                .limit(limit)
+                .offset(offset)
             )
             payments = result.scalars().all()
             return [ExtraPaymentResponse.model_validate(p) for p in payments]
@@ -89,7 +91,7 @@ class ExtraPaymentService:
                     ExtraPayment.id == payment_id,
                     ExtraPayment.deleted_at.is_(None),
                 )
-                .values(deleted_at=datetime.utcnow())
+                .values(deleted_at=func.now())
             )
             await session.commit()
         except Exception:

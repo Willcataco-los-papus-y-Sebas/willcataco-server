@@ -7,17 +7,26 @@ from app.modules.extra_payments.extra_payments.services import ExtraPaymentServi
 from app.modules.extra_payments.extra_payments.schemas import (
     ExtraPaymentCreate,
     ExtraPaymentUpdate,
+    ExtraPaymentResponse,
 )
+
 
 class ExtraPaymentController:
 
     @staticmethod
-    async def read_all(session: SessionDep):
-        payments = await ExtraPaymentService.get_all(session)
-        response = IResponse(
+    async def read_all(
+        session: SessionDep,
+        limit: int,
+        offset: int
+    ):
+        payments = await ExtraPaymentService.get_all(session, limit, offset)
+
+        response = IResponse[list[ExtraPaymentResponse]](
             detail="Extra payments found",
             status_code=200,
-            data=payments
+            data=payments,
+            page=((offset // limit) + 1),
+            offset=offset
         )
         return response
 
