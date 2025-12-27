@@ -11,17 +11,30 @@ from app.core.enums import UserRole
 
 router = APIRouter()
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=IResponse)
-async def create_water_meter(session: SessionDep, meter_info: WaterMeterBase):
-    return await WaterMeterController.create_meter(session, meter_info)
+@router.post(
+        "/", 
+        status_code=status.HTTP_201_CREATED, 
+        response_model=IResponse,
+        dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
+)
+async def create_water_meazure(session: SessionDep, meter_info: WaterMeterBase):
+    return await WaterMeterController.create_meazure(session, meter_info)
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=IResponse)
-async def list_water_meters(session: SessionDep):
-    return await WaterMeterController.get_all_meters(session)
+@router.get(
+        "/", 
+        status_code=status.HTTP_200_OK, 
+        response_model=IResponse
+)
+async def list_water_meazure(session: SessionDep):
+    return await WaterMeterController.get_all_meazures(session)
 
-@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=IResponse)
-async def read_water_meter(id: int, session: SessionDep):
-    return await WaterMeterController.read_meter(id, session)
+@router.get(
+        "/{id}", 
+        status_code=status.HTTP_200_OK, 
+        response_model=IResponse
+)
+async def read_water_meazure(id: int, session: SessionDep):
+    return await WaterMeterController.read_meazure(id, session)
 
 @router.patch(
     "/{id}", 
@@ -29,8 +42,8 @@ async def read_water_meter(id: int, session: SessionDep):
     response_model=IResponse,
     dependencies=[Depends(RequireRoles(UserRole.ADMIN))] 
 )
-async def patch_water_meter(id: int, session: SessionDep, meter_info: WaterMeterPatch):
-    return await WaterMeterController.patch_meter(id, session, meter_info)
+async def patch_water_meazure(id: int, session: SessionDep, meter_info: WaterMeterPatch):
+    return await WaterMeterController.patch_meazure(id, session, meter_info)
 
 @router.delete(
     "/{id}", 
@@ -38,5 +51,5 @@ async def patch_water_meter(id: int, session: SessionDep, meter_info: WaterMeter
     response_model=IResponse,
     dependencies=[Depends(RequireRoles(UserRole.ADMIN))]
 )
-async def delete_water_meter(id: int, session: SessionDep):
-    return await WaterMeterController.delete_meter(id, session)
+async def delete_water_meazure(id: int, session: SessionDep):
+    return await WaterMeterController.delete_meazure(id, session)
