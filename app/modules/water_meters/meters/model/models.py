@@ -16,5 +16,5 @@ class Meter(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    water_meter: Mapped["WaterMeter"] = relationship("app.modules.water_meters.water_meazure.model.models.WaterMeter", back_populates="meters")
+    water_meter: Mapped["WaterMeter"] = relationship("app.modules.water_meters.water_measure.model.models.WaterMeter", back_populates="meters")
     water_payment: Mapped["WaterPayment"] = relationship("app.modules.water_meters.water_payments.model.models.WaterPayment", back_populates="meter", uselist=False)

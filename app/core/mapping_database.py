@@ -6,5 +6,5 @@ from app.modules.water_meters.action_payments.model.models import ActionPayment
 from app.modules.water_meters.actions.model.models import Action
 from app.modules.water_meters.meters.model.models import Meter
 from app.modules.water_meters.streets.model.models import Street
-from app.modules.water_meters.water_meazure.model.models import WaterMeter
+from app.modules.water_meters.water_measure.model.models import WaterMeter
 from app.modules.water_meters.water_payments.model.models import WaterPayment

@@ -1,15 +1,15 @@
 from sqlalchemy import select, func
 from app.core.database import SessionDep
-from app.modules.water_meters.water_meazure.model.models import WaterMeter
-from app.modules.water_meters.water_meazure.model.schemas import (
+from app.modules.water_meters.water_measure.model.models import WaterMeter
+from app.modules.water_meters.water_measure.model.schemas import (
     WaterMeterBase,
     WaterMeterPatch,
     WaterMeterResponse,
 )
 
-class WaterMeazureService:
+class WaterMeasureService:
     @staticmethod
-    async def get_meazure_by_id(session: SessionDep, id: int):
+    async def get_measure_by_id(session: SessionDep, id: int):
         try:
             stmt = select(WaterMeter).where(
                 WaterMeter.id == id, 
@@ -26,7 +26,7 @@ class WaterMeazureService:
             raise
 
     @staticmethod
-    async def get_all_meazures(session: SessionDep):
+    async def get_all_measures(session: SessionDep):
         try:
             stmt = select(WaterMeter).where(WaterMeter.deleted_at.is_(None))
             result = await session.execute(stmt)
@@ -37,7 +37,7 @@ class WaterMeazureService:
             raise
 
     @staticmethod
-    async def create_meazure(session: SessionDep, meter_info: WaterMeterBase):
+    async def create_measure(session: SessionDep, meter_info: WaterMeterBase):
         try:
             new_meter = WaterMeter(
                 action_id=meter_info.action_id,
@@ -52,7 +52,7 @@ class WaterMeazureService:
             raise
 
     @staticmethod
-    async def patch_meazure(session: SessionDep, id: int, meter_info: WaterMeterPatch):
+    async def patch_measure(session: SessionDep, id: int, meter_info: WaterMeterPatch):
         try:
             stmt = select(WaterMeter).where(
                 WaterMeter.id == id, 
@@ -76,7 +76,7 @@ class WaterMeazureService:
             raise
 
     @staticmethod
-    async def delete_meazure(session: SessionDep, id: int):
+    async def delete_measure(session: SessionDep, id: int):
         try:
             stmt = select(WaterMeter).where(
                 WaterMeter.id == id, 

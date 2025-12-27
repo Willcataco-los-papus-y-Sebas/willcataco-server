@@ -5,7 +5,7 @@ from app.core.database import Base
 from app.core.enums import ActionStatus
 from app.modules.water_meters.action_payments.model.models import ActionPayment
 from app.modules.water_meters.streets.model.models import Street
-from app.modules.water_meters.water_meazure.model.models import WaterMeter
+from app.modules.water_meters.water_measure.model.models import WaterMeter
 
 class Action(Base):
     __tablename__ = "actions"
