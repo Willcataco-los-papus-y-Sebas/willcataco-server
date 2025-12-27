@@ -3,7 +3,10 @@ from fastapi import HTTPException
 
 from app.modules.water_meters.streets.services import StreetServices
 
-from app.modules.water_meters.streets.model.schemas import StreetBase, StreetPatch, StreetResponse
+from app.modules.water_meters.streets.model.schemas import (
+    StreetBase, 
+    StreetPatch
+)
 from app.core.database import SessionDep
 
 
