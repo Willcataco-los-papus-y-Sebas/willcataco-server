@@ -15,7 +15,7 @@ class UserService:
     @staticmethod
     async def get_user_by_id(session: SessionDep, id: int):
         try:
-            result = await session.execute(select(User).where(User.id == id))
+            result = await session.execute(select(User).where(User.id == id).where(User.is_active))
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
@@ -25,7 +25,7 @@ class UserService:
     @staticmethod
     async def get_user_by_email(session: SessionDep, email: EmailStr):
         try:
-            result = await session.execute(select(User).where(User.email == email))
+            result = await session.execute(select(User).where(User.email == email).where(User.is_active))
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
@@ -36,7 +36,7 @@ class UserService:
     async def get_user_by_username(session: SessionDep, username: str):
         try:
             result = await session.execute(
-                select(User).where(User.username == username)
+                select(User).where(User.username == username).where(User.is_active)
             )
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
@@ -47,7 +47,7 @@ class UserService:
     @staticmethod
     async def delete_user(session: SessionDep, id: int):
         try:
-            user = await session.execute(select(User).where(User.id == id))
+            user = await session.execute(select(User).where(User.id == id).where(User.is_active))
             user_orm = user.scalars().one()
             user_orm.is_active = False
             user_orm.deleted_at = func.now()
