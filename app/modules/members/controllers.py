@@ -2,6 +2,7 @@ from fastapi import HTTPException
 
 from app.core.database import SessionDep
 from app.core.enums import UserRole
+from app.core.dependencies import CurrentUser
 from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
 from app.modules.members.services import MemberService
@@ -47,7 +48,7 @@ class MemberController:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase
+        session: SessionDep, member_info: MemberBase, current_user: CurrentUser
     ):
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
@@ -58,7 +59,7 @@ class MemberController:
             password=member_info.ci,
             role=UserRole.MEMBER,
         )
-        user = await UserController.create_user(session, generic_user)
+        user = await UserController.create_user(session, generic_user, current_user)
         user_data = user.data
         member = await MemberService.create_member(session, member_info, user_data.id)
         response = IResponse(detail="Member Created", status_code=201, data=member)
