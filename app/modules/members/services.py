@@ -3,6 +3,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
+from app.modules.users.model.models import User
 from app.modules.members.model.schemas import (
     MemberBase,
     MemberResponse,
@@ -13,7 +14,8 @@ class MemberService:
     @staticmethod
     async def get_member_by_id(session: SessionDep, id: int):
         try:
-            result = await session.execute(select(Member).where(Member.id == id))
+            result = await session.execute(
+                select(Member).join(User).where(Member.id == id).where(User.is_active))
             member_orm = result.scalars().one_or_none()
             return MemberResponse.model_validate(member_orm) if member_orm else None
         except Exception:
@@ -24,7 +26,10 @@ class MemberService:
     @staticmethod
     async def get_member_by_ci(session: SessionDep, ci: str):
         try:
-            result = await session.execute(select(Member).where(Member.ci == ci))
+            result = await session.execute(
+                select(Member).join(User).
+                where(Member.ci == ci).
+                where(User.is_active))
             member_orm  = result.scalars().one_or_none()
             return MemberResponse.model_validate(member_orm) if member_orm else None
         except Exception:
@@ -37,8 +42,11 @@ class MemberService:
     ):
         try:
             member = await session.execute(
-                select(Member).where(Member.name.ilike(f"%{name}%")).
-                order_by(Member.last_name, Member.name).limit(limit).offset(offset))
+                select(Member).join(User).
+                where(Member.name.ilike(f"%{name}%")).
+                where(User.is_active).
+                order_by(Member.last_name, Member.name).
+                limit(limit).offset(offset))
             member_orm = member.scalars().all()
             return [MemberResponse.model_validate(m) for m in member_orm]
         except Exception:
@@ -52,8 +60,11 @@ class MemberService:
     ):
         try:
             member = await session.execute(
-                select(Member).where(Member.last_name.ilike(f"%{last_name}%")).
-                order_by(Member.last_name, Member.name).limit(limit).offset(offset))
+                select(Member).join(User).
+                where(Member.last_name.ilike(f"%{last_name}%")).
+                where(User.is_active).
+                order_by(Member.last_name, Member.name).
+                limit(limit).offset(offset))
             member_orm = member.scalars().all()
             return [MemberResponse.model_validate(m) for m in member_orm]
         except Exception:
