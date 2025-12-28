@@ -1,12 +1,13 @@
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
 from app.modules.members.model.schemas import (
-   MemberBase,
-   MemberResponse,
+    MemberBase,
+    MemberResponse,
 )
+
 
 class MemberService:
     @staticmethod
@@ -31,7 +32,9 @@ class MemberService:
             raise
 
     @staticmethod
-    async def get_members_by_name(session: SessionDep, name: str, limit: int, offset: int):
+    async def get_members_by_name(
+        session: SessionDep, name: str, limit: int, offset: int
+    ):
         try:
             member = await session.execute(
                 select(Member).where(Member.name.ilike(f"%{name}%")).
@@ -44,7 +47,9 @@ class MemberService:
 
     
     @staticmethod
-    async def get_members_by_last_name(session: SessionDep, last_name: str, limit: int, offset: int):
+    async def get_members_by_last_name(
+        session: SessionDep, last_name: str, limit: int, offset: int
+    ):
         try:
             member = await session.execute(
                 select(Member).where(Member.last_name.ilike(f"%{last_name}%")).
@@ -57,7 +62,9 @@ class MemberService:
 
 
     @staticmethod
-    async def create_member(session: SessionDep, member_info: MemberBase, user_ids: int):
+    async def create_member(
+        session: SessionDep, member_info: MemberBase, user_ids: int
+    ):
         try:
             new_member = Member(
                 name = member_info.name,
@@ -76,7 +83,9 @@ class MemberService:
 
     
     @staticmethod
-    async def patch_infomation_member(session: SessionDep, id: int, member_info: MemberBase):
+    async def patch_infomation_member(
+        session: SessionDep, id: int, member_info: MemberBase
+    ):
         try:
             member = await session.execute(select(Member).where(Member.id == id))
             member_orm = member.scalars().one_or_none()
