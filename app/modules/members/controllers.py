@@ -1,15 +1,13 @@
-
-
-from app.core.response_schema import IResponse
 from fastapi import HTTPException
-
-from app.modules.members.services import MemberService
-from app.modules.users.controllers import UserController
 
 from app.core.database import SessionDep
 from app.core.enums import UserRole
+from app.core.dependencies import CurrentUser
+from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
-from app.modules.users.model.schemas import UserBase, UserPatch, UserResponse
+from app.modules.members.services import MemberService
+from app.modules.users.controllers import UserController
+from app.modules.users.model.schemas import UserBase
 
 
 class MemberController:
@@ -25,7 +23,9 @@ class MemberController:
     
     
     @staticmethod
-    async def patch_info_member(session: SessionDep, id: int, member_info: MemberPatch):
+    async def patch_info_member(
+        session: SessionDep, id: int, member_info: MemberPatch
+    ):
         member = await MemberService.get_member_by_id(session, id)
         if not member:
             raise HTTPException(status_code=404, detail="Member not found")
@@ -47,7 +47,9 @@ class MemberController:
     
 
     @staticmethod
-    async def create_member(session: SessionDep, member_info: MemberBase):
+    async def create_member(
+        session: SessionDep, member_info: MemberBase, current_user: CurrentUser
+    ):
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
             raise HTTPException(status_code=400, detail="Member already exist")
@@ -57,7 +59,7 @@ class MemberController:
             password=member_info.ci,
             role=UserRole.MEMBER,
         )
-        user = await UserController.create_user(session, generic_user)
+        user = await UserController.create_user(session, generic_user, current_user)
         user_data = user.data
         member = await MemberService.create_member(session, member_info, user_data.id)
         response = IResponse(detail="Member Created", status_code=201, data=member)
@@ -65,7 +67,9 @@ class MemberController:
     
 
     @staticmethod
-    async def search_member(session: SessionDep, ci: str | None, last_name: str | None, name: str | None, limit: int , offset: int):
+    async def search_member(
+        session: SessionDep, ci: str | None, last_name: str | None, name: str | None, limit: int , offset: int
+    ):
         if not ci and not last_name and not name:
             raise HTTPException(status_code=400, detail="Bad Request")
         if ci:
