@@ -1,11 +1,13 @@
 from fastapi import HTTPException
-from app.core.response_schema import IResponse
+
 from app.core.database import SessionDep
-from app.modules.water_meters.water_measure.services import WaterMeasureService
+from app.core.response_schema import IResponse
 from app.modules.water_meters.water_measure.model.schemas import (
-    WaterMeterBase, 
-    WaterMeterPatch
+    WaterMeterBase,
+    WaterMeterPatch,
 )
+from app.modules.water_meters.water_measure.services import WaterMeasureService
+
 
 class WaterMeterController:
     @staticmethod
@@ -30,15 +32,17 @@ class WaterMeterController:
         meter = await WaterMeasureService.get_measure_by_id(session, id)
         if not meter:
             raise HTTPException(status_code=404, detail="Water measures not found")
-        
+
         meter_patched = await WaterMeasureService.patch_measure(session, id, meter_info)
-        return IResponse(detail="Water measure updated", status_code=200, data=meter_patched)
-    
+        return IResponse(
+            detail="Water measure updated", status_code=200, data=meter_patched
+        )
+
     @staticmethod
     async def delete_measure(id: int, session: SessionDep):
         deleted = await WaterMeasureService.delete_measure(session, id)
-        
+
         if not deleted:
             raise HTTPException(status_code=404, detail="Water measure not found")
-            
+
         return IResponse(detail="Water measure deleted", status_code=200)
