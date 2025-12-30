@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Query
 
 from app.core.database import SessionDep
 from app.core.dependencies import RequireRoles
@@ -33,7 +33,11 @@ async def read_action(id: int, session: SessionDep):
     response_model=IResponse,
     dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))],
 )
-async def read_all_actions(session: SessionDep, skip: int = 0, limit: int = 100):
+async def read_all_actions(
+    session: SessionDep, 
+    skip: int = Query(0, ge=0), 
+    limit: int = Query(100, gt=0)
+):
     return await ActionController.read_all_actions(session, skip, limit)
 
 @router.patch(

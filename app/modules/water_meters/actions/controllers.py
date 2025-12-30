@@ -23,7 +23,7 @@ class ActionController:
     @staticmethod
     async def read_all_actions(session: SessionDep, skip: int = 0, limit: int = 100):
         actions = await ActionService.get_all_actions(session, skip, limit)
-        return IResponse(detail="Actions list", status_code=200, data=actions)
+        return IResponse(detail="Actions list", status_code=200, data=actions, offset=skip)
 
     @staticmethod
     async def update_action(id: int, session: SessionDep, action_info: ActionPatch):

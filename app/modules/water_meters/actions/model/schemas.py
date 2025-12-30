@@ -1,12 +1,12 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict
+from decimal import Decimal
+from pydantic import BaseModel, ConfigDict, Field
 from app.core.enums import ActionStatus
 
 class ActionBase(BaseModel):
     member_id: int
     street_id: int
-    total_price: float
-    status: ActionStatus = ActionStatus.UNPAID
+    total_price: Decimal = Field(ge=0, decimal_places=2)
 
 class ActionCreate(ActionBase):
     pass
@@ -14,11 +14,12 @@ class ActionCreate(ActionBase):
 class ActionPatch(BaseModel):
     member_id: int | None = None
     street_id: int | None = None
-    total_price: float | None = None
+    total_price: Decimal | None = Field(None, ge=0, decimal_places=2)
     status: ActionStatus | None = None
 
 class ActionResponse(ActionBase):
     id: int
+    status: ActionStatus
     created_at: datetime
     updated_at: datetime
     
