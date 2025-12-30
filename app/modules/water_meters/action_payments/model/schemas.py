@@ -1,16 +1,17 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict
+from decimal import Decimal
+from pydantic import BaseModel, ConfigDict, Field
 
 class ActionPaymentBase(BaseModel):
     action_id: int
-    amount: float
+    amount: Decimal = Field(ge=0, decimal_places=2)
 
 class ActionPaymentCreate(ActionPaymentBase):
     pass
 
 class ActionPaymentPatch(BaseModel):
     action_id: int | None = None
-    amount: float | None = None
+    amount: Decimal | None = Field(None, ge=0, decimal_places=2)
 
 class ActionPaymentResponse(ActionPaymentBase):
     id: int

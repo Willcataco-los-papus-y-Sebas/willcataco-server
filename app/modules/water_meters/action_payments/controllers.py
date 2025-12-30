@@ -21,9 +21,10 @@ class ActionPaymentController:
         return IResponse(detail="Payment found", status_code=200, data=payment)
 
     @staticmethod
-    async def read_all_payments(session: SessionDep, skip: int = 0, limit: int = 100):
+    async def read_all_payments(session: SessionDep, skip: int, limit: int):
         payments = await ActionPaymentService.get_all_payments(session, skip, limit)
-        return IResponse(detail="Payments list", status_code=200, data=payments)
+        page = (skip // limit) + 1
+        return IResponse(detail="Payments list", status_code=200, data=payments, offset=skip, page=page)
 
     @staticmethod
     async def update_payment(id: int, session: SessionDep, payment_info: ActionPaymentPatch):

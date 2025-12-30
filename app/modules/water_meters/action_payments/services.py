@@ -20,7 +20,7 @@ class ActionPaymentService:
             raise
 
     @staticmethod
-    async def get_all_payments(session: SessionDep, skip: int = 0, limit: int = 100):
+    async def get_all_payments(session: SessionDep, skip: int, limit: int):
         try:
             result = await session.execute(
                 select(ActionPayment).where(ActionPayment.deleted_at.is_(None)).offset(skip).limit(limit)
