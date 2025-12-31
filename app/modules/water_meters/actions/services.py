@@ -20,7 +20,7 @@ class ActionService:
             raise
 
     @staticmethod
-    async def get_all_actions(session: SessionDep, skip: int = 0, limit: int = 100):
+    async def get_all_actions(session: SessionDep, skip: int, limit: int):
         try:
             result = await session.execute(
                 select(Action).where(Action.deleted_at.is_(None)).offset(skip).limit(limit)

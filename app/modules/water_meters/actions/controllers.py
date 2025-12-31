@@ -21,7 +21,7 @@ class ActionController:
         return IResponse(detail="Action found", status_code=200, data=action)
 
     @staticmethod
-    async def read_all_actions(session: SessionDep, skip: int = 0, limit: int = 100):
+    async def read_all_actions(session: SessionDep, skip: int, limit: int):
         actions = await ActionService.get_all_actions(session, skip, limit)
         return IResponse(detail="Actions list", status_code=200, data=actions, offset=skip)
 
