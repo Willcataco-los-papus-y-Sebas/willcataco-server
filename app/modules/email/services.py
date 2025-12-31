@@ -1,5 +1,4 @@
 from app.core.config import config
-import asyncio
 from email.message import EmailMessage
 from app.core.email import EmailSession
 from app.modules.email.schemas import EmailBase
