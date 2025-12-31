@@ -18,6 +18,9 @@ class Config(BaseSettings):
     # Email
 
     email_sender: str
+    email_sender_password: str
+    smtp_server: str
+    smtp_port: int
 
     model_config = SettingsConfigDict(env_file=".env")
 
