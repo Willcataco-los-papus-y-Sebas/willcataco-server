@@ -15,6 +15,10 @@ class Config(BaseSettings):
     token_algorithm : str
     token_key : str
 
+    # Email
+
+    email_sender: str
+
     model_config = SettingsConfigDict(env_file=".env")
 
     @property
