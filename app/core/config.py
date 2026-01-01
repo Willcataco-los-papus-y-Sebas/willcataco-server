@@ -8,14 +8,22 @@ class Config(BaseSettings):
     db_name: str
     db_host: str
     db_port: int
+    environment: str
 
     # JWTokens
-
     token_time_expire: int
     token_algorithm : str
     token_key : str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    # CORS
+    allowed_origins: list[str] = []
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_ignore_empty=True,
+        extra="ignore",
+        secrets_dir="/run/secrets"
+    )
 
     @property
     def database_url(self) -> str:
