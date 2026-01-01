@@ -8,6 +8,7 @@ class Config(BaseSettings):
     db_name: str
     db_host: str
     db_port: int
+    environment: str
 
     # JWTokens
     token_time_expire: int
