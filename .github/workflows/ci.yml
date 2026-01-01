@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-check:
+    name: Build and Compile Check
+    runs-on: ubuntu-latest
+    env:
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_NAME: test_db
+      DB_HOST: localhost
+      DB_PORT: 5432
+      ENVIRONMENT: test
+      TOKEN_TIME_EXPIRE: 60
+      TOKEN_ALGORITHM: HS256
+      TOKEN_KEY: test_secret_key
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Check Python Syntax
+        run: uv run python -m compileall app
+
+      - name: Verify Application Import
+        run: uv run python -c "from app.main import app; print('FastAPI app imported successfully')"
