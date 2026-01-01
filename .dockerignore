@@ -1,6 +1,7 @@
 # Git
 .git
 .gitignore
+.gitattributes
 
 # Python
 __pycache__/
@@ -24,9 +25,16 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
 
 # Virtual Environment
 .env
+.env.local
+.env.*.local
 .venv
 env/
 venv/
@@ -39,6 +47,8 @@ venv.bak/
 .vscode/
 *.swp
 *.swo
+*~
+*.iml
 
 # OS
 .DS_Store
@@ -51,3 +61,18 @@ docker-compose.yml
 
 # Project specific
 .database-pg/
+postgres_data/
+migrations/__pycache__/
+
+# Documentation
+docs/
+*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Logs
+*.log
+logs/
