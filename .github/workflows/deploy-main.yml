@@ -1,0 +1,39 @@
+name: Deploy Backend PROD
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push PROD image
+        run: |
+          IMAGE=ghcr.io/willcataco-los-papus-y-sebas/willcataco-server:prod-${{ github.sha }}
+          echo "Building $IMAGE"
+          docker build -t $IMAGE .
+          docker push $IMAGE
+
+      - name: Notify ArgoCD (PROD)
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          repository: Willcataco-los-papus-y-Sebas/willcataco-deploy
+          event-type: update-backend-prod
+          client-payload: |
+            {
+              "image": "ghcr.io/willcataco-los-papus-y-sebas/willcataco-server:prod-${{ github.sha }}"
+            }
