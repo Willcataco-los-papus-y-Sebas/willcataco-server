@@ -7,6 +7,7 @@ from app.core.config import config
 from app.core.database import SessionDep
 from app.core.dependencies import CurrentUserFromCookie
 from app.modules.auth.jwt import JWTokens
+from app.modules.auth.schemas import LoginRequest
 from app.modules.users.services import UserService
 
 
@@ -29,10 +30,10 @@ class AuthController:
     async def login_with_cookie(
         response: Response,
         session: SessionDep,
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+        credentials: LoginRequest
     ):
         user = await UserService.authenticate_user(
-            session, username=form_data.username, password=form_data.password
+            session, username=credentials.username, password=credentials.password
         )
         if not user:
             raise HTTPException(
@@ -58,6 +59,27 @@ class AuthController:
     @staticmethod
     async def get_current_user(user: CurrentUserFromCookie):
         return user
+
+    @staticmethod
+    async def refresh_token(
+        response: Response,
+        session: SessionDep,
+        user: CurrentUserFromCookie
+    ):
+        token = JWTokens.create_access_token(user.id)
+        
+        response.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True,
+            secure=config.cookie_secure,
+            samesite=config.cookie_samesite,
+            path="/",
+            max_age=config.token_time_expire * 60,
+            domain=None
+        )
+        
+        return {"ok": True}
 
     @staticmethod
     async def logout(response: Response):
