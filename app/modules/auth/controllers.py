@@ -1,9 +1,11 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.core.config import config
 from app.core.database import SessionDep
+from app.core.dependencies import CurrentUserFromCookie
 from app.modules.auth.jwt import JWTokens
 from app.modules.users.services import UserService
 
@@ -22,3 +24,50 @@ class AuthController:
             )
         token = JWTokens.create_access_token(user.id)
         return {"access_token": token, "token_type": "bearer"}
+
+    @staticmethod
+    async def login_with_cookie(
+        response: Response,
+        session: SessionDep,
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    ):
+        user = await UserService.authenticate_user(
+            session, username=form_data.username, password=form_data.password
+        )
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="Incorrect username or password"
+            )
+        
+        token = JWTokens.create_access_token(user.id)
+        
+        response.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True,
+            secure=config.cookie_secure,
+            samesite=config.cookie_samesite,
+            path="/",
+            max_age=config.token_time_expire * 60,
+            domain=None
+        )
+        
+        return {"ok": True}
+
+    @staticmethod
+    async def get_current_user(user: CurrentUserFromCookie):
+        return user
+
+    @staticmethod
+    async def logout(response: Response):
+        response.delete_cookie(
+            key="access_token",
+            path="/",
+            httponly=True,
+            secure=config.cookie_secure,
+            samesite=config.cookie_samesite,
+            domain=None
+        )
+        
+        return {"ok": True}
