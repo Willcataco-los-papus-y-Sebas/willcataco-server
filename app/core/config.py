@@ -1,3 +1,4 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Config(BaseSettings):
@@ -15,6 +16,10 @@ class Config(BaseSettings):
     token_algorithm : str
     token_key : str
 
+    # Cookies
+    cookie_secure: bool = True
+    cookie_samesite: str = "lax"
+
     # CORS
     allowed_origins: list[str] = []
 
@@ -22,7 +27,7 @@ class Config(BaseSettings):
         env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
-        secrets_dir="/run/secrets"
+        secrets_dir="/run/secrets" if Path("/run/secrets").exists() else None
     )
 
     @property
