@@ -20,6 +20,15 @@ class Config(BaseSettings):
     cookie_secure: bool = True
     cookie_samesite: str = "lax"
 
+    # Email
+
+    email_sender: str
+    email_sender_password: str
+    smtp_server: str
+    smtp_port: int
+
+    model_config = SettingsConfigDict(env_file=".env")
+    
     # CORS
     allowed_origins: list[str] = []
 
