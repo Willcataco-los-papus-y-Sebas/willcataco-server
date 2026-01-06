@@ -51,8 +51,33 @@ async def get_current_user_from_cookie(
     
     return user
 
+async def get_current_user_from_refresh_token(
+    session: SessionDep,
+    refresh_token: str | None = Cookie(None, alias="refresh_token")
+):
+    if not refresh_token:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated - no refresh token found"
+        )
+    
+    # Decode and validate refresh token
+    user_id = JWTokens.decode_refresh_token(refresh_token)
+    
+    # Get user from database
+    user = await session.get_one(User, user_id)
+    if not user or not user.is_active:
+        raise HTTPException(
+            status_code=401,
+            detail="User not found or inactive"
+        )
+    
+    return user
+
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
 CurrentUserFromCookie = Annotated[User, Depends(get_current_user_from_cookie)]
+CurrentUserFromRefreshToken = Annotated[User, Depends(get_current_user_from_refresh_token)]
 
 class RequireRoles:
     def __init__(self, *allowed_roles: UserRole):

@@ -41,16 +41,28 @@ class AuthController:
                 detail="Incorrect username or password"
             )
         
-        token = JWTokens.create_access_token(user.id)
+        access_token = JWTokens.create_access_token(user.id)
+        refresh_token = JWTokens.create_refresh_token(user.id)
         
         response.set_cookie(
             key="access_token",
-            value=token,
+            value=access_token,
             httponly=True,
             secure=config.cookie_secure,
             samesite=config.cookie_samesite,
             path="/",
             max_age=config.token_time_expire * 60,
+            domain=None
+        )
+        
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=config.cookie_secure,
+            samesite=config.cookie_samesite,
+            path="/",
+            max_age=config.refresh_token_time_expire * 60,
             domain=None
         )
         
@@ -85,6 +97,14 @@ class AuthController:
     async def logout(response: Response):
         response.delete_cookie(
             key="access_token",
+            path="/",
+            httponly=True,
+            secure=config.cookie_secure,
+            samesite=config.cookie_samesite,
+            domain=None
+        )
+        response.delete_cookie(
+            key="refresh_token",
             path="/",
             httponly=True,
             secure=config.cookie_secure,

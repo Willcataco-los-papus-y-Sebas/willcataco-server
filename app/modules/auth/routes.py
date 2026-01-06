@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.modules.auth.controllers import AuthController
 from app.modules.auth.schemas import LoginRequest, LoginResponse, LogoutResponse, RefreshResponse, TokenResponse
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUserFromCookie
+from app.core.dependencies import CurrentUserFromCookie, CurrentUserFromRefreshToken
 from app.modules.users.model.schemas import UserResponse
 
 router = APIRouter()
@@ -37,7 +37,7 @@ async def get_me(user: CurrentUserFromCookie):
 async def refresh(
     response: Response,
     session: SessionDep,
-    user: CurrentUserFromCookie
+    user: CurrentUserFromRefreshToken
 ):
     return await AuthController.refresh_token(response, session, user)
 
