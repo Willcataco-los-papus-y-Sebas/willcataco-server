@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, status
 
 from app.core.database import SessionDep
-from app.core.dependencies import RequireRoles, CurrentUser
+from app.core.dependencies import RequireRoles, CurrentUserFlexible
 from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.controllers import MemberController
@@ -15,7 +15,7 @@ router = APIRouter()
     response_model = IResponse, 
     dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
 )
-async def create_member(session: SessionDep, member_info: MemberBase, current_user: CurrentUser):
+async def create_member(session: SessionDep, member_info: MemberBase, current_user: CurrentUserFlexible):
     return await MemberController.create_member(session, member_info, current_user) 
 
 @router.get(

@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.config import config
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUserFromCookie
+from app.core.dependencies import CurrentUserFromCookie, CurrentUserFlexible
 from app.modules.auth.jwt import JWTokens
 from app.modules.auth.schemas import LoginRequest
 from app.modules.users.services import UserService
@@ -69,7 +69,7 @@ class AuthController:
         return {"ok": True}
 
     @staticmethod
-    async def get_current_user(user: CurrentUserFromCookie):
+    async def get_current_user(user: CurrentUserFlexible):
         return user
 
     @staticmethod

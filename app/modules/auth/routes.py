@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.modules.auth.controllers import AuthController
 from app.modules.auth.schemas import LoginRequest, LoginResponse, LogoutResponse, RefreshResponse, TokenResponse
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUserFromCookie, CurrentUserFromRefreshToken
+from app.core.dependencies import CurrentUserFromCookie, CurrentUserFromRefreshToken, CurrentUserFlexible
 from app.modules.users.model.schemas import UserResponse
 
 router = APIRouter()
@@ -29,7 +29,7 @@ async def login(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(user: CurrentUserFromCookie):
+async def get_me(user: CurrentUserFlexible):
     return await AuthController.get_current_user(user)
 
 
