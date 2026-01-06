@@ -24,6 +24,7 @@ class Config(BaseSettings):
 
     email_sender: str
     email_sender_password: str
+    email_from: str
     smtp_server: str
     smtp_port: int
 
