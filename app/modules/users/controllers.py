@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUser
+from app.core.dependencies import CurrentUserFlexible
 from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.users.model.schemas import UserBase, UserPatch
@@ -40,7 +40,7 @@ class UserController:
 
     @staticmethod
     async def create_user(
-        session: SessionDep, user_info: UserBase, current_user: CurrentUser
+        session: SessionDep, user_info: UserBase, current_user: CurrentUserFlexible
     ):
         if current_user.role == UserRole.STAFF and user_info.role != UserRole.MEMBER:
             raise HTTPException(status_code=400, detail="staff only can create members")

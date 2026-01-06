@@ -24,6 +24,7 @@ jobs:
       TOKEN_ALGORITHM: HS256
       TOKEN_KEY: test_secret_key
       EMAIL_SENDER: your_email@gmail.com
+      EMAIL_FROM: your_email@gmail.com
       EMAIL_SENDER_PASSWORD: your_email_password
       SMTP_SERVER: smtp.gmail.com
       SMTP_PORT: 587

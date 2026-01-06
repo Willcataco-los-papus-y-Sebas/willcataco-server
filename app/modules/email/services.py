@@ -8,7 +8,7 @@ class EmailService:
     async def send_email(email_session : EmailSession, email : EmailBase):
         try:
             message = EmailMessage()
-            message["From"] = config.email_sender
+            message["From"] = config.email_from
             message["To"] = email.recipient
             message["Subject"] = email.subject
             message.set_content(email.body)
