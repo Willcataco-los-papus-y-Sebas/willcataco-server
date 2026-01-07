@@ -153,6 +153,7 @@ class MemberService:
         try:
             members = await session.execute(
                 select(Member)
+                .join(User)
                 .where(User.is_active)
                 .order_by(Member.last_name, Member.name)
                 .limit(limit)
