@@ -132,3 +132,17 @@ class MemberService:
             await session.rollback()
             raise
 
+
+    @staticmethod
+    async def get_all(session : SessionDep, limit: int, offset: int):
+        try:
+            members = await session.execute(
+                select(Member).
+                where(User.is_active).
+                order_by(Member.last_name, Member.name).
+                limit(limit).offset(offset)
+            )
+            members_orm = members.scalars().all()
+            return [MemberResponse.model_validate(mem) for mem in members_orm]
+        except Exception:
+            raise

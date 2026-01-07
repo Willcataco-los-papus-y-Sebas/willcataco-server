@@ -71,7 +71,9 @@ class MemberController:
         session: SessionDep, ci: str | None, last_name: str | None, name: str | None, limit: int , offset: int
     ):
         if not ci and not last_name and not name:
-            raise HTTPException(status_code=400, detail="Bad Request")
+            members = await MemberService.get_all(session , limit, offset)
+            response = IResponse(detail="users retrieved" , status_code=200, data=members)
+            return response
         if ci:
             member = await MemberService.get_member_by_ci(session, ci)
             if not member:
