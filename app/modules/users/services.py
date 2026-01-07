@@ -13,6 +13,19 @@ from app.modules.users.model.schemas import (
 
 class UserService:
     @staticmethod
+    async def get_all(session: SessionDep):
+        try:
+            user = await session.execute(
+                select(User).
+                where(User.is_active).
+                order_by(User.id)
+            )
+            users_orm = user.scalars().all()
+            return [UserResponse.model_validate(use) for use in users_orm]
+        except Exception:
+            raise
+
+    @staticmethod
     async def get_user_by_id(session: SessionDep, id: int):
         try:
             result = await session.execute(select(User).where(User.id == id).where(User.is_active))

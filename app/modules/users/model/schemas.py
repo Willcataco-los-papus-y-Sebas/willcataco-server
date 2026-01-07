@@ -8,7 +8,7 @@ from app.core.enums import UserRole
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=7)
     role: UserRole = UserRole.MEMBER
 
 

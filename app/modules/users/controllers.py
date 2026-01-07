@@ -69,7 +69,9 @@ class UserController:
         email: EmailStr | None, username: str | None, session: SessionDep
     ):
         if not email and not username:
-            raise HTTPException(status_code=400, detail="Bad request")
+            users = await UserService.get_all(session)
+            response = IResponse(detail="users retrieved", status_code=200, data=users)
+            return response
         if email:
             user = await UserService.get_user_by_email(session, email)
             if not user:
