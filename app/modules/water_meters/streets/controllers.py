@@ -55,8 +55,8 @@ class StreetControllers():
     
     
     @staticmethod
-    async def get_all_streets(session: SessionDep):
-        streets = await StreetServices.get_all_streets(session)
+    async def get_all_streets(session: SessionDep, limit: int, offset: int):
+        streets = await StreetServices.get_all_streets(session, limit, offset)
         if not streets:
             raise HTTPException(status_code=404, detail="Streets not found")
         response = IResponse(detail="Streets found", status_code=200, data=streets)

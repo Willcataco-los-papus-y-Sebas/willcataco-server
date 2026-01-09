@@ -75,9 +75,14 @@ class StreetServices():
     
 
     @staticmethod
-    async def get_all_streets(session: SessionDep):
+    async def get_all_streets(session: SessionDep, limit: int, offset: int):
         try:
-            streets = await session.execute(select(Street).where(Street.deleted_at.is_(None)).order_by(Street.id))
+            streets = await session.execute(
+                select(Street)
+                .where(Street.deleted_at.is_(None))
+                .order_by(Street.id)
+                .offset(offset)
+                .limit(limit))
             streets_orm = streets.scalars().all()
             return [StreetResponse.model_validate(s) for s in streets_orm]
         except Exception:
