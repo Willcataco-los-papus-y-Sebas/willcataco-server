@@ -32,8 +32,8 @@ class StreetServices():
             street_orm = street.scalars().one_or_none()
             if street_info.name is not None:
                 street_orm.name = street_info.name
-            session.commit()
-            session.refresh(street_orm)
+            await session.commit()
+            await session.refresh(street_orm)
             return StreetResponse.model_validate(street_orm)
         except Exception:
             await session.rollback()
@@ -46,9 +46,7 @@ class StreetServices():
             street = await session.execute(select(Street).where(Street.id == id))
             street_orm = street.scalars().one_or_none()
             street_orm.deleted_at = func.now()
-            session.commit()
-            session.refresh(street_orm)
-            return StreetResponse.model_validate(street_orm)
+            await session.commit()
         except Exception:
             await session.rollback()
             raise
@@ -77,9 +75,14 @@ class StreetServices():
     
 
     @staticmethod
-    async def get_all_streets(session: SessionDep):
+    async def get_all_streets(session: SessionDep, limit: int, offset: int):
         try:
-            streets = await session.execute(select(Street).where(Street.deleted_at.is_(None)).order_by(Street.id))
+            streets = await session.execute(
+                select(Street)
+                .where(Street.deleted_at.is_(None))
+                .order_by(Street.id)
+                .offset(offset)
+                .limit(limit))
             streets_orm = streets.scalars().all()
             return [StreetResponse.model_validate(s) for s in streets_orm]
         except Exception:
