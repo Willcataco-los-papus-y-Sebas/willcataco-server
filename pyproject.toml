@@ -17,4 +17,5 @@ dependencies = [
     "pyjwt>=2.10.1",
     "sqlalchemy>=2.0.45",
     "uvicorn>=0.38.0",
+    "weasyprint>=66.0",
 ]
