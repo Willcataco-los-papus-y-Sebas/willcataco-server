@@ -12,6 +12,7 @@ from app.modules.water_meters.action_payments.routes import router as action_pay
 from app.modules.water_meters.water_measure.routes import router as water_measure_router
 from app.modules.water_meters.meters.routes import router as meter_router
 from app.modules.water_meters.water_payments.routes import router as water_payment_router
+from app.modules.pdf_generator.routes import router as pdf_router
 
 router = APIRouter()
 
@@ -28,3 +29,4 @@ router.include_router(action_payments_router, prefix="/action-payments", tags=["
 router.include_router(actions_router, prefix="/actions", tags=["actions"])
 router.include_router(water_measure_router, prefix="/water_measure", tags=["water_measure"])
 router.include_router(water_payment_router, prefix="/water_payment", tags=["water_payments"])
+router.include_router(pdf_router, prefix="/pdf", tags=["pdf"])
