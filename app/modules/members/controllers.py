@@ -44,7 +44,7 @@ class MemberController:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase
+        session: SessionDep, member_info: MemberBase, from_user_id: int
     ):
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
@@ -52,7 +52,7 @@ class MemberController:
         member_phone = await MemberService.get_by_phone(session, member_info.phone)
         if member_phone:
             raise HTTPException(status_code=400, detail="phone already exist")
-        member = await MemberService.create_member(session, member_info)
+        member = await MemberService.create_member(session, member_info, from_user_id)
         response = IResponse(detail="Member Created", status_code=201, data=member)
         return response
 
