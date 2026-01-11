@@ -2,12 +2,9 @@ from fastapi import HTTPException
 
 from app.core.database import SessionDep
 from app.core.dependencies import CurrentUserFlexible
-from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
 from app.modules.members.services import MemberService
-from app.modules.users.controllers import UserController
-from app.modules.users.model.schemas import UserBase
 
 
 class MemberController:
