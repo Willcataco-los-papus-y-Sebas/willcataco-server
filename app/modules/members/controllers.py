@@ -56,15 +56,7 @@ class MemberController:
         member_phone = await MemberService.get_by_phone(session, member_info.phone)
         if member_phone:
             raise HTTPException(status_code=400, detail="phone already exist")
-        generic_user = UserBase(
-            username=f"{member_info.last_name}_{member_info.name}",
-            email=member_info.email,
-            password=member_info.ci,
-            role=UserRole.MEMBER,
-        )
-        user = await UserController.create_user(session, generic_user, current_user)
-        user_data = user.data
-        member = await MemberService.create_member(session, member_info, user_data.id)
+        member = await MemberService.create_member(session, member_info)
         response = IResponse(detail="Member Created", status_code=201, data=member)
         return response
 

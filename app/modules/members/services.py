@@ -90,15 +90,15 @@ class MemberService:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase, user_ids: int
+        session: SessionDep, member_info: MemberBase
     ):
         try:
             new_member = Member(
                 name=member_info.name,
                 last_name=member_info.last_name,
-                user_id=user_ids,
                 ci=member_info.ci,
                 phone=member_info.phone,
+                user_id=member_info.user_id,
             )
             session.add(new_member)
             await session.commit()
