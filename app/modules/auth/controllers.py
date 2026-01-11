@@ -120,10 +120,22 @@ class AuthController:
     async def recovery_account(info_recovery : RecoveryUser, session : SessionDep, session_email : EmailSession):
         user = await UserService.get_user_by_email(info_recovery.email, session)
         if user:
+            reset_token = JWTokens.create_token_reset(user.id)
+            body_url = f"{info_recovery.url}/password/reset?token={reset_token}"
+            body = f"""
+            <html>
+                <body>
+                    <h2> Restablecer contraseña </h2>
+                    <p>Para restablecer su contraseña solo haga click en el link</p>
+                    <p> {body_url} </p>
+                    <p> El enlace expirara en {config.reset_token_time_expire} 
+                        minutos, si recibio por error ignore este email. </p> 
+                </body>
+            """
             email_base = EmailBase(
                 recipient=info_recovery.email,
-                subject="Recuperacion de cuenta en wilcataco",
-                body=""
+                subject="Recuperacion/reset de cuenta en wilcataco",
+                body=body
             )
             await EmailService.send_email(session_email, email_base)
         return IResponse(detail="email received", status_code=200)
