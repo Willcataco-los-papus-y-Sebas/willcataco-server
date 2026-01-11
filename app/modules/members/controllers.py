@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUserFlexible
 from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
 from app.modules.members.services import MemberService
@@ -45,7 +44,7 @@ class MemberController:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase, current_user: CurrentUserFlexible
+        session: SessionDep, member_info: MemberBase
     ):
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
