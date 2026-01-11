@@ -12,6 +12,19 @@ from app.modules.users.model.models import User
 
 class MemberService:
     @staticmethod
+    async def get_member_by_user_id(session: SessionDep, user_id: int):
+        try:
+            member = await session.execute(
+                select(Member).where(Member.user_id == user_id)
+            )
+            member_orm = member.scalar_one_or_none()
+            if not member_orm:
+                raise None
+            return MemberResponse.model_validate(member_orm)
+        except Exception:
+            raise
+
+    @staticmethod
     async def get_by_phone(session: SessionDep, phone: str):
         try:
             member = await session.execute(
@@ -90,7 +103,7 @@ class MemberService:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase, from_user_id: int
+        session: SessionDep, member_info: MemberBase
     ):
         try:
             new_member = Member(
@@ -98,7 +111,7 @@ class MemberService:
                 last_name=member_info.last_name,
                 ci=member_info.ci,
                 phone=member_info.phone,
-                user_id=from_user_id,
+                user_id=member_info.user_id,
             )
             session.add(new_member)
             await session.commit()

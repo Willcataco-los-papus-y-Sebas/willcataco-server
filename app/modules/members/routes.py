@@ -15,8 +15,8 @@ router = APIRouter()
     response_model = IResponse, 
     dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
 )
-async def create_member(session: SessionDep, member_info: MemberBase, from_user_id: int):
-    return await MemberController.create_member(session, member_info, from_user_id) 
+async def create_member(session: SessionDep, member_info: MemberBase):
+    return await MemberController.create_member(session, member_info) 
 
 @router.get(
     "/", 
