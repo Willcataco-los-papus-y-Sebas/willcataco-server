@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, status
 
 from app.core.database import SessionDep
-from app.core.dependencies import RequireRoles, CurrentUserFlexible
+from app.core.dependencies import RequireRoles
 from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.controllers import MemberController
