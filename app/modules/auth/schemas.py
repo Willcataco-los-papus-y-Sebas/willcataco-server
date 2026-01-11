@@ -24,4 +24,5 @@ class TokenResponse(BaseModel):
 
 
 class RecoveryUser(BaseModel):
+    url : str
     email : EmailStr

@@ -45,6 +45,10 @@ class Config(BaseSettings):
         return self.token_time_expire + 60
 
     @property
+    def reset_token_time_expire(self) -> int:
+        return int(self.token_time_expire // 4)
+
+    @property
     def database_url(self) -> str:
         return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
 

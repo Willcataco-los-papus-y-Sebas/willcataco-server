@@ -117,11 +117,11 @@ class AuthController:
         return {"ok": True}
     
     @staticmethod
-    async def recovery_account(email : RecoveryUser, session : SessionDep, session_email : EmailSession):
-        user = await UserService.get_user_by_email(email.email, session)
+    async def recovery_account(info_recovery : RecoveryUser, session : SessionDep, session_email : EmailSession):
+        user = await UserService.get_user_by_email(info_recovery.email, session)
         if user:
             email_base = EmailBase(
-                recipient=email.email,
+                recipient=info_recovery.email,
                 subject="Recuperacion de cuenta en wilcataco",
                 body=""
             )

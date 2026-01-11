@@ -56,6 +56,6 @@ async def logout(response: Response):
 
 @router.post("/recovery", response_model=IResponse)
 async def recovery_account(
-    email: RecoveryUser, session: SessionDep, session_email: EmailSession
+    info_recovery: RecoveryUser, session: SessionDep, session_email: EmailSession
 ):
-    return await AuthController.recovery_account(email, session, session_email)
+    return await AuthController.recovery_account(info_recovery, session, session_email)
