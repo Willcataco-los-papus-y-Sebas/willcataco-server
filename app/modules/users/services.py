@@ -32,7 +32,6 @@ class UserService:
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
@@ -44,7 +43,6 @@ class UserService:
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
@@ -56,7 +54,6 @@ class UserService:
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
