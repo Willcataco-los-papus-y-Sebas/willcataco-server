@@ -22,7 +22,10 @@ class EmailService:
 
     @staticmethod
     async def send_reset_pass_email(
-        email_session: EmailSession, email: EmailBase, url: str
+        email_session: EmailSession,
+        email: EmailBase,
+        url: str,
+        expire_time: int = config.reset_token_time_expire,
     ):
         try:
             message = EmailMessage()
@@ -30,7 +33,7 @@ class EmailService:
             message["To"] = email.recipient
             message["Subject"] = email.subject
             body = await TemplateLoader.get_template(
-                "email/reset_password.html", url=url
+                "email/reset_password.html", url=url, expire_time=str(expire_time)
             )
             message.set_content(body, subtype="html")
             await email_session.send_message(message)

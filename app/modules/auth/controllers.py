@@ -9,7 +9,7 @@ from app.core.dependencies import CurrentUserFlexible, CurrentUserFromCookie
 from app.core.email import EmailSession
 from app.core.response_schema import IResponse
 from app.modules.auth.jwt import JWTokens
-from app.modules.auth.schemas import LoginRequest, RecoveryUser
+from app.modules.auth.schemas import LoginRequest, RecoveryUser, ResetPassword
 from app.modules.email.schemas import EmailBase
 from app.modules.email.services import EmailService
 from app.modules.users.services import UserService
@@ -112,7 +112,7 @@ class AuthController:
         return {"ok": True}
 
     @staticmethod
-    async def recovery_account(
+    async def forgot_account(
         info_recovery: RecoveryUser, session: SessionDep, session_email: EmailSession
     ):
         user = await UserService.get_user_by_email(session, info_recovery.email)
@@ -125,3 +125,13 @@ class AuthController:
             )
             await EmailService.send_reset_pass_email(session_email, email_base, url)
         return IResponse(detail="email received", status_code=200)
+
+    @staticmethod
+    async def reset_password(token: str, passwords: ResetPassword, session: SessionDep):
+        if passwords.first != passwords.second:
+            raise HTTPException(detail="passwords must be equals", status_code=401)
+        user_id = JWTokens.decode_reset_token(token)
+        user = await UserService.reset_password(session, user_id, passwords.first)
+        if not user:
+            raise HTTPException(detail="password dont updated", status_code=400)
+        return IResponse(detail="password updated successfully", status_code=200)

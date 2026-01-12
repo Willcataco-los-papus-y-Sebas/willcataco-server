@@ -19,6 +19,7 @@ from app.modules.auth.schemas import (
     RecoveryUser,
     RefreshResponse,
     TokenResponse,
+    ResetPassword
 )
 from app.modules.users.model.schemas import UserResponse
 
@@ -54,8 +55,15 @@ async def logout(response: Response):
     return await AuthController.logout(response)
 
 
-@router.post("/recovery", response_model=IResponse)
-async def recovery_account(
+@router.post("/forgot", response_model=IResponse)
+async def forgot_account(
     info_recovery: RecoveryUser, session: SessionDep, session_email: EmailSession
 ):
-    return await AuthController.recovery_account(info_recovery, session, session_email)
+    return await AuthController.forgot_account(info_recovery, session, session_email)
+
+
+@router.post("/reset", response_model=IResponse)
+async def reset_password(
+    token : str , passwords : ResetPassword, session : SessionDep
+):
+    return await AuthController.reset_password(token , passwords, session)

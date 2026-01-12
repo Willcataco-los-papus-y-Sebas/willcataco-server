@@ -26,3 +26,7 @@ class TokenResponse(BaseModel):
 class RecoveryUser(BaseModel):
     url : str
     email : EmailStr
+
+class ResetPassword(BaseModel):
+    first : str
+    second : str

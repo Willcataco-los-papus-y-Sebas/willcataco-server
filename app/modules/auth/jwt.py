@@ -33,7 +33,7 @@ class JWTokens:
         time_loc = datetime.now(timezone.utc)
         expiration = time_loc + timedelta(minutes=int(config.reset_token_time_expire))
         payload = {"sub": str(user_id), "exp": expiration, "iat": time_loc}
-        header = {"typ": "password-reset+jwt"}
+        header = {"typ": "reset-password+jwt"}
         token = jwt.encode(
             payload, key=config.token_key, algorithm=config.token_algorithm, headers=header
         )
