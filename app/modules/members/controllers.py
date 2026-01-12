@@ -31,7 +31,7 @@ class MemberController:
             member_phone = await MemberService.get_by_phone(session, member_info.phone)
             if member_phone:
                 raise HTTPException(status_code=400, detail="phone already exist")
-        member_patched = await MemberService.patch_info_member(session, id, member_info)
+        member_patched = await MemberService.patch_infomation_member(session, id, member_info)
         response = IResponse(
             detail="Member patched", status_code=200, data=member_patched
         )

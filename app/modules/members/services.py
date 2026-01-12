@@ -5,6 +5,7 @@ from app.core.database import SessionDep
 from app.modules.members.model.models import Member
 from app.modules.members.model.schemas import (
     MemberBase,
+    MemberPatch,
     MemberResponse,
 )
 from app.modules.users.model.models import User
@@ -19,7 +20,7 @@ class MemberService:
             )
             member_orm = member.scalar_one_or_none()
             if not member_orm:
-                raise None
+                return None
             return MemberResponse.model_validate(member_orm)
         except Exception:
             raise
@@ -32,7 +33,7 @@ class MemberService:
             )
             member_orm = member.scalar_one_or_none()
             if not member_orm:
-                raise None
+                return None
             return MemberResponse.model_validate(member_orm)
         except Exception:
             raise
@@ -123,7 +124,7 @@ class MemberService:
 
     @staticmethod
     async def patch_infomation_member(
-        session: SessionDep, id: int, member_info: MemberBase
+        session: SessionDep, id: int, member_info: MemberPatch
     ):
         try:
             member = await session.execute(select(Member).where(Member.id == id))
