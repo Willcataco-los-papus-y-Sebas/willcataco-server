@@ -6,8 +6,7 @@ from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
 from app.modules.members.services import MemberService
-from app.modules.users.controllers import UserController
-from app.modules.users.model.schemas import UserBase
+from app.modules.users.services import UserService
 
 
 class MemberController:
@@ -32,7 +31,7 @@ class MemberController:
             member_phone = await MemberService.get_by_phone(session, member_info.phone)
             if member_phone:
                 raise HTTPException(status_code=400, detail="phone already exist")
-        member_patched = await MemberService.patch_info_member(session, id, member_info)
+        member_patched = await MemberService.patch_infomation_member(session, id, member_info)
         response = IResponse(
             detail="Member patched", status_code=200, data=member_patched
         )
@@ -50,21 +49,21 @@ class MemberController:
     async def create_member(
         session: SessionDep, member_info: MemberBase, current_user: CurrentUserFlexible
     ):
+        user= await UserService.get_user_by_id(session, member_info.user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail='User not found')
+        if current_user.role == UserRole.STAFF and user.role != UserRole.MEMBER :
+            raise HTTPException(status_code=400, detail="staff only can create members")
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
             raise HTTPException(status_code=400, detail="Member already exist")
         member_phone = await MemberService.get_by_phone(session, member_info.phone)
         if member_phone:
             raise HTTPException(status_code=400, detail="phone already exist")
-        generic_user = UserBase(
-            username=f"{member_info.last_name}_{member_info.name}",
-            email=member_info.email,
-            password=member_info.ci,
-            role=UserRole.MEMBER,
-        )
-        user = await UserController.create_user(session, generic_user, current_user)
-        user_data = user.data
-        member = await MemberService.create_member(session, member_info, user_data.id)
+        member_user_id = await MemberService.get_member_by_user_id(session, member_info.user_id)
+        if member_user_id:
+            raise HTTPException(status_code=400, detail="User already exist")
+        member = await MemberService.create_member(session, member_info)
         response = IResponse(detail="Member Created", status_code=201, data=member)
         return response
 

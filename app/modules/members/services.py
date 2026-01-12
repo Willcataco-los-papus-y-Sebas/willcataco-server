@@ -5,12 +5,26 @@ from app.core.database import SessionDep
 from app.modules.members.model.models import Member
 from app.modules.members.model.schemas import (
     MemberBase,
+    MemberPatch,
     MemberResponse,
 )
 from app.modules.users.model.models import User
 
 
 class MemberService:
+    @staticmethod
+    async def get_member_by_user_id(session: SessionDep, user_id: int):
+        try:
+            member = await session.execute(
+                select(Member).where(Member.user_id == user_id)
+            )
+            member_orm = member.scalar_one_or_none()
+            if not member_orm:
+                return None
+            return MemberResponse.model_validate(member_orm)
+        except Exception:
+            raise
+
     @staticmethod
     async def get_by_phone(session: SessionDep, phone: str):
         try:
@@ -19,7 +33,7 @@ class MemberService:
             )
             member_orm = member.scalar_one_or_none()
             if not member_orm:
-                raise None
+                return None
             return MemberResponse.model_validate(member_orm)
         except Exception:
             raise
@@ -90,15 +104,15 @@ class MemberService:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase, user_ids: int
+        session: SessionDep, member_info: MemberBase
     ):
         try:
             new_member = Member(
                 name=member_info.name,
                 last_name=member_info.last_name,
-                user_id=user_ids,
                 ci=member_info.ci,
                 phone=member_info.phone,
+                user_id=member_info.user_id,
             )
             session.add(new_member)
             await session.commit()
@@ -110,7 +124,7 @@ class MemberService:
 
     @staticmethod
     async def patch_infomation_member(
-        session: SessionDep, id: int, member_info: MemberBase
+        session: SessionDep, id: int, member_info: MemberPatch
     ):
         try:
             member = await session.execute(select(Member).where(Member.id == id))
