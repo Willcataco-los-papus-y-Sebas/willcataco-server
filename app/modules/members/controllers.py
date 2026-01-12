@@ -1,9 +1,12 @@
 from fastapi import HTTPException
 
 from app.core.database import SessionDep
+from app.core.dependencies import CurrentUserFlexible
+from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
 from app.modules.members.services import MemberService
+from app.modules.users.services import UserService
 
 
 class MemberController:
@@ -44,8 +47,13 @@ class MemberController:
 
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase
+        session: SessionDep, member_info: MemberBase, current_user: CurrentUserFlexible
     ):
+        user= await UserService.get_user_by_id(session, member_info.user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail='User not found')
+        if current_user.role == UserRole.STAFF and user.role != UserRole.MEMBER :
+            raise HTTPException(status_code=400, detail="staff only can create members")
         member_ci = await MemberService.get_member_by_ci(session, member_info.ci)
         if member_ci:
             raise HTTPException(status_code=400, detail="Member already exist")
