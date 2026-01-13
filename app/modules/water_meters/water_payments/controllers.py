@@ -2,12 +2,28 @@ from fastapi import HTTPException
 
 from app.core.database import SessionDep
 from app.core.response_schema import IResponse
+from app.core.enums import PaymentStatus
 from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase
 from app.modules.water_meters.water_payments.services import WaterPaymentService
 
 
 class WaterPaymentController:
     @staticmethod
+    async def list_water_payments(
+        session: SessionDep,
+        limit: int,
+        offset: int,
+        member_id: int | None,
+        status: PaymentStatus | None,
+    ):
+        payments = await WaterPaymentService.get_all_water_payments(
+            session, limit, offset, member_id, status
+        )
+        response = IResponse(
+            detail="Water payments retrieved", status_code=200, data=payments
+        )
+        return response
+
     async def create_water_payment(session: SessionDep, payment_info: WaterPaymentBase):
         payment = await WaterPaymentService.create_water_payment(session, payment_info)
         if not payment:
