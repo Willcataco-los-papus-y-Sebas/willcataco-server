@@ -13,6 +13,32 @@ from app.modules.water_meters.water_payments.model.schemas import (
 
 class WaterPaymentService:
     @staticmethod
+    async def get_all_water_payments(
+        session: SessionDep,
+        limit: int = 10,
+        offset: int = 0,
+        member_id: int | None = None,
+        status: PaymentStatus | None = None,
+    ):
+        try:
+            stmt = select(WaterPayment).where(WaterPayment.deleted_at.is_(None))
+
+            if member_id:
+                stmt = stmt.where(WaterPayment.member_id == member_id)
+
+            if status:
+                stmt = stmt.where(WaterPayment.status == status)
+
+            stmt = stmt.limit(limit).offset(offset).order_by(WaterPayment.created_at.desc())
+
+            result = await session.execute(stmt)
+            payments_orm = result.scalars().all()
+            return [WaterPaymentResponse.model_validate(p) for p in payments_orm]
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
     async def get_water_payment_by_id(session: SessionDep, id: int):
         try:
             result = await session.execute(
