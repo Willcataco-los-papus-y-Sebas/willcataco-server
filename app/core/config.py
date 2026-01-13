@@ -46,7 +46,7 @@ class Config(BaseSettings):
 
     @property
     def reset_token_time_expire(self) -> int:
-        return int(self.token_time_expire // 4)
+        return 30
 
     @property
     def database_url(self) -> str:
