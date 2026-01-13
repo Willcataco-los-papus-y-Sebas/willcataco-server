@@ -34,6 +34,23 @@ async def search_member(
     return await MemberController.search_member(session, ci, full_name, limit, offset)
 
 @router.get(
+    "/by_date",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
+)
+async def search_by_filter_time(
+    session: SessionDep,
+    year: str | None = None,
+    month: str | None = None,
+    limit: int = Query(20, ge=0, le=20),
+    offset: int = Query(0, ge=0)
+):
+    return await MemberController.search_by_filter_time(
+        session, year, month, limit, offset
+    )
+
+@router.get(
     "/{id}", 
     status_code = status.HTTP_200_OK, 
     response_model = IResponse,
