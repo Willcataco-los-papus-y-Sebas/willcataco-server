@@ -85,7 +85,7 @@ class MemberController:
             member = await MemberService.get_member_by_ci(session, ci)
             if not member:
                 raise HTTPException(status_code=404, detail="Member not found")
-            response = IResponse(detail="Member found", status_code=200, data=member)
+            response = IResponse(detail="Member found", status_code=200, data=[member])
             return response
         if full_name:
             member = await MemberService.search_full_name(session, full_name, limit, offset)
