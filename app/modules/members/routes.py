@@ -43,7 +43,7 @@ async def search_by_filter_time(
     session: SessionDep,
     year: str | None = None,
     month: str | None = None,
-    limit: int = Query(20, ge=0, le=20),
+    limit: int = Query(10, ge=0, le=10),
     offset: int = Query(0, ge=0)
 ):
     return await MemberController.search_by_filter_time(

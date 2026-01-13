@@ -199,11 +199,11 @@ class MemberService:
             conditions = []
             if year:
                 conditions.append(
-                    extract('year', Member.created_at) == year
+                    extract('year', Member.created_at) == int(year)
                 )
             if month:
                 conditions.append(
-                    extract('month', Member.created_at) == month
+                    extract('month', Member.created_at) == int(month)
                 )
             
             members = await session.execute(

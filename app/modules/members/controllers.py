@@ -105,5 +105,7 @@ class MemberController:
         if month and (int(month) < 1 or int(month) > 12):
             raise HTTPException(status_code=400, detail="Bad request in month")
         member = await MemberService.get_members_by_time(session, year, month, limit, offset)
+        if not member:
+            raise HTTPException(status_code=404, detail="Member(s) not found")
         response = IResponse(detail="Member(s) found", status_code=200, data=member)
         return response
