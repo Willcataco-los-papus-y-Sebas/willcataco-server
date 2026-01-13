@@ -3,10 +3,24 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.modules.auth.controllers import AuthController
-from app.modules.auth.schemas import LoginRequest, LoginResponse, LogoutResponse, RefreshResponse, TokenResponse
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUserFromCookie, CurrentUserFromRefreshToken, CurrentUserFlexible
+from app.core.dependencies import (
+    CurrentUserFlexible,
+    CurrentUserFromCookie,
+    CurrentUserFromRefreshToken,
+)
+from app.core.email import EmailSession
+from app.core.response_schema import IResponse
+from app.modules.auth.controllers import AuthController
+from app.modules.auth.schemas import (
+    LoginRequest,
+    LoginResponse,
+    LogoutResponse,
+    RecoveryUser,
+    RefreshResponse,
+    TokenResponse,
+    ResetPassword
+)
 from app.modules.users.model.schemas import UserResponse
 
 router = APIRouter()
@@ -20,11 +34,7 @@ async def login_access_token(
 
 
 @router.post("/login", response_model=LoginResponse)
-async def login(
-    response: Response,
-    session: SessionDep,
-    credentials: LoginRequest
-):
+async def login(response: Response, session: SessionDep, credentials: LoginRequest):
     return await AuthController.login_with_cookie(response, session, credentials)
 
 
@@ -35,9 +45,7 @@ async def get_me(user: CurrentUserFlexible):
 
 @router.post("/refresh", response_model=RefreshResponse)
 async def refresh(
-    response: Response,
-    session: SessionDep,
-    user: CurrentUserFromRefreshToken
+    response: Response, session: SessionDep, user: CurrentUserFromRefreshToken
 ):
     return await AuthController.refresh_token(response, session, user)
 
@@ -45,3 +53,17 @@ async def refresh(
 @router.post("/logout", response_model=LogoutResponse)
 async def logout(response: Response):
     return await AuthController.logout(response)
+
+
+@router.post("/forgot", response_model=IResponse)
+async def forgot_account(
+    info_recovery: RecoveryUser, session: SessionDep, session_email: EmailSession
+):
+    return await AuthController.forgot_account(info_recovery, session, session_email)
+
+
+@router.post("/reset", response_model=IResponse)
+async def reset_password(
+    token : str , passwords : ResetPassword, session : SessionDep
+):
+    return await AuthController.reset_password(token , passwords, session)

@@ -1,5 +1,5 @@
 from pydantic import EmailStr
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from app.core.database import SessionDep
 from app.modules.auth.hashing import Hasher
@@ -16,9 +16,7 @@ class UserService:
     async def get_all(session: SessionDep):
         try:
             user = await session.execute(
-                select(User).
-                where(User.is_active).
-                order_by(User.id)
+                select(User).where(User.is_active).order_by(User.id)
             )
             users_orm = user.scalars().all()
             return [UserResponse.model_validate(use) for use in users_orm]
@@ -28,21 +26,23 @@ class UserService:
     @staticmethod
     async def get_user_by_id(session: SessionDep, id: int):
         try:
-            result = await session.execute(select(User).where(User.id == id).where(User.is_active))
+            result = await session.execute(
+                select(User).where(User.id == id).where(User.is_active)
+            )
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
     async def get_user_by_email(session: SessionDep, email: EmailStr):
         try:
-            result = await session.execute(select(User).where(User.email == email).where(User.is_active))
+            result = await session.execute(
+                select(User).where(User.email == email).where(User.is_active)
+            )
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
@@ -54,13 +54,14 @@ class UserService:
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
     async def delete_user(session: SessionDep, id: int):
         try:
-            user = await session.execute(select(User).where(User.id == id).where(User.is_active))
+            user = await session.execute(
+                select(User).where(User.id == id).where(User.is_active)
+            )
             user_orm = user.scalars().one()
             user_orm.is_active = False
             user_orm.deleted_at = func.now()
@@ -116,6 +117,24 @@ class UserService:
             if not user_orm or not user_orm.is_active:
                 return None
             if not Hasher.verify_password(password, user_orm.password):
+                return None
+            return UserResponse.model_validate(user_orm)
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def reset_password(session: SessionDep, id: int, new: str):
+        try:
+            user = await session.execute(
+                update(User)
+                .where(User.id == id)
+                .values(password=Hasher.get_password_hash(new))
+                .returning(User)
+            )
+            user_orm = user.scalar_one_or_none()
+            await session.commit()
+            if not user:
                 return None
             return UserResponse.model_validate(user_orm)
         except Exception:
