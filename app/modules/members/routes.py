@@ -26,13 +26,12 @@ async def create_member(session: SessionDep, member_info: MemberBase, current_us
 )
 async def search_member(
     session: SessionDep, 
-    ci: str | None=None, 
-    last_name: str | None=None, 
-    name: str | None=None,
+    ci: str | None= None, 
+    full_name : str | None = None,
     limit: int =Query(10, ge=0, le=10), 
     offset: int=Query(0, ge=0)
 ):
-    return await MemberController.search_member(session, ci, last_name, name, limit, offset)
+    return await MemberController.search_member(session, ci, full_name, limit, offset)
 
 @router.get(
     "/{id}", 
