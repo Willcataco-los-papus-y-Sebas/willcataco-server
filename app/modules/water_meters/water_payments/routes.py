@@ -2,12 +2,29 @@ from fastapi import APIRouter, Depends, status
 
 from app.core.dependencies import RequireRoles
 from app.core.database import SessionDep
-from app.core.enums import UserRole
+from app.core.enums import UserRole, PaymentStatus
 from app.modules.water_meters.water_payments.controllers import WaterPaymentController
 from app.core.response_schema import IResponse
 from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase
 
 router = APIRouter()
+
+@router.get(
+    "/",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+)
+async def list_water_payments(
+    session: SessionDep,
+    limit: int = 10,
+    offset: int = 0,
+    member_id: int | None = None,
+    status: PaymentStatus | None = None,
+):
+    return await WaterPaymentController.list_water_payments(
+        session, limit, offset, member_id, status
+    )
+
 
 @router.post(
     "/",
