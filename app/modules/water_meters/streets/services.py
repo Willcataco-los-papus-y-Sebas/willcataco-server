@@ -4,7 +4,8 @@ from app.core.database import SessionDep
 from app.modules.water_meters.streets.model.models import Street
 from app.modules.water_meters.streets.model.schemas import (
     StreetBase,
-    StreetResponse
+    StreetResponse,
+    StreetPatch
 )
 
 
@@ -26,7 +27,7 @@ class StreetServices():
     
 
     @staticmethod
-    async def patch_info_street(session: SessionDep, id: int, street_info: StreetBase):
+    async def patch_info_street(session: SessionDep, id: int, street_info: StreetPatch):
         try:
             street = await session.execute(select(Street).where(Street.id == id))
             street_orm = street.scalars().one_or_none()
