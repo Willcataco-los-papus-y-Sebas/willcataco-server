@@ -39,3 +39,23 @@ class EmailService:
             await email_session.send_message(message)
         except Exception:
             raise
+
+    @staticmethod
+    async def send_internal_login_email(
+        email_session: EmailSession,
+        email: EmailBase,
+        url: str,
+        expire_time: int,
+    ):
+        try:
+            message = EmailMessage()
+            message["From"] = config.email_from
+            message["To"] = email.recipient
+            message["Subject"] = email.subject
+            body = await TemplateLoader.get_template(
+                "email/internal_login.html", url=url, expire_time=str(expire_time)
+            )
+            message.set_content(body, subtype="html")
+            await email_session.send_message(message)
+        except Exception:
+            raise
