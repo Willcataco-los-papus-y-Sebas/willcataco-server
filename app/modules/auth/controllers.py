@@ -26,7 +26,7 @@ class AuthController:
         )
         if not user:
             raise HTTPException(status_code=400, detail="Bad request")
-        token = JWTokens.create_access_token(user.id)
+        token = JWTokens.create_access_token_simple(str(user.id))
         return {"access_token": token, "token_type": "bearer"}
 
     @staticmethod
