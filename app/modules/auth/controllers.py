@@ -65,11 +65,11 @@ class AuthController:
             domain=None,
         )
 
-        return {"ok": True}
+        return IResponse(detail="Login successful", status_code=200)
 
     @staticmethod
     async def get_current_user(user: CurrentUserFlexible):
-        return user
+        return IResponse(detail="Current user", status_code=200, data=user)
 
     @staticmethod
     async def refresh_token(
@@ -88,7 +88,7 @@ class AuthController:
             domain=None,
         )
 
-        return {"ok": True}
+        return IResponse(detail="Token refreshed", status_code=200)
 
     @staticmethod
     async def logout(response: Response):
@@ -109,7 +109,7 @@ class AuthController:
             domain=None,
         )
 
-        return {"ok": True}
+        return IResponse(detail="Logged out successfully", status_code=200)
 
     @staticmethod
     async def forgot_account(

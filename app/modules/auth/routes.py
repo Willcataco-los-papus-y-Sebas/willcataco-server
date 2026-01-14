@@ -14,10 +14,7 @@ from app.core.response_schema import IResponse
 from app.modules.auth.controllers import AuthController
 from app.modules.auth.schemas import (
     LoginRequest,
-    LoginResponse,
-    LogoutResponse,
     RecoveryUser,
-    RefreshResponse,
     TokenResponse,
     ResetPassword
 )
@@ -33,24 +30,24 @@ async def login_access_token(
     return await AuthController.login_token(session, form_data)
 
 
-@router.post("/login", response_model=LoginResponse)
+@router.post("/login", response_model=IResponse[None])
 async def login(response: Response, session: SessionDep, credentials: LoginRequest):
     return await AuthController.login_with_cookie(response, session, credentials)
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/me", response_model=IResponse[UserResponse])
 async def get_me(user: CurrentUserFlexible):
     return await AuthController.get_current_user(user)
 
 
-@router.post("/refresh", response_model=RefreshResponse)
+@router.post("/refresh", response_model=IResponse[None])
 async def refresh(
     response: Response, session: SessionDep, user: CurrentUserFromRefreshToken
 ):
     return await AuthController.refresh_token(response, session, user)
 
 
-@router.post("/logout", response_model=LogoutResponse)
+@router.post("/logout", response_model=IResponse[None])
 async def logout(response: Response):
     return await AuthController.logout(response)
 
