@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Query
 
 from app.core.response_schema import IResponse
 from app.core.dependencies import RequireRoles
@@ -29,8 +29,10 @@ async def create_street(session: SessionDep, street_info: StreetBase):
                 UserRole.ADMIN, 
                 UserRole.STAFF
             ))])
-async def get_all_streets(session: SessionDep):
-    return await StreetControllers.get_all_streets(session)
+async def get_all_streets(session: SessionDep,
+                          limit : int = Query(10, ge=0, le=10),
+                          offset: int = Query(0, ge=0)):
+    return await StreetControllers.get_all_streets(session, limit, offset)
 
 
 @router.get("/{id}", status_code= status.HTTP_200_OK, response_model= IResponse, 

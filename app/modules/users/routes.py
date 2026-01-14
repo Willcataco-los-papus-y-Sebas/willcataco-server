@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from pydantic import EmailStr
 
 from app.core.database import SessionDep
-from app.core.dependencies import CurrentUser, RequireRoles
+from app.core.dependencies import CurrentUserFlexible, RequireRoles
 from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.users.controllers import UserController
@@ -38,7 +38,7 @@ async def patch_information_user(id: int, session: SessionDep, user_info: UserPa
     dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))],
 )
 async def create_user(
-    session: SessionDep, user_info: UserBase, current_user: CurrentUser
+    session: SessionDep, user_info: UserBase, current_user: CurrentUserFlexible
 ):
     return await UserController.create_user(session, user_info, current_user)
 

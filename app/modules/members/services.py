@@ -3,34 +3,60 @@ from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
-from app.modules.users.model.models import User
 from app.modules.members.model.schemas import (
     MemberBase,
+    MemberPatch,
     MemberResponse,
 )
+from app.modules.users.model.models import User
 
 
 class MemberService:
     @staticmethod
+    async def get_member_by_user_id(session: SessionDep, user_id: int):
+        try:
+            member = await session.execute(
+                select(Member).where(Member.user_id == user_id)
+            )
+            member_orm = member.scalar_one_or_none()
+            if not member_orm:
+                return None
+            return MemberResponse.model_validate(member_orm)
+        except Exception:
+            raise
+
+    @staticmethod
+    async def get_by_phone(session: SessionDep, phone: str):
+        try:
+            member = await session.execute(
+                select(Member).where(Member.phone == phone).where(User.is_active)
+            )
+            member_orm = member.scalar_one_or_none()
+            if not member_orm:
+                return None
+            return MemberResponse.model_validate(member_orm)
+        except Exception:
+            raise
+
+    @staticmethod
     async def get_member_by_id(session: SessionDep, id: int):
         try:
             result = await session.execute(
-                select(Member).join(User).where(Member.id == id).where(User.is_active))
+                select(Member).join(User).where(Member.id == id).where(User.is_active)
+            )
             member_orm = result.scalars().one_or_none()
             return MemberResponse.model_validate(member_orm) if member_orm else None
         except Exception:
             await session.rollback()
             raise
 
-
     @staticmethod
     async def get_member_by_ci(session: SessionDep, ci: str):
         try:
             result = await session.execute(
-                select(Member).join(User).
-                where(Member.ci == ci).
-                where(User.is_active))
-            member_orm  = result.scalars().one_or_none()
+                select(Member).join(User).where(Member.ci == ci).where(User.is_active)
+            )
+            member_orm = result.scalars().one_or_none()
             return MemberResponse.model_validate(member_orm) if member_orm else None
         except Exception:
             await session.rollback()
@@ -42,47 +68,51 @@ class MemberService:
     ):
         try:
             member = await session.execute(
-                select(Member).join(User).
-                where(Member.name.ilike(f"%{name}%")).
-                where(User.is_active).
-                order_by(Member.last_name, Member.name).
-                limit(limit).offset(offset))
+                select(Member)
+                .join(User)
+                .where(Member.name.ilike(f"%{name}%"))
+                .where(User.is_active)
+                .order_by(Member.last_name, Member.name)
+                .limit(limit)
+                .offset(offset)
+            )
             member_orm = member.scalars().all()
             return [MemberResponse.model_validate(m) for m in member_orm]
         except Exception:
             await session.rollback()
             raise
 
-    
     @staticmethod
     async def get_members_by_last_name(
         session: SessionDep, last_name: str, limit: int, offset: int
     ):
         try:
             member = await session.execute(
-                select(Member).join(User).
-                where(Member.last_name.ilike(f"%{last_name}%")).
-                where(User.is_active).
-                order_by(Member.last_name, Member.name).
-                limit(limit).offset(offset))
+                select(Member)
+                .join(User)
+                .where(Member.last_name.ilike(f"%{last_name}%"))
+                .where(User.is_active)
+                .order_by(Member.last_name, Member.name)
+                .limit(limit)
+                .offset(offset)
+            )
             member_orm = member.scalars().all()
             return [MemberResponse.model_validate(m) for m in member_orm]
         except Exception:
             await session.rollback()
             raise
 
-
     @staticmethod
     async def create_member(
-        session: SessionDep, member_info: MemberBase, user_ids: int
+        session: SessionDep, member_info: MemberBase
     ):
         try:
             new_member = Member(
-                name = member_info.name,
-                last_name = member_info.last_name,
-                user_id = user_ids,
-                ci = member_info.ci,
-                phone = member_info.phone
+                name=member_info.name,
+                last_name=member_info.last_name,
+                ci=member_info.ci,
+                phone=member_info.phone,
+                user_id=member_info.user_id,
             )
             session.add(new_member)
             await session.commit()
@@ -92,10 +122,9 @@ class MemberService:
             await session.rollback()
             raise
 
-    
     @staticmethod
     async def patch_infomation_member(
-        session: SessionDep, id: int, member_info: MemberBase
+        session: SessionDep, id: int, member_info: MemberPatch
     ):
         try:
             member = await session.execute(select(Member).where(Member.id == id))
@@ -114,12 +143,13 @@ class MemberService:
         except Exception:
             await session.rollback()
             raise
-    
 
     @staticmethod
     async def delete_member(session: SessionDep, id: int):
         try:
-            member = await session.execute(select(Member).options(selectinload(Member.user)).where(Member.id == id))
+            member = await session.execute(
+                select(Member).options(selectinload(Member.user)).where(Member.id == id)
+            )
             member_orm = member.scalars().one_or_none()
             datetime = func.now()
             member_orm.deleted_at = datetime
@@ -132,3 +162,18 @@ class MemberService:
             await session.rollback()
             raise
 
+    @staticmethod
+    async def get_all(session: SessionDep, limit: int, offset: int):
+        try:
+            members = await session.execute(
+                select(Member)
+                .join(User)
+                .where(User.is_active)
+                .order_by(Member.last_name, Member.name)
+                .limit(limit)
+                .offset(offset)
+            )
+            members_orm = members.scalars().all()
+            return [MemberResponse.model_validate(mem) for mem in members_orm]
+        except Exception:
+            raise

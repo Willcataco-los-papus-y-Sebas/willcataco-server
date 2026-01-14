@@ -27,6 +27,9 @@ class StreetControllers():
         street = await StreetServices.get_street_by_id(session, id)
         if not street:
             raise HTTPException(status_code=404, detail="Street not found")
+        street_name = await StreetServices.get_street_by_name(session, street_info.name)
+        if street_name:
+            raise HTTPException(status_code=400, detail="Street already exists")
         street_patched = await StreetServices.patch_info_street(session, id, street_info)
         response = IResponse(detail="Street patched", status_code=200, data=street_patched)
         return response
@@ -52,8 +55,8 @@ class StreetControllers():
     
     
     @staticmethod
-    async def get_all_streets(session: SessionDep):
-        streets = await StreetServices.get_all_streets(session)
+    async def get_all_streets(session: SessionDep, limit: int, offset: int):
+        streets = await StreetServices.get_all_streets(session, limit, offset)
         if not streets:
             raise HTTPException(status_code=404, detail="Streets not found")
         response = IResponse(detail="Streets found", status_code=200, data=streets)

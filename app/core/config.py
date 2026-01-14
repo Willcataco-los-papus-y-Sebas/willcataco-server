@@ -1,3 +1,4 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Config(BaseSettings):
@@ -15,6 +16,20 @@ class Config(BaseSettings):
     token_algorithm : str
     token_key : str
 
+    # Cookies
+    cookie_secure: bool = True
+    cookie_samesite: str = "lax"
+
+    # Email
+
+    email_sender: str
+    email_sender_password: str
+    email_from: str
+    smtp_server: str
+    smtp_port: int
+
+    model_config = SettingsConfigDict(env_file=".env")
+    
     # CORS
     allowed_origins: list[str] = []
 
@@ -22,8 +37,20 @@ class Config(BaseSettings):
         env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
-        secrets_dir="/run/secrets"
+        secrets_dir="/run/secrets" if Path("/run/secrets").exists() else None
     )
+
+    @property
+    def refresh_token_time_expire(self) -> int:
+        return self.token_time_expire + 60
+
+    @property
+    def reset_token_time_expire(self) -> int:
+        return 30
+
+    @property
+    def internal_token_time_expire(self) -> int:
+        return 10
 
     @property
     def database_url(self) -> str:

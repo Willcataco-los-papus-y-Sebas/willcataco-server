@@ -23,6 +23,13 @@ jobs:
       TOKEN_TIME_EXPIRE: 60
       TOKEN_ALGORITHM: HS256
       TOKEN_KEY: test_secret_key
+      EMAIL_SENDER: your_email@gmail.com
+      EMAIL_FROM: your_email@gmail.com
+      EMAIL_SENDER_PASSWORD: your_email_password
+      SMTP_SERVER: smtp.gmail.com
+      SMTP_PORT: 587
+      COOKIE_SECURE: true
+      COOKIE_SAMESITE: lax
       
     steps:
       - name: Checkout code
