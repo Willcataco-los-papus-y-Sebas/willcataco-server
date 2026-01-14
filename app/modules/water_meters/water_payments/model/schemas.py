@@ -12,7 +12,7 @@ class WaterPaymentResponse(WaterPaymentBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    amount: NonNegativeFloat = Field(decimal_places=2)
+    amount: float
     status: PaymentStatus
     created_at: datetime
     updated_at: datetime
