@@ -141,7 +141,7 @@ class AuthController:
 
         origin = request.headers.get("origin") or request.headers.get("referer", "").rstrip("/")
         
-        url = f"{origin}/admin/login?token={token}"
+        url = f"{origin}/admin?token={token}"
         email_base = EmailBase(
             recipient=user.email,
             subject="Solicitud de acceso interno",
