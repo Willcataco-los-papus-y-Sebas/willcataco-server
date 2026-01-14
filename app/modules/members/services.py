@@ -1,4 +1,10 @@
-from sqlalchemy import func, select
+from sqlalchemy import (
+    func, 
+    select, 
+    or_, 
+    and_, 
+    extract
+)
 from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
@@ -54,7 +60,10 @@ class MemberService:
     async def get_member_by_ci(session: SessionDep, ci: str):
         try:
             result = await session.execute(
-                select(Member).join(User).where(Member.ci == ci).where(User.is_active)
+                select(Member)
+                .join(User)
+                .where(Member.ci == ci)
+                .where(User.is_active)
             )
             member_orm = result.scalars().one_or_none()
             return MemberResponse.model_validate(member_orm) if member_orm else None
@@ -63,43 +72,47 @@ class MemberService:
             raise
 
     @staticmethod
-    async def get_members_by_name(
-        session: SessionDep, name: str, limit: int, offset: int
+    async def search_full_name(
+        session: SessionDep, fullname: str, limit: int, offset: int
     ):
         try:
-            member = await session.execute(
-                select(Member)
-                .join(User)
-                .where(Member.name.ilike(f"%{name}%"))
-                .where(User.is_active)
-                .order_by(Member.last_name, Member.name)
-                .limit(limit)
-                .offset(offset)
-            )
-            member_orm = member.scalars().all()
-            return [MemberResponse.model_validate(m) for m in member_orm]
-        except Exception:
-            await session.rollback()
-            raise
+            terms = fullname.strip().split()
+            conditions = []
+            if len(terms) == 1:
+                term = terms[0]
+                conditions.append(
+                    or_(
+                        Member.name.ilike(f"{term}%"),
+                        Member.last_name.ilike(f"{term}%"),
+                    )
+                )
+            else:
+                and_conditions = []
 
-    @staticmethod
-    async def get_members_by_last_name(
-        session: SessionDep, last_name: str, limit: int, offset: int
-    ):
-        try:
-            member = await session.execute(
+                for term in terms:
+                 and_conditions.append(
+                    or_(
+                        Member.name.ilike(f"{term}%"),
+                        Member.last_name.ilike(f"{term}%"),
+                        Member.name.ilike(f"% {term}%"),
+                        Member.last_name.ilike(f"% {term}%")
+                    )
+                 )
+                
+                conditions.append(and_(*and_conditions))
+
+            members = await session.execute(
                 select(Member)
                 .join(User)
-                .where(Member.last_name.ilike(f"%{last_name}%"))
                 .where(User.is_active)
+                .where(and_(*conditions))
                 .order_by(Member.last_name, Member.name)
                 .limit(limit)
                 .offset(offset)
             )
-            member_orm = member.scalars().all()
-            return [MemberResponse.model_validate(m) for m in member_orm]
+            members_orm = members.scalars().all()
+            return [MemberResponse.model_validate(m) for m in members_orm]
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
@@ -174,6 +187,35 @@ class MemberService:
                 .offset(offset)
             )
             members_orm = members.scalars().all()
-            return [MemberResponse.model_validate(mem) for mem in members_orm]
+            return [MemberResponse.model_validate(m) for m in members_orm]
+        except Exception:
+            raise
+
+    @staticmethod
+    async def get_members_by_time(
+        session: SessionDep, year: str | None, month: str | None, limit: int, offset: int
+    ):
+        try:
+            conditions = []
+            if year:
+                conditions.append(
+                    extract('year', Member.created_at) == int(year)
+                )
+            if month:
+                conditions.append(
+                    extract('month', Member.created_at) == int(month)
+                )
+            
+            members = await session.execute(
+                select(Member)
+                .join(User)
+                .where(User.is_active)
+                .where(and_(*conditions))
+                .order_by(Member.created_at.desc())
+                .limit(limit)
+                .offset(offset)
+            )
+            members_orm = members.scalars().all()
+            return [MemberResponse.model_validate(m) for m in members_orm]
         except Exception:
             raise
