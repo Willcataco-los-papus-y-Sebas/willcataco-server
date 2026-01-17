@@ -5,9 +5,19 @@ from app.core.dependencies import RequireRoles, CurrentUserFlexible
 from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.controllers import MemberController
-from app.modules.members.model.schemas import MemberBase, MemberPatch
+from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberStatsResponse
 
 router = APIRouter()
+
+@router.get(
+    "/stats",
+    status_code=status.HTTP_200_OK,
+    response_model=IResponse,
+    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))],
+    summary="Obtener estadísticas generales de socios"
+)
+async def get_member_stats(session: SessionDep):
+    return await MemberController.get_stats(session)
 
 @router.post(
     "/", 
