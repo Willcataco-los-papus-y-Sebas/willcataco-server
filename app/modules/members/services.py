@@ -77,35 +77,25 @@ class MemberService:
     ):
         try:
             terms = fullname.strip().split()
-            conditions = []
-            if len(terms) == 1:
-                term = terms[0]
-                conditions.append(
-                    or_(
-                        Member.name.ilike(f"{term}%"),
-                        Member.last_name.ilike(f"{term}%"),
-                    )
-                )
-            else:
-                and_conditions = []
+            and_conditions = []
 
-                for term in terms:
-                 and_conditions.append(
-                    or_(
-                        Member.name.ilike(f"{term}%"),
-                        Member.last_name.ilike(f"{term}%"),
-                        Member.name.ilike(f"% {term}%"),
-                        Member.last_name.ilike(f"% {term}%")
-                    )
-                 )
-                
-                conditions.append(and_(*and_conditions))
+            for term in terms:
+                and_conditions.append(
+                or_(
+                    Member.name.ilike(f"{term}%"),
+                    Member.last_name.ilike(f"{term}%"),
+                    Member.name.ilike(f"% {term}%"),
+                    Member.last_name.ilike(f"% {term}%")
+                )
+                )
+                    
+                condition = and_(*and_conditions)
 
             members = await session.execute(
                 select(Member)
                 .join(User)
                 .where(User.is_active)
-                .where(and_(*conditions))
+                .where(condition)
                 .order_by(Member.last_name, Member.name)
                 .limit(limit)
                 .offset(offset)

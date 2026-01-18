@@ -77,7 +77,7 @@ class MemberController:
         limit: int,
         offset: int,
     ):
-        if not ci and not full_name:
+        if not any([ci, full_name, month, year]):
             members = await MemberService.get_all(session, limit, offset)
             response = IResponse(
                 detail="users retrieved", status_code=200, data=members
