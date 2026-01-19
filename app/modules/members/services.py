@@ -10,6 +10,9 @@ from app.modules.members.model.schemas import (
 )
 from app.modules.users.model.models import User
 
+from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
+
 
 class MemberService:
     @staticmethod
@@ -177,3 +180,47 @@ class MemberService:
             return [MemberResponse.model_validate(mem) for mem in members_orm]
         except Exception:
             raise
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @staticmethod
+    async def get_new_members_between_dates(
+        session: SessionDep,
+        start_date: date,
+        end_date: date,
+    ) -> list[MemberResponse]:
+        try:
+            tz = ZoneInfo("America/La_Paz")
+            start_dt = datetime.combine(start_date, time.min, tzinfo=tz)
+            end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min, tzinfo=tz)
+
+            result = await session.execute(
+                select(Member)
+                .join(User)
+                .where(User.is_active)
+                .where(Member.deleted_at.is_(None))
+                .where(Member.created_at >= start_dt)
+                .where(Member.created_at < end_exclusive)
+                .order_by(Member.created_at, Member.last_name, Member.name)
+            )
+
+            members_orm = result.scalars().all()
+            return [MemberResponse.model_validate(m) for m in members_orm]
+
+        except Exception:
+            await session.rollback()
+            raise
+

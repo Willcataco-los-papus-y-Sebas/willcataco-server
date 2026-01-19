@@ -1,0 +1,38 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+  <div class="info-box">
+    <h2>Reporte de socios nuevos</h2>
+    <p><strong>rango:</strong> del {{ start_date }} al {{ end_date }}</p>
+    <p><strong>total de socios nuevos:</strong> {{ total }}</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>nombre</th>
+        <th>apellido</th>
+        <th>ci</th>
+        <th>telefono</th>
+        <th>fecha de registro</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if members and members|length > 0 %}
+        {% for m in members %}
+          <tr>
+            <td>{{ m.name }}</td>
+            <td>{{ m.last_name }}</td>
+            <td>{{ m.ci }}</td>
+            <td>{{ m.phone }}</td>
+            <td>{{ m.created_at.strftime("%d/%m/%Y") }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="5" class="no-data">sin datos para el rango seleccionado</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}
