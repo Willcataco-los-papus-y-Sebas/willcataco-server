@@ -1,4 +1,4 @@
-<mj-section>
+<mj-section background-color="#581056">
   <mj-column>
     <mj-text>Aqui estara el footer</mj-text>
   </mj-column>

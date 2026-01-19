@@ -1,0 +1,25 @@
+
+  <mj-head>
+    <mj-title>Preview Test</mj-title>
+  </mj-head>
+  <mj-body>
+    <mj-section>
+        <mj-column>
+        <mj-text>Estimado(a) {{full_name}}</mj-text>
+        <mj-text>
+          USTED realizó el pago efectuado el {{date_pay}} a las {{hour_pay}} con el fín de
+          cancelar el correspondiente pago del {{date_water_pay}}
+        </mj-text>
+        <mj-text>
+            ID PAGO: {{}}
+        </mj-text>
+        <mj-text>
+            NUMERO DE TRANSACCIÓN: {{}}
+        </mj-text>
+        <mj-text>
+            MONTO: {{amount}}
+          </mj-text>
+        </mj-column>
+    </mj-section>
+  </mj-body>
+

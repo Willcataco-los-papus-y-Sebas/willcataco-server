@@ -3,11 +3,6 @@
     <mj-body>
         <mj-include path="./header.mjml">
         <!--aqui empiezan a editar-->
-        <mj-section>
-            <mj-column>
-                <mj-text>hola mundo</mj-text>     
-            </mj-column>           
-        </mj-section>
         <!--hasta aqui-->
         <mj-include path="./footer.mjml">
     </mj-body>
