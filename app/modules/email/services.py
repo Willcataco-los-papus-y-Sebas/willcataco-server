@@ -14,7 +14,7 @@ class EmailService:
             message["From"] = config.email_from
             message["To"] = email.recipient
             message["Subject"] = email.subject
-            body = await TemplateLoader.get_template("email/email_test.html")
+            body = await TemplateLoader.get_template("email/template.html", head_title=email.subject)
             message.set_content(body, subtype="html")
             await email_session.send_message(message)
         except Exception:
