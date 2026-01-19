@@ -59,3 +59,29 @@ class EmailService:
             await email_session.send_message(message)
         except Exception:
             raise
+
+    @staticmethod
+    async def send_water_bill_email(
+        email_session: EmailSession,
+        email: EmailBase,
+        name: str,
+        reading_value: float,
+        date: str,
+        months_owed: int,
+    ):
+        try:
+            message = EmailMessage()
+            message["From"] = config.email_from
+            message["To"] = email.recipient
+            message["Subject"] = email.subject
+            body = await TemplateLoader.get_template(
+                "email/html/notificacion_boleta.html",
+                name=name,
+                reading_value=str(reading_value),
+                date=date,
+                months_owed=str(months_owed),
+            )
+            message.set_content(body, subtype="html")
+            await email_session.send_message(message)
+        except Exception:
+            raise

@@ -9,3 +9,17 @@ class EmailController:
     async def send_email(email_session: EmailSession, email: EmailBase):
         await EmailService.send_email(email_session, email)
         return IResponse(detail="Email sent successfully", status_code=200)
+
+    @staticmethod
+    async def send_water_bill_email(
+        email_session: EmailSession, 
+        email: EmailBase, 
+        name: str, 
+        reading: float, 
+        date: str, 
+        months: int
+    ):
+        await EmailService.send_water_bill_email(
+            email_session, email, name, reading, date, months
+        )
+        return IResponse(detail="Water Bill Email sent successfully", status_code=200)
