@@ -28,8 +28,8 @@ async def search_member(
     session: SessionDep, 
     ci: str | None= None, 
     full_name: str | None = None,
-    year: str | None = Query(None),
-    month: str | None = Query(None, ge=1, le=12),
+    year: int | None = Query(None),
+    month: int | None = Query(None, ge=1, le=12),
     limit: int =Query(10, ge=0, le=10), 
     offset: int=Query(0, ge=0)
 ):

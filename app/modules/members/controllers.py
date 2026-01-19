@@ -72,8 +72,8 @@ class MemberController:
         session: SessionDep,
         ci: str | None,
         full_name: str | None,
-        year: str | None,
-        month: str | None,
+        year: int | None,
+        month: int | None,
         limit: int,
         offset: int,
     ):
@@ -90,7 +90,7 @@ class MemberController:
             response = IResponse(detail="Member found", status_code=200, data=[member])
             return response
         if full_name:
-            member = await MemberService.search_full_name(session, full_name, limit, offset)
+            member = await MemberService.search_full_name(session, full_name, year, month, limit, offset)
             if not member:
                 raise HTTPException(status_code=404, detail="Member(s) not found")
             response = IResponse(detail="Member(s) found", status_code=200, data=member)

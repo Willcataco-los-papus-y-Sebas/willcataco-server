@@ -73,7 +73,12 @@ class MemberService:
 
     @staticmethod
     async def search_full_name(
-        session: SessionDep, fullname: str, limit: int, offset: int
+        session: SessionDep, 
+        fullname: str, 
+        year: int | None, 
+        month: int | None, 
+        limit: int, 
+        offset: int
     ):
         try:
             terms = fullname.strip().split()
@@ -90,16 +95,21 @@ class MemberService:
                 )
                     
                 condition = and_(*and_conditions)
+            
+            condition_date = MemberService.get_query_date(year, month)
 
-            members = await session.execute(
+            query = (
                 select(Member)
                 .join(User)
                 .where(User.is_active)
                 .where(condition)
-                .order_by(Member.last_name, Member.name)
-                .limit(limit)
-                .offset(offset)
             )
+
+            if condition_date is not None:
+                query = query.where(condition_date)
+
+            query = query.order_by(Member.last_name, Member.name).limit(limit).offset(offset)
+            members = await session.execute(query)
             members_orm = members.scalars().all()
             return [MemberResponse.model_validate(m) for m in members_orm]
         except Exception:
@@ -183,29 +193,37 @@ class MemberService:
 
     @staticmethod
     async def get_members_by_time(
-        session: SessionDep, year: str | None, month: str | None, limit: int, offset: int
+        session: SessionDep, year: int | None, month: int | None, limit: int, offset: int
     ):
         try:
-            conditions = []
-            if year:
-                conditions.append(
-                    extract('year', Member.created_at) == int(year)
-                )
-            if month:
-                conditions.append(
-                    extract('month', Member.created_at) == int(month)
-                )
-            
-            members = await session.execute(
+            query = ( 
                 select(Member)
                 .join(User)
                 .where(User.is_active)
-                .where(and_(*conditions))
-                .order_by(Member.created_at.desc())
-                .limit(limit)
-                .offset(offset)
             )
+
+            date = MemberService.get_query_date(year, month)
+
+            if date is not None:
+                query = query.where(date)
+            
+            query = query.order_by(Member.created_at.desc()).limit(limit).offset(offset)
+
+            members = await session.execute(query)
             members_orm = members.scalars().all()
             return [MemberResponse.model_validate(m) for m in members_orm]
         except Exception:
             raise
+
+    @staticmethod
+    def get_query_date(year: int | None, month: int | None):
+        date = []
+        if year:
+            date.append(
+                extract('year', Member.created_at) == year
+            )
+        if month:
+            date.append(
+                extract('month', Member.created_at) == month
+            )
+        return and_(*date) if date else None
