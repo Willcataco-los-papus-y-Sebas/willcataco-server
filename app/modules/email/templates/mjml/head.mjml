@@ -1,0 +1,6 @@
+<mj-head>
+    <mj-title>{{head_title}}</mj-title>
+    <mj-attributes>
+        <mj-all font-family="Roboto, sans-serif"></mj-all>
+    </mj-attributes>
+</mj-head>
