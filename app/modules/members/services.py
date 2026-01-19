@@ -177,3 +177,21 @@ class MemberService:
             return [MemberResponse.model_validate(mem) for mem in members_orm]
         except Exception:
             raise
+    
+    @staticmethod
+    async def get_member_with_details(session: SessionDep, id: int):
+        try:
+            result = await session.execute(
+                select(Member)
+                .join(User)
+                .options(
+                    selectinload(Member.payments),
+                    selectinload(Member.water_payments)
+                )
+                .where(Member.id == id)
+                .where(User.is_active)
+            )
+            member_orm = result.scalars().one_or_none()
+            return member_orm 
+        except Exception:
+            raise
