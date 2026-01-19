@@ -1,0 +1,79 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+<h2>{{ titulo }}</h2>
+
+<div class="info-box">
+    <strong>CI:</strong> {{ member.ci }} <br>
+    <strong>Teléfono:</strong> {{ member.phone }} <br>
+    <strong>Fecha Registro:</strong> 
+    {% if member.created_at %}
+        {{ member.created_at.strftime('%d/%m/%Y') }}
+    {% else %}
+        -
+    {% endif %}
+</div>
+
+<h3>1. Historial de Pagos de Agua</h3>
+{% if member.water_payments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Periodo</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Fecha Pago</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wp in member.water_payments %}
+            <tr>
+                <td>{{ wp.month }}/{{ wp.year }}</td> 
+                <td>Bs. {{ wp.amount }}</td>
+                <td>{{ wp.status }}</td>
+                <td>
+                    {% if wp.created_at %}
+                        {{ wp.created_at.strftime('%d/%m/%Y') }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="no-data"><em>No hay pagos de agua registrados.</em></p>
+{% endif %}
+
+<h3>2. Pagos Extras / Aportes</h3>
+{% if member.payments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in member.payments %}
+            <tr>
+                <td>{{ p.description }}</td>
+                <td>Bs. {{ p.amount }}</td>
+                <td>
+                    {% if p.created_at %}
+                        {{ p.created_at.strftime('%d/%m/%Y') }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="no-data"><em>No hay pagos extras registrados.</em></p>
+{% endif %}
+
+{% endblock %}
