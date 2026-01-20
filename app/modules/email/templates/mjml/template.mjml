@@ -1,14 +1,14 @@
 <mjml>
-    <mj-include path="./head.mjml">
-    <mj-body>
-        <mj-include path="./header.mjml">
-        <!--aqui empiezan a editar-->
-        <mj-section>
-            <mj-column>
-                <mj-text>hola mundo</mj-text>     
-            </mj-column>           
-        </mj-section>
-        <!--hasta aqui-->
-        <mj-include path="./footer.mjml">
-    </mj-body>
+  <mj-include path="./head.mjml" />
+  <mj-body width="600px">
+    <mj-include path="./header.mjml" />
+    <!--aqui empiezan a editar-->
+    <mj-section>
+      <mj-column>
+        <mj-text>Email Test de Willcataco</mj-text>
+      </mj-column>
+    </mj-section>
+    <!--hasta aqui-->
+    <mj-include path="./footer.mjml" />
+  </mj-body>
 </mjml>
