@@ -9,7 +9,8 @@ from app.modules.members.model.schemas import (
     MemberResponse,
 )
 from app.modules.users.model.models import User
-
+from app.modules.water_meters.water_payments.model.models import WaterPayment
+from app.modules.extra_payments.payments.model.models import Payment
 
 class MemberService:
     @staticmethod
@@ -185,8 +186,8 @@ class MemberService:
                 select(Member)
                 .join(User)
                 .options(
-                    selectinload(Member.payments),
-                    selectinload(Member.water_payments)
+                    selectinload(Member.water_payments).selectinload(WaterPayment.meter),
+                    selectinload(Member.payments).selectinload(Payment.extra_payment)
                 )
                 .where(Member.id == id)
                 .where(User.is_active)
