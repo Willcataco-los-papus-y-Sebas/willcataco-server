@@ -75,7 +75,7 @@ class EmailService:
             message["To"] = email.recipient
             message["Subject"] = email.subject
             body = await TemplateLoader.get_template(
-                "email/html/notificacion_boleta.html",
+                "email/notificacion_boleta.html",
                 name=name,
                 reading_value=str(reading_value),
                 date=date,
