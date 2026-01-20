@@ -85,6 +85,8 @@ class EmailService:
                 reading_value=str(reading_value),
                 date=date,
                 months_owed=str(months_owed),
+                email_title=email.subject,
+                year=str(datetime.now().year),
             )
             message.set_content(body, subtype="html")
             await email_session.send_message(message)
