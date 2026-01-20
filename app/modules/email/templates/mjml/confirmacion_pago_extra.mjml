@@ -1,0 +1,32 @@
+<mjml>
+  <mj-include path="./head.mjml" />
+  <mj-body>
+    <mj-include path="./header.mjml" />
+
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" font-weight="bold" color="#333333">Hola {{ name }},</mj-text>
+        <mj-text font-size="16px" color="#555555">
+          Confirmamos la recepción de tu pago extra realizado exitosamente.
+        </mj-text>
+
+        <mj-divider border-color="#581056" border-width="1px" />
+
+        <mj-table>
+          <tr style="border-bottom:1px solid #581056;text-align:left;padding:15px 0;">
+            <th style="padding: 0 15px 0 0;">Fecha de Pago</th>
+            <th style="padding: 0 15px 0 0;">Razon</th>
+            <th style="padding: 0 15px;">Monto Pagado</th>
+          </tr>
+          <tr>
+            <td style="padding: 0 15px 0 0;">{{ payment_date }}</td>
+            <td style="padding: 0 15px 0 0;">{{ description }}</td>
+            <td style="padding: 0 15px; font-weight: bold; color: #581056;">{{ amount }}</td>
+          </tr>
+        </mj-table>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="./footer.mjml" />
+  </mj-body>
+</mjml>
