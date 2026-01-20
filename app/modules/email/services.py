@@ -1,10 +1,10 @@
+from datetime import datetime
 from email.message import EmailMessage
 
 from app.core.config import config
 from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
 from app.modules.email.schemas import EmailBase
-from datetime import datetime
 
 
 class EmailService:
