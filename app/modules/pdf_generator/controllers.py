@@ -18,6 +18,3 @@ class PdfGenController:
             return await PdfGenService.generate_member_report(session, id)
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
-        except Exception as e:
-            print(f"Error generating PDF: {e}")
-            raise HTTPException(status_code=500, detail="Internal Server Error")

@@ -22,14 +22,14 @@ class PdfGenService:
         member = await MemberService.get_member_with_details(session, member_id)
         if not member:
             raise ValueError("Socio no encontrado")
-        context = {
-            "member": member,
-            "fecha": datetime.now().strftime("%d/%m/%Y %H:%M"),
-            "titulo": f"Extracto de Socio: {member.name} {member.last_name}"
-        }
-        html_string = await TemplateLoader.get_template("pdf/member_report.html", **context)
+        html_string = await TemplateLoader.get_template(
+            "pdf/member_report.html",
+            member=member,
+            fecha=datetime.now().strftime("%d/%m/%Y %H:%M"),
+            titulo=f"Extracto de Socio: {member.name} {member.last_name}"
+        )
         pdf_bytes = HTML(string=html_string).write_pdf()
-        filename = f"Reporte_{member.ci}.pdf"
+        filename = f"Reporte_{member.name}_{member.last_name}.pdf".replace(" ", "_")
         return StreamingResponse(
             io.BytesIO(pdf_bytes),
             media_type="application/pdf",
