@@ -216,7 +216,7 @@ class MemberService:
             raise
 
     @staticmethod
-    def get_query_date(year: int | None, month: int | None):
+    def __get_query_date(year: int | None, month: int | None):
         date = []
         if year:
             date.append(
