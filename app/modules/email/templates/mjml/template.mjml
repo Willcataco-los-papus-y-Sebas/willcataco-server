@@ -1,9 +1,9 @@
 <mjml>
-    <mj-include path="./head.mjml">
-    <mj-body>
-        <mj-include path="./header.mjml">
+    <mj-include path="./head.mjml" />
+    <mj-body width="600px">
+        <mj-include path="./header.mjml" />
         <!--aqui empiezan a editar-->
         <!--hasta aqui-->
-        <mj-include path="./footer.mjml">
+        <mj-include path="./footer.mjml" />
     </mj-body>
 </mjml>
