@@ -2,11 +2,47 @@
     <mj-include path="./head.mjml">
     <mj-body>
         <mj-include path="./header.mjml">
+        <mj-section padding-bottom="0px">
+            <mj-column background-color="#D0D0D0" border-radius="8px">
+                <mj-text font-family="Roboto, sans-serif">Estimado(a) {{name}}</mj-text>
+                <mj-text font-family="Roboto, sans-serif">Gracias por cancelar el pago de nuestros servicios</mj-text>
+            </mj-column>
+        </mj-section>
         <mj-section>
-            <mj-column>
-                <mj-text>Estimado(a) {{full_name}}</mj-text>
-                <mj-text>Gracias por cancelar el pago por nuestros servicios</mj-text>
-                <mj-text>Por favor lea los datos del recibo:</mj-text>
+            <mj-column background-color="#D0D0D0" border-radius="5px">
+                <mj-text font-family="Roboto, sans-serif">Datos del Recibo</mj-text>
+                <mj-divider padding-top="0" border-color="#581056" border-width="2px"/>
+                <mj-table padding-left="90px" padding-right="90px">
+                   <tr>
+                    <td style="width: 10%; text-align: left; padding: 8px 0;">NOMBRE:</td>
+                    <td style="width: 90%; text-align: right; padding: 8px 0;">{{full_name}}</td>
+                   </tr>
+                   <tr>
+                    <td style="width: 30%; text-align: left; padding: 8px 0;">CI:</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{ci}}</td>
+                   </tr>
+                   <tr>
+                    <td style="width: 30%; text-align: left; padding: 8px 0;">ID PAGO:</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{id_payment}}</td>
+                   </tr>
+                   <tr>
+                    <td style="width: 30%; text-align: left; padding: 8px 0;">LECTURA:</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{water_meter}}</td>
+                   </tr>
+                   <tr>
+                    <td style="width: 30%; text-align: left; padding: 8px 0;">FECHA DE COBRO:</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_pay}}</td>
+                   </tr>
+                   <tr>
+                    <td style="width: 30%; text-align: left; padding: 8px 0;">FECHA DE PAGO:</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_paied}}  {{hour_paied}}</td>
+                   </tr>
+                   <tr>
+                    <td style="width: 30%; text-align: left; padding: 8px 0;">MONTO:</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">Bs.{{amount}}</td>
+                   </tr>
+                </mj-table>
+                <mj-divider padding-top="0" border-color="#581056" border-width="2px"/>
             </mj-column>
         </mj-section>
         <mj-include path="./footer.mjml">
