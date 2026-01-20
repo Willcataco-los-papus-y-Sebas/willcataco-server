@@ -10,10 +10,10 @@
           Se ha registrado una nueva lectura de agua en tu medidor.
         </mj-text>
         
-        <mj-divider border-color="#e0e0e0" border-width="1px" />
+        <mj-divider border-color="#581056" border-width="1px" />
         
         <mj-table>
-          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+          <tr style="border-bottom:1px solid #581056;text-align:left;padding:15px 0;">
             <th style="padding: 0 15px 0 0;">Fecha</th>
             <th style="padding: 0 15px;">Lectura</th>
             <th style="padding: 0 0 0 15px;">Meses Deuda</th>
@@ -31,7 +31,7 @@
           Recuerda que puedes ver más detalles y realizar pagos en nuestra plataforma.
         </mj-text>
 
-        <mj-button href="#" background-color="#007bff" color="white" border-radius="5px">
+        <mj-button href="#" background-color="#581056" color="white" border-radius="5px">
           Ver Detalle
         </mj-button>
         
