@@ -8,13 +8,11 @@ class EmailBase(BaseModel):
     subject: str
 
 class EmailWaterReceiptBase(BaseModel):
-    recipient: EmailStr
-    subject: str
     name_member: str
     last_name_member: str
     ci_member: str
     id_payment: int
-    water_reading: Decimal = Field(..., decimal_places=2)
-    date_created: datetime
+    water_reading: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
+    date_created: datetime = Field()
     date_updated: datetime
-    amount: Decimal = Field(..., decimal_places=2)
+    amount: Decimal = Field(ge=0, max_digits=10, decimal_places=2)

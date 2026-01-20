@@ -1,3 +1,7 @@
+from fastapi import HTTPException
+
+from app.core.enums import UserRole
+from app.core.dependencies import CurrentUserFlexible
 from app.core.email import EmailSession
 from app.core.response_schema import IResponse
 from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase
@@ -14,8 +18,11 @@ class EmailController:
     async def send_water_payment_email(
         email_session: EmailSession, 
         email: EmailBase,
-        email_receipt: EmailWaterReceiptBase 
+        email_receipt: EmailWaterReceiptBase,
+        current_user:  CurrentUserFlexible
     ):
+        if current_user.role == UserRole.MEMBER:
+            raise HTTPException(status_code=400, detail="members not allowed")
         await EmailService.send_water_payment_email(
             email_session, 
             email,

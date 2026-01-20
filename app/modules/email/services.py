@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from zoneinfo import ZoneInfo
 from email.message import EmailMessage
 
 from app.core.config import config
@@ -7,8 +7,10 @@ from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
 from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase
 
+BOLIVIA_TIME = ZoneInfo("America/La_Paz")
 
 class EmailService:
+
     @staticmethod
     async def send_email(email_session: EmailSession, email: EmailBase):
         try:
@@ -84,9 +86,9 @@ class EmailService:
                 ci = email_receipt.ci_member,
                 id_payment = email_receipt.id_payment,
                 water_meter = email_receipt.water_reading,
-                date_pay = email_receipt.date_created.strftime('%d/%m/%Y'),
-                date_paied = email_receipt.date_updated.strftime('%d/%m/%Y'),
-                hour_paied = email_receipt.date_updated.strftime('%H:%M'),
+                date_pay = email_receipt.date_created.astimezone(BOLIVIA_TIME).strftime('%d/%m/%Y'),
+                date_paied = email_receipt.date_updated.astimezone(BOLIVIA_TIME).strftime('%d/%m/%Y'),
+                hour_paied = email_receipt.date_updated.astimezone(BOLIVIA_TIME).strftime('%H:%M'),
                 amount = email_receipt.amount
             )
             message.set_content(body, subtype="html")

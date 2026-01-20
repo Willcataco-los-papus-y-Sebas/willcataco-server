@@ -16,12 +16,13 @@ async def send_email(email_session: EmailSession, email: EmailBase):
 @router.post("/water-receipt", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def send_water_payment_email(
     email_session: EmailSession, 
+    email: EmailBase,
     email_receipt: EmailWaterReceiptBase,
-    user: CurrentUserFlexible
+    current_user: CurrentUserFlexible
 ):
-    email = EmailBase(recipient=email_receipt.recipient, subject=email_receipt.subject)
     return await EmailController.send_water_payment_email(
         email_session, 
         email,
-        email_receipt
+        email_receipt,
+        current_user
     )
