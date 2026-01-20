@@ -1,10 +1,6 @@
-from datetime import datetime
-from decimal import Decimal
-from pydantic import NonNegativeFloat 
-
 from app.core.email import EmailSession
 from app.core.response_schema import IResponse
-from app.modules.email.schemas import EmailBase
+from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase
 from app.modules.email.services import EmailService
 
 
@@ -18,25 +14,11 @@ class EmailController:
     async def send_water_payment_email(
         email_session: EmailSession, 
         email: EmailBase,
-        name_member: str,
-        last_name_member: str,
-        ci_member: str,
-        id_payment: int,
-        water_reading: Decimal,
-        date_created: datetime,
-        date_updated: datetime,
-        amount: NonNegativeFloat 
+        email_receipt: EmailWaterReceiptBase 
     ):
         await EmailService.send_water_payment_email(
             email_session, 
             email,
-            name_member,
-            last_name_member,
-            ci_member,
-            id_payment,
-            water_reading,
-            date_created,
-            date_updated,
-            amount
+            email_receipt
         )
         return IResponse(detail="Email sent successfully", status_code=200)

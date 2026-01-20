@@ -1,13 +1,11 @@
 from datetime import datetime
-from decimal import Decimal
-from pydantic import NonNegativeFloat 
 
 from email.message import EmailMessage
 
 from app.core.config import config
 from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
-from app.modules.email.schemas import EmailBase
+from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase
 
 
 class EmailService:
@@ -72,14 +70,7 @@ class EmailService:
     async def send_water_payment_email(
         email_session: EmailSession,
         email: EmailBase,
-        name_member: str,
-        last_name_member: str,
-        ci_member: str,
-        id_payment: int,
-        water_reading: Decimal,
-        date_created: datetime,
-        date_updated: datetime,
-        amount: NonNegativeFloat 
+        email_receipt: EmailWaterReceiptBase 
     ):
         try:
             message = EmailMessage()
@@ -87,18 +78,18 @@ class EmailService:
             message["To"] = email.recipient
             message["Subject"] = email.subject
             body = await TemplateLoader.get_template(
-                "email/template/water-payments.mjml",
-                name = name_member,
-                full_name = f'{name_member} {last_name_member}',
-                ci = ci_member,
-                id_payment = id_payment,
-                water_meter = water_reading,
-                date_pay = date_created.strftime('%d/%m/%Y'),
-                date_paied = date_updated.strftime('%d/%m/%Y'),
-                hour_paied = date_updated.strftime('%H:%M'),
-                amount = amount
+                "email/water_payment.html",
+                name = email_receipt.name_member,
+                full_name = f'{email_receipt.name_member} {email_receipt.last_name_member}',
+                ci = email_receipt.ci_member,
+                id_payment = email_receipt.id_payment,
+                water_meter = email_receipt.water_reading,
+                date_pay = email_receipt.date_created.strftime('%d/%m/%Y'),
+                date_paied = email_receipt.date_updated.strftime('%d/%m/%Y'),
+                hour_paied = email_receipt.date_updated.strftime('%H:%M'),
+                amount = email_receipt.amount
             )
-            message.set_content(body, subtype="mjml")
+            message.set_content(body, subtype="html")
             await email_session.send_message(message)
         except Exception:
             raise
