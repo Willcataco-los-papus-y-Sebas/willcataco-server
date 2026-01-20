@@ -1,8 +1,9 @@
-<mj-section background-color="#581056" padding="10px" full-width="full-width">
+<mj-section background-color="#581056" padding="10px">
   <mj-column width="100%" vertical-align="middle">
+    <!--TODO: cambiar el src-->
     <mj-image align="center" width="45px" src="../assets/willcataco.png" />
   </mj-column>
   <mj-column width="100%">
-    <mj-text align="center" color="#ffffff"><h2>{{email_title}}</h2></mj-text>
+    <mj-text align="center" color="#ffffff" font-size="24px" font-weight="bold">{{email_title}}</mj-text>
   </mj-column>
 </mj-section>

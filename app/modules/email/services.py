@@ -4,6 +4,7 @@ from app.core.config import config
 from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
 from app.modules.email.schemas import EmailBase
+from datetime import datetime
 
 
 class EmailService:
@@ -14,7 +15,11 @@ class EmailService:
             message["From"] = config.email_from
             message["To"] = email.recipient
             message["Subject"] = email.subject
-            body = await TemplateLoader.get_template("email/template.html", head_title=email.subject)
+            body = await TemplateLoader.get_template(
+                "email/template.html",
+                email_title=email.subject,
+                year=str(datetime.now().year),
+            )
             message.set_content(body, subtype="html")
             await email_session.send_message(message)
         except Exception:
