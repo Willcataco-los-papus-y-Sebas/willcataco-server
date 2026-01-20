@@ -96,7 +96,7 @@ class MemberService:
                     
                 condition = and_(*and_conditions)
             
-            condition_date = MemberService.get_query_date(year, month)
+            condition_date = MemberService.__get_query_date(year, month)
 
             query = (
                 select(Member)
@@ -202,7 +202,7 @@ class MemberService:
                 .where(User.is_active)
             )
 
-            date = MemberService.get_query_date(year, month)
+            date = MemberService.__get_query_date(year, month)
 
             if date is not None:
                 query = query.where(date)
