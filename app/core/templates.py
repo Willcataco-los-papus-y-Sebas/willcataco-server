@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any
 
 class TemplateLoader:
-    __email_templates = Path(__file__).parent.parent / "modules" / "email" / "templates"
+    __email_templates = Path(__file__).parent.parent / "modules" / "email" / "templates" / "html"
     __pdf_templates = Path(__file__).parent.parent / "modules" / "pdf_generator" / "templates"
 
     __jinja_env = Environment(
