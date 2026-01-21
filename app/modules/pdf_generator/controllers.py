@@ -14,7 +14,4 @@ class PdfGenController:
 
     @staticmethod
     async def get_member_report(session: SessionDep, id: int, curr_user_flex: CurrentUserFlexible):
-        try:
-            return await PdfGenService.generate_member_report(session, id)
-        except ValueError as e:
-            raise HTTPException(status_code=404, detail=str(e))
+        return await PdfGenService.generate_member_report(session, id)

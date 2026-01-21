@@ -5,6 +5,7 @@ from weasyprint import HTML
 from app.core.templates import TemplateLoader
 from app.core.database import SessionDep
 from app.modules.members.services import MemberService 
+from fastapi import HTTPException, status
 
 class PdfGenService:
     @staticmethod
@@ -21,7 +22,10 @@ class PdfGenService:
     async def generate_member_report(session: SessionDep, member_id: int):
         member = await MemberService.get_member_with_details(session, member_id)
         if not member:
-            raise ValueError("Socio no encontrado")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Socio no encontrado"
+            )
         html_string = await TemplateLoader.get_template(
             "pdf/member_report.html",
             member=member,
