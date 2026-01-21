@@ -9,16 +9,6 @@ from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberSta
 
 router = APIRouter()
 
-@router.get(
-    "/stats",
-    status_code=status.HTTP_200_OK,
-    response_model=IResponse,
-    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))],
-    summary="Obtener estadísticas generales de socios"
-)
-async def get_member_stats(session: SessionDep):
-    return await MemberController.get_stats(session)
-
 @router.post(
     "/", 
     status_code = status.HTTP_201_CREATED, 

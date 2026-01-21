@@ -7,7 +7,6 @@ from app.core.response_schema import IResponse
 from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberResponse
 from app.modules.members.services import MemberService
 from app.modules.users.services import UserService
-from app.modules.members.model.schemas import MemberStatsResponse
 
 class MemberController:
     @staticmethod
@@ -116,14 +115,3 @@ class MemberController:
                 offset=offset,
             )
             return response
-    
-    @staticmethod
-    async def get_stats(session: SessionDep):
-        stats_data = await MemberService.get_dashboard_stats(session)
-        
-        response = IResponse(
-            detail="Member statistics retrieved successfully",
-            status_code=200,
-            data=stats_data
-        )
-        return response
