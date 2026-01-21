@@ -54,7 +54,13 @@
             </td>
             
             <td style="padding: 8px; border: 1px solid #ddd;">
-                {{ payment.created_at.strftime('%d/%m/%Y') }}
+                {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
+                    {# Si está pagado, mostramos updated_at (fecha de modificación/pago) #}
+                    {{ payment.updated_at.strftime('%d/%m/%Y') }}
+                {% else %}
+                    {# Si está pendiente, mostramos un guion #}
+                    -
+                {% endif %}
             </td>
         </tr>
         {% else %}
@@ -74,7 +80,7 @@
             <th style="padding: 8px; border: 1px solid #ddd;">Descripción</th>
             <th style="padding: 8px; border: 1px solid #ddd;">Monto</th>
             <th style="padding: 8px; border: 1px solid #ddd;">Estado</th>
-            <th style="padding: 8px; border: 1px solid #ddd;">Fecha de Registro</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Fecha de Pago</th>
         </tr>
     </thead>
     <tbody>
@@ -106,7 +112,12 @@
             </td>
 
             <td style="padding: 8px; border: 1px solid #ddd;">
-                {{ payment.created_at.strftime('%d/%m/%Y') }}
+                {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
+                    {# Si está pagado, mostramos la fecha real del pago #}
+                    {{ payment.updated_at.strftime('%d/%m/%Y') }}
+                {% else %}
+                    -
+                {% endif %}
             </td>
         </tr>
         {% else %}
