@@ -3,7 +3,7 @@
 {% block content %}
   <div class="info-box">
     <h2>Reporte de socios nuevos</h2>
-    <p><strong>rango:</strong> del {{ start_date }} al {{ end_date }}</p>
+    <p><strong>entre fechas:</strong> del {{ start_date }} al {{ end_date }}</p>
     <p><strong>total de socios nuevos:</strong> {{ total }}</p>
   </div>
 
@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody>
-      {% if members and members|length > 0 %}
+      {% if members %}
         {% for m in members %}
           <tr>
             <td>{{ m.name }}</td>
@@ -30,7 +30,7 @@
         {% endfor %}
       {% else %}
         <tr>
-          <td colspan="5" class="no-data">sin datos para el rango seleccionado</td>
+          <td colspan="5" class="no-data">Sin socios nuevos entre las fechas</td>
         </tr>
       {% endif %}
     </tbody>

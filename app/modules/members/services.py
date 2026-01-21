@@ -16,9 +16,7 @@ from app.modules.members.model.schemas import (
 )
 from app.modules.users.model.models import User
 
-from datetime import date, datetime, time, timedelta
-from zoneinfo import ZoneInfo
-
+from datetime import date, datetime, time, timedelta, timezone
 class MemberService:
     @staticmethod
     async def get_member_by_user_id(session: SessionDep, user_id: int):
@@ -209,12 +207,11 @@ class MemberService:
         end_date: date,
     ) -> list[MemberResponse]:
         try:
-            tz = ZoneInfo("America/La_Paz")
-            start_dt = datetime.combine(start_date, time.min, tzinfo=tz)
+            start_dt = datetime.combine(start_date, time.min, tzinfo=timezone.utc)
             end_exclusive = datetime.combine(
                 end_date + timedelta(days=1),
                 time.min,
-                tzinfo=tz
+                tzinfo=timezone.utc,
             )
 
             result = await session.execute(
@@ -224,11 +221,7 @@ class MemberService:
                 .where(Member.deleted_at.is_(None))
                 .where(Member.created_at >= start_dt)
                 .where(Member.created_at < end_exclusive)
-                .order_by(
-                    Member.created_at,
-                    Member.last_name,
-                    Member.name
-                )
+                .order_by(Member.created_at, Member.last_name, Member.name)
             )
 
             members_orm = result.scalars().all()
