@@ -1,4 +1,5 @@
-from pydantic import NonNegativeFloat
+from decimal import Decimal
+
 from sqlalchemy import func, select, update
 
 from app.core.database import SessionDep
@@ -37,7 +38,7 @@ class MeterServices:
         session: SessionDep,
         id: int,
         meter_info: MeterPatch,
-        past_read: NonNegativeFloat,
+        past_read: Decimal,
     ):
         try:
             meter_info_update = meter_info.model_dump()
