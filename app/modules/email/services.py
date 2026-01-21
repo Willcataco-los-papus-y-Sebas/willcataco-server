@@ -1,5 +1,4 @@
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from email.message import EmailMessage
 
 from app.core.config import config
@@ -7,7 +6,6 @@ from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
 from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase
 
-BOLIVIA_TIME = ZoneInfo("America/La_Paz")
 
 class EmailService:
 
@@ -79,17 +77,16 @@ class EmailService:
             message["From"] = config.email_from
             message["To"] = email.recipient
             message["Subject"] = email.subject
+
+            dump_receipt = email_receipt.model_dump()
+            dump_receipt['date_created'] = email_receipt.date_created.strftime('%d/%m/%Y')
+            dump_receipt['date_updated'] = email_receipt.date_updated.strftime('%d/%m/%Y  %H:%M')
+
             body = await TemplateLoader.get_template(
                 "email/water_payment.html",
-                name = email_receipt.name_member,
-                full_name = f'{email_receipt.name_member} {email_receipt.last_name_member}',
-                ci = email_receipt.ci_member,
-                id_payment = email_receipt.id_payment,
-                water_meter = email_receipt.water_reading,
-                date_pay = email_receipt.date_created.astimezone(BOLIVIA_TIME).strftime('%d/%m/%Y'),
-                date_paied = email_receipt.date_updated.astimezone(BOLIVIA_TIME).strftime('%d/%m/%Y'),
-                hour_paied = email_receipt.date_updated.astimezone(BOLIVIA_TIME).strftime('%H:%M'),
-                amount = email_receipt.amount
+                **dump_receipt,
+                email_title="Recibo del agua",
+                year=str(datetime.now().year)
             )
             message.set_content(body, subtype="html")
             await email_session.send_message(message)

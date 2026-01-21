@@ -13,6 +13,6 @@ class EmailWaterReceiptBase(BaseModel):
     ci_member: str
     id_payment: int
     water_reading: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
-    date_created: datetime = Field()
+    date_created: datetime
     date_updated: datetime
     amount: Decimal = Field(ge=0, max_digits=10, decimal_places=2)

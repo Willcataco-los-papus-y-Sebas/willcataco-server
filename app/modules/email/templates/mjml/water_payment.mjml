@@ -4,7 +4,7 @@
         <mj-include path="./header.mjml">
         <mj-section padding-bottom="0px">
             <mj-column background-color="#D0D0D0" border-radius="8px">
-                <mj-text font-family="Roboto, sans-serif">Estimado(a) {{name}}</mj-text>
+                <mj-text font-family="Roboto, sans-serif">Estimado(a) {{name_member}}</mj-text>
                 <mj-text font-family="Roboto, sans-serif">Gracias por cancelar el pago de nuestros servicios</mj-text>
             </mj-column>
         </mj-section>
@@ -15,11 +15,11 @@
                 <mj-table padding-left="70px" padding-right="70px">
                    <tr>
                     <td style="width: 10%; text-align: left; padding: 8px 0;">NOMBRE:</td>
-                    <td style="width: 90%; text-align: right; padding: 8px 0;">{{full_name}}</td>
+                    <td style="width: 90%; text-align: right; padding: 8px 0;">{{name_member}} {{last_name_member}}</td>
                    </tr>
                    <tr>
                     <td style="width: 30%; text-align: left; padding: 8px 0;">CI:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{ci}}</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{ci_member}}</td>
                    </tr>
                    <tr>
                     <td style="width: 30%; text-align: left; padding: 8px 0;">ID PAGO:</td>
@@ -27,15 +27,15 @@
                    </tr>
                    <tr>
                     <td style="width: 30%; text-align: left; padding: 8px 0;">LECTURA:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{water_meter}}</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{water_reading}}</td>
                    </tr>
                    <tr>
                     <td style="width: 30%; text-align: left; padding: 8px 0;">FECHA DE COBRO:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_pay}}</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_created}}</td>
                    </tr>
                    <tr>
                     <td style="width: 30%; text-align: left; padding: 8px 0;">FECHA DE PAGO:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_paied}}  {{hour_paied}}</td>
+                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_updated}}</td>
                    </tr>
                    <tr>
                     <td style="width: 30%; text-align: left; padding: 8px 0;">MONTO:</td>
