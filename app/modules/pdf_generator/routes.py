@@ -34,8 +34,5 @@ async def get_new_members_report(
     end_date: date = Query(...),
 ):
     return await PdfGenController.get_new_members_report(
-        session=session,
-        curr_user_flex=curr_user_flex,
-        start_date=start_date,
-        end_date=end_date,
+        session, curr_user_flex, start_date, end_date
     )

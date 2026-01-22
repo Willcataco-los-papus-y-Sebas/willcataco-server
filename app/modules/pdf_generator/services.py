@@ -1,15 +1,13 @@
 import io
-
-from datetime import date, datetime
-from zoneinfo import ZoneInfo
+from datetime import date, datetime, timezone
 
 from fastapi.responses import StreamingResponse
 from weasyprint import HTML
 
 from app.core.database import SessionDep
-
 from app.core.templates import TemplateLoader
 from app.modules.members.services import MemberService
+
 
 class PdfGenService:
     @staticmethod
@@ -23,7 +21,7 @@ class PdfGenService:
                 "Content-Disposition": "attachment; filename=helloworld.pdf",
             },
         )
-    
+
     @staticmethod
     async def get_new_members_report(
         session: SessionDep,
@@ -33,8 +31,7 @@ class PdfGenService:
         members = await MemberService.get_new_members_between_dates(session, start_date, end_date)
         total = len(members)
 
-        tz = ZoneInfo("America/La_Paz")
-        generated_at = datetime.now(tz).strftime("%d/%m/%Y %H:%M")
+        generated_at = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M")
 
         html = await TemplateLoader.get_template(
             "pdf/new_members_report.html",
@@ -47,7 +44,8 @@ class PdfGenService:
 
         pdf = HTML(string=html).write_pdf()
 
-        filename = f"new_members_report_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        date_range = f"{start_date.strftime('%d-%m-%Y')}_{end_date.strftime('%d-%m-%Y')}"
+        filename = f"new_members_report_{date_range}.pdf"
 
         return StreamingResponse(
             io.BytesIO(pdf),
