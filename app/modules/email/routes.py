@@ -20,12 +20,7 @@ async def send_water_bill(
     bill_data: WaterBillEmailParams,
     user: CurrentUserFlexible
 ):
-    email = EmailBase(recipient=bill_data.recipient, subject=bill_data.subject)
     return await EmailController.send_water_bill_email(
         email_session, 
-        email, 
-        bill_data.name, 
-        bill_data.reading_value, 
-        bill_data.date, 
-        bill_data.months_owed
+        bill_data
     )
