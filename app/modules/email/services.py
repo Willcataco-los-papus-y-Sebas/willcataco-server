@@ -4,7 +4,7 @@ from email.message import EmailMessage
 from app.core.config import config
 from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
-from app.modules.email.schemas import EmailBase
+from app.modules.email.schemas import EmailBase, WaterBillEmailParams
 
 
 class EmailService:
@@ -68,25 +68,18 @@ class EmailService:
     @staticmethod
     async def send_water_bill_email(
         email_session: EmailSession,
-        email: EmailBase,
-        name: str,
-        reading_value: float,
-        date: str,
-        months_owed: int,
+        bill_data: WaterBillEmailParams,
     ):
         try:
             message = EmailMessage()
             message["From"] = config.email_from
-            message["To"] = email.recipient
-            message["Subject"] = email.subject
+            message["To"] = bill_data.recipient
+            message["Subject"] = bill_data.subject
             body = await TemplateLoader.get_template(
                 "email/notificacion_boleta.html",
-                name=name,
-                reading_value=str(reading_value),
-                date=date,
-                months_owed=str(months_owed),
-                email_title=email.subject,
+                email_title=bill_data.subject,
                 year=str(datetime.now().year),
+                **bill_data.model_dump(),
             )
             message.set_content(body, subtype="html")
             await email_session.send_message(message)
