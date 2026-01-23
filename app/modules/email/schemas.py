@@ -4,7 +4,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 class EmailBase(BaseModel):
     recipient: EmailStr
-    subject: str
+    subject: str = Field(..., min_length=5, max_length=100)
 
 class WaterBillEmailParams(EmailBase):
     name: str
