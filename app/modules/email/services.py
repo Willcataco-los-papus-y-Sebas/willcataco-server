@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from email.message import EmailMessage
 
 from app.core.config import config
@@ -70,22 +70,19 @@ class EmailService:
         email_session: EmailSession,
         bill_data: WaterBillEmailParams,
     ):
-        try:
-            message = EmailMessage()
-            message["From"] = config.email_from
-            message["To"] = bill_data.recipient
-            message["Subject"] = bill_data.subject
-            template_context = bill_data.model_dump()
-            template_context["date"] = bill_data.date.strftime("%Y-%m-%d")
-            template_context["reading_value"] = f"{bill_data.reading_value:.2f}"
-            
-            body = await TemplateLoader.get_template(
-                "email/notificacion_boleta.html",
-                email_title=bill_data.subject,
-                year=str(datetime.now().year),
-                **template_context,
-            )
-            message.set_content(body, subtype="html")
-            await email_session.send_message(message)
-        except Exception:
-            raise
+        message = EmailMessage()
+        message["From"] = config.email_from
+        message["To"] = bill_data.recipient
+        message["Subject"] = bill_data.subject
+        template_context = bill_data.model_dump()
+        template_context["date"] = bill_data.date.strftime("%Y-%m-%d")
+        template_context["reading_value"] = f"{bill_data.reading_value:.2f}"
+        
+        body = await TemplateLoader.get_template(
+            "email/notificacion_boleta.html",
+            email_title=bill_data.subject,
+            year=str(datetime.now(timezone.utc).year),
+            **template_context,
+        )
+        message.set_content(body, subtype="html")
+        await email_session.send_message(message)
