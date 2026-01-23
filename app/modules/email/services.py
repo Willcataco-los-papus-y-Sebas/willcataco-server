@@ -4,8 +4,7 @@ from email.message import EmailMessage
 from app.core.config import config
 from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
-from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase
-
+from app.modules.email.schemas import EmailBase, EmailWaterReceiptBase,  WaterBillEmailParams
 
 class EmailService:
 
@@ -66,6 +65,31 @@ class EmailService:
         except Exception:
             raise
     
+    @staticmethod
+    async def send_water_bill_email(
+        email_session: EmailSession,
+        bill_data: WaterBillEmailParams,
+    ):
+        try:
+            message = EmailMessage()
+            message["From"] = config.email_from
+            message["To"] = bill_data.recipient
+            message["Subject"] = bill_data.subject
+            template_context = bill_data.model_dump()
+            template_context["date"] = bill_data.date.strftime("%Y-%m-%d")
+            template_context["reading_value"] = f"{bill_data.reading_value:.2f}"
+            
+            body = await TemplateLoader.get_template(
+                "email/notificacion_boleta.html",
+                email_title=bill_data.subject,
+                year=str(datetime.now().year),
+                **template_context,
+            )
+            message.set_content(body, subtype="html")
+            await email_session.send_message(message)
+        except Exception:
+            raise
+
     @staticmethod
     async def send_water_payment_email(
         email_session: EmailSession,
