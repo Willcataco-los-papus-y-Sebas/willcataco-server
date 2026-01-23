@@ -14,7 +14,7 @@ router = APIRouter()
 async def send_email(email_session: EmailSession, email: EmailBase):
     return await EmailController.send_email(email_session, email)
 
-@router.post("/test-bill", status_code=status.HTTP_200_OK, response_model=IResponse)
+@router.post("/notifications/water-bill", status_code=status.HTTP_200_OK, response_model=IResponse)
 async def send_water_bill(
     email_session: EmailSession, 
     bill_data: WaterBillEmailParams,
