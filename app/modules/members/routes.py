@@ -5,7 +5,7 @@ from app.core.dependencies import RequireRoles, CurrentUserFlexible
 from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.members.controllers import MemberController
-from app.modules.members.model.schemas import MemberBase, MemberPatch, MemberStatsResponse
+from app.modules.members.model.schemas import MemberBase, MemberPatch
 
 router = APIRouter()
 

@@ -27,22 +27,17 @@ class StatsService:
                 debtors_action_query
             ).subquery()
             query = select(
-                func.count(Member.id).label("total"),
-                func.count(case((User.is_active == True, 1))).label("active"),
-                func.count(case((User.is_active == False, 1))).label("inactive"),
-                func.count(case((Member.id.in_(select(debtors_union)), 1))).label("debt")
+                func.count(Member.id).label("total_members"),
+                func.count(case((User.is_active, 1))).label("active_members"),
+                func.count(case((~User.is_active, 1))).label("inactive_members"),
+                func.count(case((Member.id.in_(select(debtors_union)), 1))).label("members_with_debt"),
+                (
+                    func.count(Member.id) - 
+                    func.count(case((Member.id.in_(select(debtors_union)), 1)))
+                ).label("members_solvent")
             ).join(User)
             result = await session.execute(query)
-            stats = result.one()
-            total = stats.total or 0
-            debt = stats.debt or 0
-            return MemberStatsResponse(
-                total_members=total,
-                active_members=stats.active or 0,
-                inactive_members=stats.inactive or 0,
-                members_with_debt=debt,
-                members_solvent=total - debt
-            )
-        except Exception as e:
-            print(f"Error calculating stats: {e}") 
-            raise e
+            stats_row = result.one()
+            return MemberStatsResponse.model_validate(stats_row)
+        except Exception:
+            raise
