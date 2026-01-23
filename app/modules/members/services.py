@@ -1,5 +1,4 @@
 from sqlalchemy import func, select
-from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
@@ -127,7 +126,9 @@ class MemberService:
         session: SessionDep, id: int, member_info: MemberPatch
     ):
         try:
-            member = await session.execute(select(Member).where(Member.id == id))
+            member = await session.execute(
+                select(Member).where(Member.id == id)
+            )
             member_orm = member.scalars().one_or_none()
             if member_info.name is not None:
                 member_orm.name = member_info.name
@@ -148,13 +149,11 @@ class MemberService:
     async def delete_member(session: SessionDep, id: int):
         try:
             member = await session.execute(
-                select(Member).options(selectinload(Member.user)).where(Member.id == id)
+                select(Member).where(Member.id == id)
             )
             member_orm = member.scalars().one_or_none()
             datetime = func.now()
             member_orm.deleted_at = datetime
-            member_orm.user.is_active = False
-            member_orm.user.deleted_at = datetime
             await session.commit()
             await session.refresh(member_orm)
             return MemberResponse.model_validate(member_orm)
