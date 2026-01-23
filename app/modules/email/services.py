@@ -70,6 +70,7 @@ class EmailService:
         email_session: EmailSession,
         bill_data: WaterBillEmailParams,
     ):
+        try:
         message = EmailMessage()
         message["From"] = config.email_from
         message["To"] = bill_data.recipient
@@ -86,3 +87,5 @@ class EmailService:
         )
         message.set_content(body, subtype="html")
         await email_session.send_message(message)
+        except Exception:
+            raise
