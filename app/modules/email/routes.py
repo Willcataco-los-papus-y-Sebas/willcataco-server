@@ -22,5 +22,6 @@ async def send_water_bill(
 ):
     return await EmailController.send_water_bill_email(
         email_session, 
-        bill_data
+        bill_data,
+        user
     )
