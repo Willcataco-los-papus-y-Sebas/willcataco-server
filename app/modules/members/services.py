@@ -16,7 +16,7 @@ from app.modules.members.model.schemas import (
 )
 from app.modules.users.model.models import User
 
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import date, datetime, time, timedelta
 class MemberService:
     @staticmethod
     async def get_member_by_user_id(session: SessionDep, user_id: int):
@@ -207,12 +207,8 @@ class MemberService:
         end_date: date,
     ) -> list[MemberResponse]:
         try:
-            start_dt = datetime.combine(start_date, time.min, tzinfo=timezone.utc)
-            end_exclusive = datetime.combine(
-                end_date + timedelta(days=1),
-                time.min,
-                tzinfo=timezone.utc,
-            )
+            start_dt = datetime.combine(start_date, time.min)
+            end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
 
             result = await session.execute(
                 select(Member)

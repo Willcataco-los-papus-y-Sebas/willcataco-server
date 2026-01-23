@@ -25,9 +25,6 @@ class PdfGenController:
             raise HTTPException(detail="user dont have privileges", status_code=401)
 
         if end_date < start_date:
-            raise HTTPException(
-                status_code=400,
-                detail="end_date must be greater than or equal to start_date",
-            )
+            raise HTTPException(status_code=400, detail="invalid date range")
 
         return await PdfGenService.get_new_members_report(session, start_date, end_date)

@@ -1,5 +1,5 @@
 import io
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 
 from fastapi.responses import StreamingResponse
 from weasyprint import HTML
@@ -17,9 +17,7 @@ class PdfGenService:
         return StreamingResponse(
             io.BytesIO(pdf),
             media_type="application/pdf",
-            headers={
-                "Content-Disposition": "attachment; filename=helloworld.pdf",
-            },
+            headers={"Content-Disposition": "attachment; filename=helloworld.pdf"},
         )
 
     @staticmethod
@@ -28,10 +26,12 @@ class PdfGenService:
         start_date: date,
         end_date: date,
     ):
-        members = await MemberService.get_new_members_between_dates(session, start_date, end_date)
+        members = await MemberService.get_new_members_between_dates(
+            session, start_date, end_date
+        )
         total = len(members)
 
-        generated_at = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M")
+        generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
 
         html = await TemplateLoader.get_template(
             "pdf/new_members_report.html",
@@ -44,8 +44,7 @@ class PdfGenService:
 
         pdf = HTML(string=html).write_pdf()
 
-        date_range = f"{start_date.strftime('%d-%m-%Y')}_{end_date.strftime('%d-%m-%Y')}"
-        filename = f"new_members_report_{date_range}.pdf"
+        filename = f"new_members_report_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
 
         return StreamingResponse(
             io.BytesIO(pdf),
