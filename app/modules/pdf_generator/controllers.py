@@ -14,4 +14,9 @@ class PdfGenController:
 
     @staticmethod
     async def get_member_report(session: SessionDep, id: int, curr_user_flex: CurrentUserFlexible):
+        if curr_user_flex.role not in [UserRole.ADMIN, UserRole.STAFF]:
+            raise HTTPException(
+                status_code=403, 
+                detail="Insufficient privileges"
+            )   
         return await PdfGenService.generate_member_report(session, id)

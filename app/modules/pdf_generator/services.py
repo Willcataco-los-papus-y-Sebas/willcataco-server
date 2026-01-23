@@ -24,7 +24,7 @@ class PdfGenService:
         if not member:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Socio no encontrado"
+                detail="Member not found"
             )
         html_string = await TemplateLoader.get_template(
             "pdf/member_report.html",
