@@ -1,4 +1,7 @@
-@page { margin: 2cm; size: Letter; }
+@page { 
+    margin: 2cm 2cm 4cm 2cm; 
+    size: Letter; 
+}
 
 body { 
     font-family: 'Roboto', Helvetica, sans-serif;
@@ -22,15 +25,15 @@ body {
 
 .footer { 
     position: fixed; 
-    bottom: 0; 
+    bottom: -3cm;
     left: 0; 
     right: 0; 
+    height: 2cm;
     text-align: center; 
     font-size: 10px; 
     color: #777; 
     border-top: 1px solid #ddd; 
     padding-top: 10px;
-    padding-bottom: 10px;
 }
 
 .info-box { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #eee; }
@@ -47,4 +50,10 @@ th {
 }
 
 td { border: 1px solid #ddd; padding: 8px; }
+
+tr {
+    break-inside: avoid; 
+    page-break-inside: avoid;
+}
+
 .no-data { color: #777; font-style: italic; }
