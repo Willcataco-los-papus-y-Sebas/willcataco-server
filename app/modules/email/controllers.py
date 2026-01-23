@@ -2,6 +2,7 @@ from fastapi import HTTPException
 
 from app.core.dependencies import CurrentUserFlexible
 from app.core.email import EmailSession
+from app.core.enums import UserRole
 from app.core.response_schema import IResponse
 from app.modules.email.schemas import EmailBase, WaterBillEmailParams
 from app.modules.email.services import EmailService
@@ -19,7 +20,7 @@ class EmailController:
         bill_data: WaterBillEmailParams,
         user: CurrentUserFlexible
     ):
-        if not (user.is_superuser or user.is_staff):
+        if user.role not in [UserRole.ADMIN, UserRole.STAFF]:
             raise HTTPException(status_code=403, detail="Not enough permissions")
             
         await EmailService.send_water_bill_email(
