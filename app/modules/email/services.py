@@ -82,7 +82,7 @@ class EmailService:
             body = await TemplateLoader.get_template(
                 "email/notificacion_boleta.html",
                 email_title=bill_data.subject,
-                year=str(datetime.now(timezone.utc).year),
+                year=str(datetime.now().year),
                 **template_context,
             )
             message.set_content(body, subtype="html")
