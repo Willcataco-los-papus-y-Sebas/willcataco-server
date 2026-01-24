@@ -5,7 +5,7 @@ from sqlalchemy import (
     and_, 
     extract
 )
-
+from sqlalchemy.orm import selectinload
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
 from app.modules.members.model.schemas import (
@@ -13,9 +13,9 @@ from app.modules.members.model.schemas import (
     MemberPatch,
     MemberResponse,
 )
-from app.modules.users.model.models import User
-
+from app.modules.users.model.models import User 
 from datetime import date, datetime, time, timedelta
+
 class MemberService:
     @staticmethod
     async def get_member_by_user_id(session: SessionDep, user_id: int):
@@ -192,6 +192,27 @@ class MemberService:
             )
             members_orm = members.scalars().all()
             return [MemberResponse.model_validate(m) for m in members_orm]
+        except Exception:
+            raise
+    
+    @staticmethod
+    async def get_member_with_details(session: SessionDep, id: int):
+        from app.modules.water_meters.water_payments.model.models import WaterPayment
+        from app.modules.extra_payments.payments.model.models import Payment
+
+        try:
+            result = await session.execute(
+                select(Member)
+                .join(User)
+                .options(
+                    selectinload(Member.water_payments).selectinload(WaterPayment.meter),
+                    selectinload(Member.payments).selectinload(Payment.extra_payment)
+                )
+                .where(Member.id == id)
+                .where(User.is_active)
+            )
+            member_orm = result.scalars().one_or_none()
+            return member_orm 
         except Exception:
             raise
 
