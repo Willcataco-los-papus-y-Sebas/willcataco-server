@@ -5,7 +5,7 @@ from sqlalchemy import (
     and_, 
     extract
 )
-
+from sqlalchemy.orm import selectinload
 from app.core.database import SessionDep
 from app.modules.members.model.models import Member
 from app.modules.members.model.schemas import (
@@ -13,9 +13,7 @@ from app.modules.members.model.schemas import (
     MemberPatch,
     MemberResponse,
 )
-from app.modules.users.model.models import User
-from app.modules.water_meters.water_payments.model.models import WaterPayment
-from app.modules.extra_payments.payments.model.models import Payment
+from app.modules.users.model.models import User 
 from datetime import date, datetime, time, timedelta
 
 class MemberService:
@@ -199,6 +197,9 @@ class MemberService:
     
     @staticmethod
     async def get_member_with_details(session: SessionDep, id: int):
+        from app.modules.water_meters.water_payments.model.models import WaterPayment
+        from app.modules.extra_payments.payments.model.models import Payment
+
         try:
             result = await session.execute(
                 select(Member)

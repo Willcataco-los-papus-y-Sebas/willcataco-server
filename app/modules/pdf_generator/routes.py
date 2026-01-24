@@ -21,26 +21,25 @@ router = APIRouter()
 async def get_pdf(curr_user_flex: CurrentUserFlexible):
     return await PdfGenController.get_pdf(curr_user_flex)
 
-<<<<<<< HEAD
 @router.get(
     "/member/{id}",
-=======
-
-@router.get(
-    "/new-members",
->>>>>>> origin/dev
     status_code=status.HTTP_200_OK,
     response_class=StreamingResponse,
     dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
 )
-<<<<<<< HEAD
 async def get_member_report(
     id: int, 
     session: SessionDep, 
     curr_user_flex: CurrentUserFlexible
 ):
     return await PdfGenController.get_member_report(session, id, curr_user_flex)
-=======
+
+@router.get(
+    "/new-members",
+    status_code=status.HTTP_200_OK,
+    response_class=StreamingResponse,
+    dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
+)
 async def get_new_members_report(
     session: SessionDep,
     curr_user_flex: CurrentUserFlexible,
@@ -50,4 +49,3 @@ async def get_new_members_report(
     return await PdfGenController.get_new_members_report(
         session, curr_user_flex, start_date, end_date
     )
->>>>>>> origin/dev
