@@ -3,45 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @page { margin: 2cm; size: Letter; }
-        body { font-family: Helvetica, sans-serif; font-size: 12px; color: #333; }
-        .header { 
-            border-bottom: 2px solid #7A2570; 
-            padding-bottom: 10px; 
-            margin-bottom: 20px; 
-            display: flex; 
-            justify-content: space-between; 
-        }
-        .logo { 
-            font-size: 20px; 
-            font-weight: bold; 
-            color: #7A2570; 
-        }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10px; color: #777; border-top: 1px solid #ddd; padding-top: 5px; }
-        .info-box { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th { 
-            background: #f4f4f4; 
-            border: 1px solid #ddd; 
-            padding: 8px; 
-            text-align: left; 
-            font-weight: bold;
-            color: #7A2570;
-        }
-        td { border: 1px solid #ddd; padding: 8px; }
-        .no-data { color: #777; font-style: italic; }
+        {% include "pdf/styles.css" %}
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo">WILCATACO</div>
+        <div class="logo">WILLCATACO</div>
         <div>Reporte Oficial</div>
     </div>
+
     <div class="content">
         {% block content %}{% endblock %}
     </div>
+
     <div class="footer">
-        Generado el {{ fecha }} - Sistema Wilcataco
+        Generado el {{ fecha }} - Sistema Willcataco
     </div>
 </body>
 </html>

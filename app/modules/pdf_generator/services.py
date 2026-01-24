@@ -1,13 +1,11 @@
 import io
 from datetime import date, datetime
-
 from fastapi.responses import StreamingResponse
 from weasyprint import HTML
-
-from app.core.database import SessionDep
 from app.core.templates import TemplateLoader
-from app.modules.members.services import MemberService
-
+from app.core.database import SessionDep
+from app.modules.members.services import MemberService 
+from fastapi import HTTPException, status
 
 class PdfGenService:
     @staticmethod
@@ -50,4 +48,28 @@ class PdfGenService:
             io.BytesIO(pdf),
             media_type="application/pdf",
             headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+
+    @staticmethod
+    async def generate_member_report(session: SessionDep, member_id: int):
+        member = await MemberService.get_member_with_details(session, member_id)
+        if not member:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Member not found"
+            )
+        html_string = await TemplateLoader.get_template(
+            "pdf/member_report.html",
+            member=member,
+            fecha=datetime.now().strftime("%d/%m/%Y %H:%M"),
+            titulo=f"Extracto de Socio: {member.name} {member.last_name}"
+        )
+        pdf_bytes = HTML(string=html_string).write_pdf()
+        filename = f"Reporte_{member.name}_{member.last_name}.pdf".replace(" ", "_")
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+            },
         )
