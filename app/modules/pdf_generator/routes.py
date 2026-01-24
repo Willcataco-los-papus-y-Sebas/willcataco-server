@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends, status
+from datetime import date
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import StreamingResponse
+
+from app.core.database import SessionDep
 
 from app.core.dependencies import CurrentUserFlexible, RequireRoles
 from app.core.enums import UserRole
@@ -18,15 +21,33 @@ router = APIRouter()
 async def get_pdf(curr_user_flex: CurrentUserFlexible):
     return await PdfGenController.get_pdf(curr_user_flex)
 
+<<<<<<< HEAD
 @router.get(
     "/member/{id}",
+=======
+
+@router.get(
+    "/new-members",
+>>>>>>> origin/dev
     status_code=status.HTTP_200_OK,
     response_class=StreamingResponse,
     dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
 )
+<<<<<<< HEAD
 async def get_member_report(
     id: int, 
     session: SessionDep, 
     curr_user_flex: CurrentUserFlexible
 ):
     return await PdfGenController.get_member_report(session, id, curr_user_flex)
+=======
+async def get_new_members_report(
+    session: SessionDep,
+    curr_user_flex: CurrentUserFlexible,
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+):
+    return await PdfGenController.get_new_members_report(
+        session, curr_user_flex, start_date, end_date
+    )
+>>>>>>> origin/dev

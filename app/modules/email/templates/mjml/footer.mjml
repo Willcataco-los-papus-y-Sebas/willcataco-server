@@ -1,0 +1,11 @@
+<mj-section background-color="#581056">
+  <mj-column>
+    <mj-text align="center" color="#ffffff" font-size="11px">
+      Este es un correo automático, por favor no respondas a este
+      mensaje</mj-text
+    >
+    <mj-text align="center" color="#ffffff" font-size="13px">
+      &copy; {{year}} Willcataco</mj-text
+    >
+  </mj-column>
+</mj-section>
