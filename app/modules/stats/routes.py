@@ -16,6 +16,6 @@ router = APIRouter()
 )
 async def get_member_stats(
     session: SessionDep, 
-    curr_user: CurrentUserFlexible = Depends()
+    curr_user: CurrentUserFlexible 
 ):
     return await StatsController.get_member_stats(session, curr_user)
