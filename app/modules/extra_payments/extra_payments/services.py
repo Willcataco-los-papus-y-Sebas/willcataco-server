@@ -1,3 +1,4 @@
+from datetime import date, datetime, time, timedelta
 from sqlalchemy import select, update, func
 from app.core.database import SessionDep
 from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
@@ -94,6 +95,30 @@ class ExtraPaymentService:
                 .values(deleted_at=func.now())
             )
             await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+    @staticmethod
+    async def get_between_dates(session: SessionDep, start_date: date, end_date: date, only_active: bool = True):
+        try:
+            start_dt = datetime.combine(start_date, time.min)
+            end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
+
+            query = (
+                select(ExtraPayment)
+                .where(ExtraPayment.deleted_at.is_(None))
+                .where(ExtraPayment.created_at >= start_dt)
+                .where(ExtraPayment.created_at < end_exclusive)
+                .order_by(ExtraPayment.created_at.desc(), ExtraPayment.name)
+            )
+
+            if only_active:
+                query = query.where(ExtraPayment.is_active)
+
+            result = await session.execute(query)
+            extras = result.scalars().all()
+            return [ExtraPaymentResponse.model_validate(e) for e in extras]
         except Exception:
             await session.rollback()
             raise
