@@ -1,51 +1,206 @@
 <mjml>
-    <mj-include path="./head.mjml">
-    <mj-body>
-        <mj-include path="./header.mjml">
-        <mj-section padding-bottom="0px">
-            <mj-column background-color="#D0D0D0" border-radius="8px">
-                <mj-text font-family="Roboto, sans-serif">Estimado(a) {{name_member}}</mj-text>
-                <mj-text font-family="Roboto, sans-serif">Gracias por cancelar el pago de nuestros servicios</mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section>
-            <mj-column background-color="#D0D0D0" border-radius="5px">
-                <mj-text font-family="Roboto, sans-serif">Datos del Recibo</mj-text>
-                <mj-divider padding-top="0" border-color="#581056" border-width="2px"/>
-                <mj-table padding-left="70px" padding-right="70px">
-                   <tr>
-                    <td style="width: 10%; text-align: left; padding: 8px 0;">NOMBRE:</td>
-                    <td style="width: 90%; text-align: right; padding: 8px 0;">{{name_member}} {{last_name_member}}</td>
-                   </tr>
-                   <tr>
-                    <td style="width: 30%; text-align: left; padding: 8px 0;">CI:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{ci_member}}</td>
-                   </tr>
-                   <tr>
-                    <td style="width: 30%; text-align: left; padding: 8px 0;">ID PAGO:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{id_payment}}</td>
-                   </tr>
-                   <tr>
-                    <td style="width: 30%; text-align: left; padding: 8px 0;">LECTURA:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{water_reading}}</td>
-                   </tr>
-                   <tr>
-                    <td style="width: 30%; text-align: left; padding: 8px 0;">FECHA DE COBRO:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_created}}</td>
-                   </tr>
-                   <tr>
-                    <td style="width: 30%; text-align: left; padding: 8px 0;">FECHA DE PAGO:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">{{date_updated}}</td>
-                   </tr>
-                   <tr>
-                    <td style="width: 30%; text-align: left; padding: 8px 0;">MONTO:</td>
-                    <td style="width: 70%; text-align: right; padding: 8px 0;">Bs.{{amount}}</td>
-                   </tr>
-                </mj-table>
-                <mj-divider padding-top="0" border-color="#581056" border-width="2px"/>
-            </mj-column>
-        </mj-section>
-        <mj-include path="./footer.mjml">
-    </mj-body>
-</mjml>
+  <mj-include path="./head.mjml" />
+  <mj-body>
+    <mj-include path="./header.mjml" />
+    <mj-section padding-bottom="0px">
+      <mj-column>
+        <mj-text font-family="Roboto, sans-serif"
+          >Estimado(a) {{name_member}}</mj-text
+        >
+        <mj-text font-family="Roboto, sans-serif"
+          >Gracias por cancelar el pago de nuestros servicios</mj-text
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column padding="15px">
+        <mj-text font-size="16px" align="left" padding="0 0 0 0">
+          Datos del Recibo
+        </mj-text>
+        <mj-divider
+          padding-top="10px"
+          padding-bottom="0"
+          padding-left="0"
+          padding-right="0"
+          border-color="#581056"
+          border-width="1px"
+        />
 
+        <mj-table padding="0">
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              NOMBRE:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+                word-wrap: break-word;
+              "
+            >
+              {{name_member}} {{last_name_member}}
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              CI:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              {{ci_member}}
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              ID PAGO:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              {{id_payment}}
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              LECTURA:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              {{water_reading}}
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              FECHA COBRO:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              {{date_created}}
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              FECHA PAGO:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              {{date_updated}}
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              MONTO:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              Bs. {{amount}}
+            </td>
+          </tr>
+        </mj-table>
+
+        <mj-divider
+          padding-top="10px"
+          padding-bottom="0"
+          padding-left="0"
+          padding-right="0"
+          border-color="#581056"
+          border-width="1px"
+        />
+      </mj-column>
+    </mj-section>
+    <mj-include path="./footer.mjml" />
+  </mj-body>
+</mjml>
