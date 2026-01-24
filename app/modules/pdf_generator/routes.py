@@ -36,3 +36,19 @@ async def get_new_members_report(
     return await PdfGenController.get_new_members_report(
         session, curr_user_flex, start_date, end_date
     )
+
+@router.get(
+    "/extra-payments-catalog",
+    status_code=status.HTTP_200_OK,
+    response_class=StreamingResponse,
+    dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
+)
+async def get_extra_payments_catalog_report(
+    session: SessionDep,
+    curr_user_flex: CurrentUserFlexible,
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+):
+    return await PdfGenController.get_extra_payments_catalog_report(
+        session, curr_user_flex, start_date, end_date
+    )

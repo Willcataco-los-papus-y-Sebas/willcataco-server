@@ -28,3 +28,18 @@ class PdfGenController:
             raise HTTPException(status_code=400, detail="invalid date range")
 
         return await PdfGenService.get_new_members_report(session, start_date, end_date)
+
+    @staticmethod
+    async def get_extra_payments_catalog_report(
+        session: SessionDep,
+        curr_user_flex: CurrentUserFlexible,
+        start_date: date,
+        end_date: date,
+    ):
+        if curr_user_flex.role is UserRole.MEMBER:
+            raise HTTPException(detail="user dont have privileges", status_code=401)
+
+        if end_date < start_date:
+            raise HTTPException(status_code=400, detail="invalid date range")
+
+        return await PdfGenService.get_extra_payments_catalog_report(session, start_date, end_date)
