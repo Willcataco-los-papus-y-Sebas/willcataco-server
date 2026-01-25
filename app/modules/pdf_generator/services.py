@@ -84,7 +84,7 @@ class PdfGenService:
         start_date: date,
         end_date: date,
     ):
-        extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, True)
+        extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, False)
         total = len(extras)
 
         total_amount = Decimal("0.00")
