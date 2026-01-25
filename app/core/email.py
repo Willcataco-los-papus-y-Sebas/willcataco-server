@@ -16,7 +16,6 @@ async def get_email_session():
 
     try:
         await smtp.connect()
-        await smtp.starttls()
         await smtp.login(config.email_sender, config.email_sender_password)
         yield smtp
     except Exception:
