@@ -21,12 +21,13 @@ class Config(BaseSettings):
     cookie_samesite: str = "lax"
 
     # Email
-
     email_sender: str
     email_sender_password: str
     email_from: str
     smtp_server: str
     smtp_port: int
+    smtp_use_tls: bool = False
+    smtp_start_tls: bool = False
 
     model_config = SettingsConfigDict(env_file=".env")
     

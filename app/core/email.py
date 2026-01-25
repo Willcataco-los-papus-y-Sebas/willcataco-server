@@ -10,8 +10,8 @@ async def get_email_session():
     smtp = SMTP(
         hostname=config.smtp_server,
         port=config.smtp_port,
-        use_tls=False,
-        start_tls=False,
+        use_tls=config.smtp_use_tls,
+        start_tls=config.smtp_start_tls,
     )
 
     try:
