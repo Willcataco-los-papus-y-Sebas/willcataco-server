@@ -27,7 +27,7 @@ class Config(BaseSettings):
     smtp_server: str
     smtp_port: int
     smtp_use_tls: bool = False
-    smtp_start_tls: bool = False
+    smtp_start_tls: bool = True
 
     model_config = SettingsConfigDict(env_file=".env")
     
