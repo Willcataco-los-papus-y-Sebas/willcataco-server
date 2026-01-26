@@ -8,6 +8,7 @@ from app.modules.water_meters.meters.model.models import Meter
 from app.modules.water_meters.water_payments.model.schemas import (
     WaterPaymentBase,
     WaterPaymentResponse,
+    WaterPaymentFilter,
 )
 
 
@@ -15,27 +16,29 @@ class WaterPaymentService:
     @staticmethod
     async def get_all_water_payments(
         session: SessionDep,
-        limit: int = 10,
-        offset: int = 0,
-        member_id: int | None = None,
-        status: PaymentStatus | None = None,
+        filters: WaterPaymentFilter,
     ):
         try:
             stmt = select(WaterPayment).where(WaterPayment.deleted_at.is_(None))
 
-            if member_id:
-                stmt = stmt.where(WaterPayment.member_id == member_id)
+            if filters.member_id:
+                stmt = stmt.where(WaterPayment.member_id == filters.member_id)
 
-            if status:
-                stmt = stmt.where(WaterPayment.status == status)
+            if filters.status:
+                stmt = stmt.where(WaterPayment.status == filters.status)
 
-            stmt = stmt.limit(limit).offset(offset).order_by(WaterPayment.created_at.desc())
+            if filters.start_date:
+                stmt = stmt.where(WaterPayment.created_at >= filters.start_date)
+
+            if filters.end_date:
+                stmt = stmt.where(WaterPayment.created_at <= filters.end_date)
+
+            stmt = stmt.limit(filters.limit).offset(filters.offset).order_by(WaterPayment.created_at.desc())
 
             result = await session.execute(stmt)
             payments_orm = result.scalars().all()
             return [WaterPaymentResponse.model_validate(p) for p in payments_orm]
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
@@ -49,7 +52,6 @@ class WaterPaymentService:
                 return None
             return WaterPaymentResponse.model_validate(payment_orm)
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
