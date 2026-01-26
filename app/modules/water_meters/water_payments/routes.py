@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, status
 
-from app.core.dependencies import RequireRoles
+from app.core.dependencies import RequireRoles, get_current_user_flexible
 from app.core.database import SessionDep
 from app.core.enums import UserRole, PaymentStatus
 from app.modules.water_meters.water_payments.controllers import WaterPaymentController
 from app.core.response_schema import IResponse
 from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase, WaterPaymentFilter
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user_flexible)])
 
 @router.get(
     "/",
