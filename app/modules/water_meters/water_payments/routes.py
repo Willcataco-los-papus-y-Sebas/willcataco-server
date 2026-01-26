@@ -5,7 +5,7 @@ from app.core.database import SessionDep
 from app.core.enums import UserRole, PaymentStatus
 from app.modules.water_meters.water_payments.controllers import WaterPaymentController
 from app.core.response_schema import IResponse
-from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase
+from app.modules.water_meters.water_payments.model.schemas import WaterPaymentBase, WaterPaymentFilter
 
 router = APIRouter()
 
@@ -16,13 +16,10 @@ router = APIRouter()
 )
 async def list_water_payments(
     session: SessionDep,
-    limit: int = 10,
-    offset: int = 0,
-    member_id: int | None = None,
-    status: PaymentStatus | None = None,
+    filters: WaterPaymentFilter = Depends(),
 ):
     return await WaterPaymentController.list_water_payments(
-        session, limit, offset, member_id, status
+        session, filters
     )
 
 
