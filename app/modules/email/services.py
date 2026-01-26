@@ -42,7 +42,11 @@ class EmailService:
             message["To"] = email.recipient
             message["Subject"] = email.subject
             body = await TemplateLoader.get_template(
-                "email/reset_password.html", url=url, expire_time=str(expire_time)
+                "email/reset_password.html",
+                url=url,
+                expire_time=str(expire_time),
+                email_title="Recuperar Cuenta",
+                year=str(datetime.now().year),
             )
             message.set_content(body, subtype="html")
             await email_session.send_message(message)
