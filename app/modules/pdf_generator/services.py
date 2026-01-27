@@ -83,16 +83,18 @@ class PdfGenService:
         session: SessionDep,
         start_date: date,
         end_date: date,
+        only_active: bool,
     ):
-        extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, False)
+        extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, only_active)
         total = len(extras)
 
         total_amount = Decimal("0.00")
         for e in extras:
-            if e.amount is not None:
+            if e.amount is not None and e.is_active:
                 total_amount += e.amount
 
         generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
+        report_title = "Reporte de Pagos Extras (Activos)" if only_active else "Reporte de Pagos Extras (General)"
 
         html = await TemplateLoader.get_template(
             "pdf/extra_payments_catalog_report.html",
@@ -102,6 +104,7 @@ class PdfGenService:
             total=total,
             total_amount=str(total_amount),
             extras=extras,
+            report_title=report_title,
         )
 
         pdf = HTML(string=html).write_pdf()
