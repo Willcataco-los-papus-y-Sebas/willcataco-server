@@ -5,7 +5,6 @@ from app.core.database import SessionDep
 from app.core.dependencies import CurrentUserFlexible
 from app.core.enums import UserRole
 from app.modules.pdf_generator.services import PdfGenService
-from app.core.database import SessionDep
 
 class PdfGenController:
     @staticmethod
@@ -37,3 +36,20 @@ class PdfGenController:
             raise HTTPException(status_code=400, detail="invalid date range")
 
         return await PdfGenService.get_new_members_report(session, start_date, end_date)
+    
+    @staticmethod
+    async def get_members_water_payments_report(
+        session: SessionDep,
+        start_date: date,
+        end_date: date,
+        curr_user_flex: CurrentUserFlexible
+    ):
+        if curr_user_flex.role is UserRole.MEMBER:
+            raise HTTPException(detail="member dont have privileges", status_code=401)
+        if end_date < start_date:
+            raise HTTPException(status_code=400, detail="invalid date range")
+        
+        return await PdfGenService.generate_members_water_payments_report(session, start_date, end_date)
+        
+
+

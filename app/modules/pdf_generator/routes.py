@@ -7,7 +7,6 @@ from app.core.database import SessionDep
 from app.core.dependencies import CurrentUserFlexible, RequireRoles
 from app.core.enums import UserRole
 from app.modules.pdf_generator.controllers import PdfGenController
-from app.core.database import SessionDep
 
 router = APIRouter()
 
@@ -48,4 +47,20 @@ async def get_new_members_report(
 ):
     return await PdfGenController.get_new_members_report(
         session, curr_user_flex, start_date, end_date
+    )
+
+@router.get(
+    "/members-water-payments",
+    status_code=status.HTTP_200_OK,
+    response_class=StreamingResponse,
+    dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))]
+)
+async def get_members_water_payments_report(
+    session: SessionDep,
+    curr_user_flex: CurrentUserFlexible,
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+):
+    return await PdfGenController.get_members_water_payments_report(
+        session, start_date, end_date, curr_user_flex
     )
