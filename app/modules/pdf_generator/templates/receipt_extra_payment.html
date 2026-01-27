@@ -1,0 +1,27 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+<div class="info-box">
+    <h2><strong>Recibo #</strong>{{payment.id}}</h2>
+    <p><strong>Fecha: </strong>{{date}}</p>
+    <p><strong>Socio: </strong>{{member.name}} {{member.last_name}}</p>
+    <p><strong>CI:</strong> {{ member.ci }}</p>
+    <p><strong>Telefono: </strong>{{ member.phone}}</p>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Descripcion</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{extra.description}}</td>
+            <td>{{extra.amount}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endblock %}

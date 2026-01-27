@@ -64,3 +64,16 @@ async def get_members_water_payments_report(
     return await PdfGenController.get_members_water_payments_report(
         session, start_date, end_date, curr_user_flex
     )
+@router.get("/receipt-extra-payment",
+            status_code=status.HTTP_200_OK,
+            response_class=StreamingResponse,
+            dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
+)
+async def get_receipt_extra_payment(
+    session: SessionDep,
+    curr_user_flex: CurrentUserFlexible,
+    payment_id : int = Query(...)
+):
+    return await PdfGenController.get_receipt_extra_payment(
+        session, curr_user_flex, payment_id
+    )
