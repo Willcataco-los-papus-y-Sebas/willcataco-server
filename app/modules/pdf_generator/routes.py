@@ -7,7 +7,6 @@ from app.core.database import SessionDep
 from app.core.dependencies import CurrentUserFlexible, RequireRoles
 from app.core.enums import UserRole
 from app.modules.pdf_generator.controllers import PdfGenController
-from app.core.database import SessionDep
 
 router = APIRouter()
 
