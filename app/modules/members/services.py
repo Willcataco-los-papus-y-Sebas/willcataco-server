@@ -14,7 +14,14 @@ from app.modules.members.model.schemas import (
     MemberResponse,
 )
 from app.modules.users.model.models import User 
+from app.modules.water_meters.water_payments.model.models import WaterPayment
+from app.modules.extra_payments.payments.model.models import Payment
+from app.core.enums import PaymentStatus
+
 from datetime import date, datetime, time, timedelta
+'''
+from calendar import monthrange
+'''
 
 class MemberService:
     @staticmethod
@@ -197,9 +204,6 @@ class MemberService:
     
     @staticmethod
     async def get_member_with_details(session: SessionDep, id: int):
-        from app.modules.water_meters.water_payments.model.models import WaterPayment
-        from app.modules.extra_payments.payments.model.models import Payment
-
         try:
             result = await session.execute(
                 select(Member)
@@ -240,8 +244,84 @@ class MemberService:
             return [MemberResponse.model_validate(m) for m in members_orm]
 
         except Exception:
-            await session.rollback()
             raise
+    
+    @staticmethod 
+    async def get_members_water_payments(
+        session: SessionDep, start_date: date, end_date: date
+    ):
+        try:
+            start_dt = datetime.combine(start_date, time.min)
+            if end_date.month == 12:
+                end_next_month = end_date.replace(year=end_date.year + 1, month=1)
+            else:
+                end_next_month = end_date.replace(month=end_date.month + 1)
+
+            end_exclusive = datetime.combine(end_next_month, time.min)
+
+            members = await session.execute(
+                select(Member).
+                join(User).
+                join(WaterPayment).
+                options(
+                    selectinload(Member.water_payments).selectinload(WaterPayment.meter)
+                ).
+                where(User.is_active).
+                where(and_(WaterPayment.created_at >= start_dt, 
+                           WaterPayment.created_at < end_exclusive)
+                ).
+                distinct().
+                order_by(Member.last_name, Member.name)
+            )
+
+            print(f'{start_date}')
+            print(f'{end_exclusive}')
+
+            members_orm = members.scalars().all()
+            period = []
+
+            while start_dt < end_exclusive:
+                period.append({
+                    "year": start_dt.year,
+                    "month": start_dt.month,
+                    "members": []
+                })
+
+                if start_dt.month == 12:
+                    start_dt = start_dt.replace(
+                        year= start_dt.year +1, 
+                        month= 1
+                    )
+                else:
+                    start_dt= start_dt.replace(month= start_dt.month +1)
+
+            for period_data in period:
+                year = period_data["year"]
+                month = period_data["month"]
+
+                for member in members_orm:
+                    month_paid = None
+                    for payment in member.water_payments:
+                        if(payment.created_at.year == year and
+                           payment.created_at.month == month):
+                            month_paid = payment
+                            break
+                    if month_paid is not None:
+                        is_paid = month_paid.status == PaymentStatus.PAID
+                        period_data["members"].append({
+                            "name": member.name,
+                            "last_name": member.last_name,
+                            "water_reading": month_paid.meter.water_reading,
+                            "amount": month_paid.amount,
+                            "fecha_cobro": month_paid.created_at.strftime("%d/%m/%Y"),
+                            "fecha_pago": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
+                            "status": month_paid.status.value
+                        })
+                    else:
+                        period_data["members"] = []
+            return period
+        except Exception:
+            raise 
 
     @staticmethod
     async def get_members_by_time(
