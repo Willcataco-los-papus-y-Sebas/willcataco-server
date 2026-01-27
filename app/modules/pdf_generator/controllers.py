@@ -43,6 +43,6 @@ class PdfGenController:
         session: SessionDep, curr_user_flex: CurrentUserFlexible, payment_id: int
     ):
         if curr_user_flex.role is UserRole.MEMBER:
-            raise HTTPException(detail="user dont have privileges", status_code=401)
+            raise HTTPException(detail="user dont have privileges", status_code=403)
 
         return await PdfGenService.get_receipt_extra_payment(session, payment_id)
