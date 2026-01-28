@@ -1,7 +1,7 @@
 from datetime import datetime
 from email.message import EmailMessage
 
-from app.core.time import get_time_zone
+from app.core.time import TimeBolivia
 from app.core.config import config
 from app.core.email import EmailSession
 from app.core.templates import TemplateLoader
@@ -89,7 +89,7 @@ class EmailService:
             message["To"] = bill_data.recipient
             message["Subject"] = bill_data.subject
             template_context = bill_data.model_dump()
-            template_context["date"] = get_time_zone(bill_data.date).strftime("%Y-%m-%d")
+            template_context["date"] = TimeBolivia.get_time_zone(bill_data.date, "%Y-%m-%d")
             template_context["reading_value"] = f"{bill_data.reading_value:.2f}"
 
             body = await TemplateLoader.get_template(
@@ -116,12 +116,8 @@ class EmailService:
             message["Subject"] = email.subject
 
             dump_receipt = email_receipt.model_dump()
-            dump_receipt["date_created"] = get_time_zone(email_receipt.date_created).strftime(
-                "%d/%m/%Y"
-            )
-            dump_receipt["date_updated"] = get_time_zone(email_receipt.date_updated).strftime(
-                "%d/%m/%Y  %H:%M"
-            )
+            dump_receipt["date_created"] = TimeBolivia.get_time_zone(email_receipt.date_created, "%d/%m/%Y")
+            dump_receipt["date_updated"] = TimeBolivia.get_time_zone(email_receipt.date_updated, "%d/%m/%Y  %H:%M")
 
             body = await TemplateLoader.get_template(
                 "email/water_payment.html",
