@@ -61,7 +61,7 @@ async def get_extra_payments_catalog_report(
     curr_user_flex: CurrentUserFlexible,
     start_date: date = Query(...),
     end_date: date = Query(...),
-    only_active: bool = Query(True),
+    only_active: bool = Query(...),
 ):
     return await PdfGenController.get_extra_payments_catalog_report(
         session, curr_user_flex, start_date, end_date, only_active
