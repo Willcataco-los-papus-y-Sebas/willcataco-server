@@ -7,9 +7,11 @@ from fastapi.responses import StreamingResponse
 from weasyprint import HTML
 
 from app.core.database import SessionDep
+from app.core.enums import PaymentStatus
 from app.core.templates import TemplateLoader
-from app.modules.members.services import MemberService
 from app.modules.extra_payments.extra_payments.services import ExtraPaymentService
+from app.modules.extra_payments.payments.services import PaymentService
+from app.modules.members.services import MemberService
 
 
 class PdfGenService:
@@ -47,7 +49,9 @@ class PdfGenService:
 
         pdf = HTML(string=html).write_pdf()
 
-        filename = f"new_members_report_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        filename = (
+            f"new_members_report_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        )
 
         return StreamingResponse(
             io.BytesIO(pdf),
@@ -60,14 +64,13 @@ class PdfGenService:
         member = await MemberService.get_member_with_details(session, member_id)
         if not member:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Member not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Member not found"
             )
         html_string = await TemplateLoader.get_template(
             "pdf/member_report.html",
             member=member,
             fecha=datetime.now().strftime("%d/%m/%Y %H:%M"),
-            titulo=f"Extracto de Socio: {member.name} {member.last_name}"
+            titulo=f"Extracto de Socio: {member.name} {member.last_name}",
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
         filename = f"Reporte_{member.name}_{member.last_name}.pdf".replace(" ", "_")
@@ -78,6 +81,7 @@ class PdfGenService:
                 "Content-Disposition": f"attachment; filename={filename}",
             },
         )
+
     @staticmethod
     async def get_extra_payments_catalog_report(
         session: SessionDep,
@@ -115,4 +119,32 @@ class PdfGenService:
             io.BytesIO(pdf),
             media_type="application/pdf",
             headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+
+    @staticmethod
+    async def get_receipt_extra_payment(session: SessionDep, payment_id: int):
+        payment = await PaymentService.get_payment_by_id(session, payment_id)
+        if not payment:
+            raise HTTPException(detail="payment not found", status_code=400)
+        if payment.status is PaymentStatus.UNPAID:
+            raise HTTPException(detail="payment is unpaid", status_code=400)
+        extra = await ExtraPaymentService.get_by_id(session, payment.extra_payment_id)
+        member = await MemberService.get_member_by_id(session, payment.member_id)
+        fecha = payment.created_at.strftime("%d/%m/%Y %H:%M")
+        html_string = await TemplateLoader.get_template(
+            "pdf/receipt_extra_payment.html",
+            member=member,
+            extra=extra,
+            fecha=datetime.now().strftime("%d/%m/%Y %H:%M"),
+            date=fecha,
+            payment=payment,
+        )
+        pdf_bytes = HTML(string=html_string).write_pdf()
+        filename = f"Recibo_{member.name}_del_{fecha}.pdf".replace(" ", "_")
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+            },
         )
