@@ -19,9 +19,6 @@ from app.modules.extra_payments.payments.model.models import Payment
 from app.core.enums import PaymentStatus
 
 from datetime import date, datetime, time, timedelta
-'''
-from calendar import monthrange
-'''
 
 class MemberService:
     @staticmethod
@@ -273,9 +270,6 @@ class MemberService:
                 distinct().
                 order_by(Member.last_name, Member.name)
             )
-
-            print(f'{start_date}')
-            print(f'{end_exclusive}')
 
             members_orm = members.scalars().all()
             period = []
