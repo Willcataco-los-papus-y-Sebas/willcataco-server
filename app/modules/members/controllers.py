@@ -8,7 +8,6 @@ from app.modules.members.model.schemas import MemberBase, MemberPatch
 from app.modules.members.services import MemberService
 from app.modules.users.services import UserService
 
-
 class MemberController:
     @staticmethod
     async def delete_member(session: SessionDep, id: int):
