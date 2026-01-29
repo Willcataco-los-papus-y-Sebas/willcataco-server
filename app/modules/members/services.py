@@ -13,7 +13,8 @@ from app.modules.members.model.schemas import (
     MemberPatch,
     MemberResponse,
 )
-from app.modules.users.model.models import User 
+from app.modules.users.model.models import User
+from app.modules.water_meters.water_payments.model.models import WaterPayment
 from datetime import date, datetime, time, timedelta
 
 class MemberService:
