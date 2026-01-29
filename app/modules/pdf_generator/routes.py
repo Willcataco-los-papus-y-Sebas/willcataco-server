@@ -3,11 +3,9 @@ from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import StreamingResponse
 
 from app.core.database import SessionDep
-
 from app.core.dependencies import CurrentUserFlexible, RequireRoles
 from app.core.enums import UserRole
 from app.modules.pdf_generator.controllers import PdfGenController
-from app.core.database import SessionDep
 
 router = APIRouter()
 
@@ -21,6 +19,7 @@ router = APIRouter()
 async def get_pdf(curr_user_flex: CurrentUserFlexible):
     return await PdfGenController.get_pdf(curr_user_flex)
 
+
 @router.get(
     "/member/{id}",
     status_code=status.HTTP_200_OK,
@@ -33,6 +32,7 @@ async def get_member_report(
     curr_user_flex: CurrentUserFlexible
 ):
     return await PdfGenController.get_member_report(session, id, curr_user_flex)
+
 
 @router.get(
     "/new-members",
@@ -49,6 +49,25 @@ async def get_new_members_report(
     return await PdfGenController.get_new_members_report(
         session, curr_user_flex, start_date, end_date
     )
+
+
+@router.get(
+    "/extra-payments-catalog",
+    status_code=status.HTTP_200_OK,
+    response_class=StreamingResponse,
+    dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
+)
+async def get_extra_payments_catalog_report(
+    session: SessionDep,
+    curr_user_flex: CurrentUserFlexible,
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    only_active: bool = Query(...),
+):
+    return await PdfGenController.get_extra_payments_catalog_report(
+        session, curr_user_flex, start_date, end_date, only_active
+    )
+
 
 @router.get("/receipt-extra-payment",
             status_code=status.HTTP_200_OK,

@@ -1,5 +1,6 @@
 import io
 from datetime import date, datetime
+from decimal import Decimal
 
 from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse
@@ -79,6 +80,45 @@ class PdfGenService:
             headers={
                 "Content-Disposition": f"attachment; filename={filename}",
             },
+        )
+
+    @staticmethod
+    async def get_extra_payments_catalog_report(
+        session: SessionDep,
+        start_date: date,
+        end_date: date,
+        only_active: bool,
+    ):
+        extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, only_active)
+        total = len(extras)
+
+        total_amount = Decimal("0.00")
+        for e in extras:
+            if e.amount is not None and e.is_active:
+                total_amount += e.amount
+
+        generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
+        report_title = "Reporte de Pagos Extras (Activos)" if only_active else "Reporte de Pagos Extras (General)"
+
+        html = await TemplateLoader.get_template(
+            "pdf/extra_payments_catalog_report.html",
+            fecha=generated_at,
+            start_date=start_date.strftime("%d/%m/%Y"),
+            end_date=end_date.strftime("%d/%m/%Y"),
+            total=total,
+            total_amount=str(total_amount),
+            extras=extras,
+            report_title=report_title,
+        )
+
+        pdf = HTML(string=html).write_pdf()
+
+        filename = f"extra_payments_catalog_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+
+        return StreamingResponse(
+            io.BytesIO(pdf),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
         )
 
     @staticmethod
