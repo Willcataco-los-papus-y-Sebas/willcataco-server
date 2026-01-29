@@ -1,13 +1,13 @@
 from datetime import date
+from typing import List
+
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import StreamingResponse
 
 from app.core.database import SessionDep
-
 from app.core.dependencies import CurrentUserFlexible, RequireRoles
 from app.core.enums import UserRole
 from app.modules.pdf_generator.controllers import PdfGenController
-from app.core.database import SessionDep
 
 router = APIRouter()
 
@@ -62,4 +62,18 @@ async def get_receipt_extra_payment(
 ):
     return await PdfGenController.get_receipt_extra_payment(
         session, curr_user_flex, payment_id
+    )
+
+@router.get("/receipt-water-payment",
+            status_code=status.HTTP_200_OK,
+            response_class=StreamingResponse,
+            dependencies=[Depends(RequireRoles(UserRole.STAFF, UserRole.ADMIN))],
+)
+async def get_receipt_water_payment(
+    session: SessionDep,
+    curr_user_flex: CurrentUserFlexible,
+    payment_ids: List[int] = Query(...) 
+):
+    return await PdfGenController.get_receipt_water_payment(
+        session, curr_user_flex, payment_ids
     )
