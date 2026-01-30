@@ -13,7 +13,7 @@ class TimeBolivia:
     @staticmethod
     def format_datetime(date: datetime):
         to_bolivia = TimeBolivia.__get_time_zone(date)
-        return to_bolivia.strftime("%d/%m/%Y  %H/%M")
+        return to_bolivia.strftime("%d/%m/%Y %H:%M")
     
     @staticmethod
     def __get_time_zone(time: datetime):
