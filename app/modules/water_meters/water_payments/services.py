@@ -104,4 +104,4 @@ class WaterPaymentService:
             .order_by(WaterPayment.id.asc())
         )
         payments = result.scalars().all()
-        return list(payments)
+        return payments

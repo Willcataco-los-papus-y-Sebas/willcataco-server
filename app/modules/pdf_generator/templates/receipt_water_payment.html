@@ -5,7 +5,6 @@
     {% set member = payments[0].member %}
     
     <h2>
-        {# CORRECCIÓN: Siempre mostrar "Recibo de Agua", aunque sean varios #}
         <strong>Recibo de Agua</strong> 
         {% if payments|length > 1 %}
             ({{ payments|length }} Periodos)
