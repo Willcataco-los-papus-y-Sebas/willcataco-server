@@ -5,10 +5,12 @@
     {% set member = payments[0].member %}
     
     <h2>
+        {# CORRECCIÓN: Siempre mostrar "Recibo de Agua", aunque sean varios #}
+        <strong>Recibo de Agua</strong> 
         {% if payments|length > 1 %}
-            <strong>Recibo Consolidado</strong> ({{ payments|length }} Periodos)
+            ({{ payments|length }} Periodos)
         {% else %}
-            <strong>Recibo de Agua #</strong>{{ payments[0].id }}
+            #{{ payments[0].id }}
         {% endif %}
     </h2>
     
