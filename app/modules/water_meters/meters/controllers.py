@@ -41,6 +41,6 @@ class MeterController:
 
     @staticmethod
     async def create_meter(session: SessionDep, meter_info: MeterBase):
-        meter = await MeterServices.create_meter(session , id)
+        meter = await MeterServices.create_meter(session , meter_info)
         response = IResponse(detail="meter created", status_code=201, data=meter)
         return response
