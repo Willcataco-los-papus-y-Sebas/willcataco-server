@@ -79,7 +79,7 @@ class EmailService:
         template_context["amount"] = f"{payment_data.amount:.2f}"
         
         body = await TemplateLoader.get_template(
-            "email/confirmacion_pago_extra.mjml",
+            "email/confirmacion_pago_extra.html",
             email_title=payment_data.subject,
             year=str(datetime.now().year),
             **template_context,
