@@ -9,7 +9,9 @@ from app.modules.water_meters.water_payments.model.schemas import (
     WaterPaymentBase,
     WaterPaymentResponse,
 )
-
+from typing import List
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 class WaterPaymentService:
     @staticmethod
@@ -89,3 +91,17 @@ class WaterPaymentService:
         except Exception:
             await session.rollback()
             raise
+
+    @staticmethod
+    async def get_payments_by_ids(session: SessionDep, payment_ids: List[int]) -> List[WaterPayment]:
+        result = await session.execute(
+            select(WaterPayment)
+            .options(
+                selectinload(WaterPayment.member), 
+                selectinload(WaterPayment.meter)
+            )
+            .where(WaterPayment.id.in_(payment_ids))
+            .order_by(WaterPayment.id.asc())
+        )
+        payments = result.scalars().all()
+        return list(payments)

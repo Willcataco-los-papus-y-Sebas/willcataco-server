@@ -5,8 +5,6 @@ from typing import List
 from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse
 from weasyprint import HTML
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.core.enums import PaymentStatus
@@ -14,8 +12,7 @@ from app.core.templates import TemplateLoader
 from app.modules.extra_payments.extra_payments.services import ExtraPaymentService
 from app.modules.extra_payments.payments.services import PaymentService
 from app.modules.members.services import MemberService
-from app.modules.water_meters.water_payments.model.models import WaterPayment
-
+from app.modules.water_meters.water_payments.services import WaterPaymentService
 
 class PdfGenService:
     @staticmethod
@@ -115,16 +112,7 @@ class PdfGenService:
 
     @staticmethod
     async def get_receipt_water_payment(session: SessionDep, payment_ids: List[int]):
-        result = await session.execute(
-            select(WaterPayment)
-            .options(
-                selectinload(WaterPayment.member), 
-                selectinload(WaterPayment.meter)
-            )
-            .where(WaterPayment.id.in_(payment_ids))
-            .order_by(WaterPayment.id.asc())
-        )
-        payments = result.scalars().all()
+        payments = await WaterPaymentService.get_payments_by_ids(session, payment_ids)
         if not payments:
             raise HTTPException(detail="No payments found", status_code=404)
         first_member_id = payments[0].member_id
@@ -144,7 +132,7 @@ class PdfGenService:
             fecha=fecha_emision 
         )
         if len(payments) > 1:
-            filename = f"Recibo_Consolidado_{payments[0].member.last_name}.pdf"
+            filename = f"Recibo_Agua_{payments[0].member.last_name}_mult.pdf"
         else:
             filename = f"Recibo_Agua_{payments[0].member.last_name}_{payments[0].id}.pdf"
         pdf_bytes = HTML(string=html_string).write_pdf()
