@@ -1,5 +1,6 @@
 from pydantic import EmailStr
 from sqlalchemy import func, select, update
+from sqlalchemy.orm import selectinload
 
 from app.core.database import SessionDep
 from app.modules.auth.hashing import Hasher
@@ -53,6 +54,20 @@ class UserService:
             )
             user_orm = result.scalars().one_or_none()
             return UserResponse.model_validate(user_orm) if user_orm else None
+        except Exception:
+            raise
+
+    @staticmethod
+    async def get_user_orm_by_id(session: SessionDep, id: int):
+        try:
+            result = await session.execute(
+                select(User)
+                .options(selectinload(User.member))
+                .where(User.id == id)
+                .where(User.is_active)
+            )
+            user_orm = result.scalars().one_or_none()
+            return user_orm
         except Exception:
             raise
 

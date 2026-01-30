@@ -1,14 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class ExtraPaymentBase(BaseModel):
     name: str
-    description: Optional[str] = None
-    amount: Decimal = Field(..., ge=0, decimal_places=2)
+    description: str | None = None
+    amount: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
     is_active: bool = True
 
 
@@ -17,10 +16,10 @@ class ExtraPaymentCreate(ExtraPaymentBase):
 
 
 class ExtraPaymentUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    amount: Optional[Decimal] = Field(None, ge=0, decimal_places=2)
-    is_active: Optional[bool] = None
+    name: str | None = None
+    description: str | None = None
+    amount: Decimal | None = Field(None, ge=0, max_digits=10, decimal_places=2)
+    is_active: bool | None = None
 
 
 class ExtraPaymentResponse(ExtraPaymentBase):

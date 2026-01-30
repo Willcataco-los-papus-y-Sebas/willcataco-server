@@ -21,12 +21,13 @@ class Config(BaseSettings):
     cookie_samesite: str = "lax"
 
     # Email
-
     email_sender: str
     email_sender_password: str
     email_from: str
     smtp_server: str
     smtp_port: int
+    smtp_use_tls: bool = False
+    smtp_start_tls: bool = True
 
     model_config = SettingsConfigDict(env_file=".env")
     
@@ -47,6 +48,10 @@ class Config(BaseSettings):
     @property
     def reset_token_time_expire(self) -> int:
         return 30
+
+    @property
+    def internal_token_time_expire(self) -> int:
+        return 10
 
     @property
     def database_url(self) -> str:

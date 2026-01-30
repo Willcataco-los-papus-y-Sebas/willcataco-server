@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        {% include "pdf/styles.css" %}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">WILLCATACO</div>
+        <div>Reporte Oficial</div>
+    </div>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        Generado el {{ fecha }} - Sistema Willcataco
+    </div>
+</body>
+</html>
