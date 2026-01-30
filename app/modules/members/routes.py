@@ -27,28 +27,13 @@ async def create_member(session: SessionDep, member_info: MemberBase, current_us
 async def search_member(
     session: SessionDep, 
     ci: str | None= None, 
-    full_name : str | None = None,
+    full_name: str | None = None,
+    year: int | None = Query(None),
+    month: int | None = Query(None, ge=1, le=12),
     limit: int =Query(10, ge=0, le=10), 
     offset: int=Query(0, ge=0)
 ):
-    return await MemberController.search_member(session, ci, full_name, limit, offset)
-
-@router.get(
-    "/by_date",
-    status_code=status.HTTP_200_OK,
-    response_model=IResponse,
-    dependencies=[Depends(RequireRoles(UserRole.ADMIN, UserRole.STAFF))]
-)
-async def search_by_filter_time(
-    session: SessionDep,
-    year: str | None = None,
-    month: str | None = None,
-    limit: int = Query(10, ge=0, le=10),
-    offset: int = Query(0, ge=0)
-):
-    return await MemberController.search_by_filter_time(
-        session, year, month, limit, offset
-    )
+    return await MemberController.search_member(session, ci, full_name, year, month, limit, offset)
 
 @router.get(
     "/{id}", 
