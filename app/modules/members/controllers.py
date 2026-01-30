@@ -72,10 +72,12 @@ class MemberController:
         session: SessionDep,
         ci: str | None,
         full_name: str | None,
+        year: int | None,
+        month: int | None,
         limit: int,
         offset: int,
     ):
-        if not ci and not full_name:
+        if not any([ci, full_name, month, year]):
             members = await MemberService.get_all(session, limit, offset)
             response = IResponse(
                 detail="users retrieved", status_code=200, data=members
@@ -88,24 +90,14 @@ class MemberController:
             response = IResponse(detail="Member found", status_code=200, data=[member])
             return response
         if full_name:
-            member = await MemberService.search_full_name(session, full_name, limit, offset)
+            member = await MemberService.search_full_name(session, full_name, year, month, limit, offset)
             if not member:
                 raise HTTPException(status_code=404, detail="Member(s) not found")
             response = IResponse(detail="Member(s) found", status_code=200, data=member)
             return response
-        
-    @staticmethod
-    async def search_by_filter_time(
-        session: SessionDep, 
-        year: str | None, 
-        month: str | None, 
-        limit: int, 
-        offset: int
-    ):
-        if month and (int(month) < 1 or int(month) > 12):
-            raise HTTPException(status_code=400, detail="Bad request in month")
-        member = await MemberService.get_members_by_time(session, year, month, limit, offset)
-        if not member:
-            raise HTTPException(status_code=404, detail="Member(s) not found")
-        response = IResponse(detail="Member(s) found", status_code=200, data=member)
-        return response
+        if year or month:
+            member = await MemberService.get_members_by_time(session, year, month, limit, offset)
+            if not member:
+                raise HTTPException(status_code=404, detail="Member(s) not found")
+            response =  IResponse(detail="Member(s) found", status_code=200, data=member)
+            return response
