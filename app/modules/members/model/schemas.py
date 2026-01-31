@@ -27,3 +27,11 @@ class MemberPatch(BaseModel):
     last_name: str | None = None
     ci: str | None = None
     phone: str | None = None
+
+class MemberStatsResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    total_members: int
+    active_members: int
+    inactive_members: int
+    members_with_debt: int
+    members_solvent: int
