@@ -18,7 +18,7 @@ class EmailWaterReceiptBase(BaseModel):
     last_name_member: str
     ci_member: str
     id_payment: int
-    consumo: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
+    consumption: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
     date_created: datetime
     date_updated: datetime
     amount: Decimal = Field(ge=0, max_digits=10, decimal_places=2)

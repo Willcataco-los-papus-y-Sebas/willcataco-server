@@ -27,11 +27,11 @@
                         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.name}}</td>
                         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.last_name}}</td>
                         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-                            <strong>{{m.water_reading}}</strong>
+                            <strong>{{m.consumption}}</strong>
                         </td>
                         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">Bs.{{m.amount}}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.fecha_cobro}}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.fecha_pago if m.fecha_pago else '-'}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.charge_date}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.payment_date if m.payment_date else '-'}}</td>
                         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
                             {% if m.status == "paid" %}
                              PAGADO

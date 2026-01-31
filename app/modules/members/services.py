@@ -305,10 +305,10 @@ class MemberService:
                         period_data["members"].append({
                             "name": member.name,
                             "last_name": member.last_name,
-                            "consumo": month_paid.meter.water_reading - month_paid.meter.past_water_reading,
+                            "consumption": month_paid.meter.water_reading - month_paid.meter.past_water_reading,
                             "amount": month_paid.amount,
-                            "fecha_cobro": month_paid.created_at.strftime("%d/%m/%Y"),
-                            "fecha_pago": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
+                            "charge_date": month_paid.created_at.strftime("%d/%m/%Y"),
+                            "payment_date": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
                             "status": month_paid.status.value
                         })
                     else:
