@@ -254,7 +254,7 @@ class MemberService:
             else:
                 end_next_month = end_date.replace(month=end_date.month + 1)
 
-            end_exclusive = datetime.combine(end_next_month, time.min)
+            end_exclusive = datetime.combine(end_next_month - timedelta(days=1), time.min)
 
             members = await session.execute(
                 select(Member).
@@ -272,6 +272,7 @@ class MemberService:
             )
 
             members_orm = members.scalars().all()
+
             period = []
 
             while start_dt < end_exclusive:
@@ -313,7 +314,11 @@ class MemberService:
                         })
                     else:
                         period_data["members"] = []
-            return period
+            res = {
+                "end_date": end_exclusive,
+                "period": period
+            }
+            return res
         except Exception:
             raise 
 

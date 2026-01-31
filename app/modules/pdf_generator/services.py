@@ -86,14 +86,14 @@ class PdfGenService:
     async def generate_members_water_payments_report(
         session: SessionDep, start_date: date, end_date: date
     ):
-        period = await MemberService.get_members_water_payments(session, start_date, end_date)
-        if not period:
+        res = await MemberService.get_members_water_payments(session, start_date, end_date)
+        if not res["period"]:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not registers payments in those period")
         html_string = await TemplateLoader.get_template(
             "pdf/members_water_payments_report.html",
-            period= period,
+            period= res["period"],
             start_date = start_date.strftime("%d/%m/%Y"),
-            end_date = end_date.strftime("%d/%m/%Y"),
+            end_date = res["end_date"].strftime("%d/%m/%Y"),
             fecha= datetime.now().strftime("%d/%m/%Y %H:%M")
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
