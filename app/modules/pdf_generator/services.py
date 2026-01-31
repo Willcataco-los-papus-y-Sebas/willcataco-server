@@ -1,5 +1,6 @@
 import io
 from datetime import date, datetime
+from typing import List
 from decimal import Decimal
 
 from fastapi import HTTPException, status
@@ -12,7 +13,7 @@ from app.core.templates import TemplateLoader
 from app.modules.extra_payments.extra_payments.services import ExtraPaymentService
 from app.modules.extra_payments.payments.services import PaymentService
 from app.modules.members.services import MemberService
-
+from app.modules.water_meters.water_payments.services import WaterPaymentService
 
 class PdfGenService:
     @staticmethod
@@ -141,6 +142,40 @@ class PdfGenService:
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
         filename = f"Recibo_{member.name}_del_{fecha}.pdf".replace(" ", "_")
+        return StreamingResponse(
+            io.BytesIO(pdf_bytes),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+            },
+        )
+
+    @staticmethod
+    async def get_receipt_water_payment(session: SessionDep, payment_ids: List[int]):
+        payments = await WaterPaymentService.get_payments_by_ids(session, payment_ids)
+        if not payments:
+            raise HTTPException(detail="No payments found", status_code=404)
+        first_member_id = payments[0].member_id
+        total_amount = 0
+        for p in payments:
+            if p.member_id != first_member_id:
+                raise HTTPException(detail="All payments must belong to the same member", status_code=400)
+            if p.status == PaymentStatus.UNPAID:
+                raise HTTPException(detail=f"Payment {p.id} is unpaid", status_code=400)
+            total_amount += p.amount
+        fecha_emision = datetime.now().strftime("%d/%m/%Y %H:%M")
+        html_string = await TemplateLoader.get_template(
+            "pdf/receipt_water_payment.html",
+            payments=payments,
+            total_amount=total_amount,
+            fecha_emision=fecha_emision,
+            fecha=fecha_emision 
+        )
+        if len(payments) > 1:
+            filename = f"Recibo_Agua_{payments[0].member.last_name}_mult.pdf"
+        else:
+            filename = f"Recibo_Agua_{payments[0].member.last_name}_{payments[0].id}.pdf"
+        pdf_bytes = HTML(string=html_string).write_pdf()
         return StreamingResponse(
             io.BytesIO(pdf_bytes),
             media_type="application/pdf",
