@@ -14,6 +14,7 @@ from app.modules.members.model.schemas import (
     MemberResponse,
 )
 from app.modules.users.model.models import User 
+from app.modules.water_meters.meters.model.models import Meter
 from app.modules.water_meters.water_payments.model.models import WaterPayment
 from app.modules.extra_payments.payments.model.models import Payment
 from app.core.enums import PaymentStatus
@@ -261,17 +262,20 @@ class MemberService:
                 join(User).
                 join(WaterPayment).
                 options(
-                    selectinload(Member.water_payments).selectinload(WaterPayment.meter)
+                    selectinload(Member.water_payments).
+                    selectinload(WaterPayment.meter).
+                    selectinload(Meter.water_meter)
                 ).
                 where(User.is_active).
                 where(and_(WaterPayment.created_at >= start_dt, 
-                           WaterPayment.created_at < end_exclusive)
+                           WaterPayment.created_at <= end_exclusive)
                 ).
                 distinct().
                 order_by(Member.last_name, Member.name)
             )
 
             members_orm = members.scalars().all()
+            print(members_orm)
 
             period = []
 
@@ -293,31 +297,28 @@ class MemberService:
             for period_data in period:
                 year = period_data["year"]
                 month = period_data["month"]
-
+                period_data["members"] = []
                 for member in members_orm:
                     month_paid = None
                     for payment in member.water_payments:
                         if(payment.created_at.year == year and
                            payment.created_at.month == month):
                             month_paid = payment
-                            break
-                    if month_paid is not None:
-                        is_paid = month_paid.status == PaymentStatus.PAID
-                        period_data["members"].append({
-                            "name": member.name,
-                            "last_name": member.last_name,
-                            "consumption": month_paid.meter.water_reading - month_paid.meter.past_water_reading,
-                            "amount": month_paid.amount,
-                            "charge_date": month_paid.created_at.strftime("%d/%m/%Y"),
-                            "payment_date": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
-                            "status": month_paid.status.value
-                        })
-                    else:
-                        period_data["members"] = []
-            res = {
-                "end_date": end_exclusive,
-                "period": period
-            }
+                            is_paid = month_paid.status == PaymentStatus.PAID
+                            period_data["members"].append({
+                                "name": member.name,
+                                "last_name": member.last_name,
+                                "meter_id": month_paid.meter.water_meter.id,
+                                "consumption": month_paid.meter.water_reading - month_paid.meter.past_water_reading,
+                                "amount": month_paid.amount,
+                                "charge_date": month_paid.created_at.strftime("%d/%m/%Y"),
+                                "payment_date": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
+                                "status": month_paid.status.value
+                            })
+                            res = {
+                                "end_date": end_exclusive,
+                                "period": period
+                            }
             return res
         except Exception:
             raise 
