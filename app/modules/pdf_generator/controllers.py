@@ -1,4 +1,5 @@
 from datetime import date
+from typing import List
 
 from fastapi import HTTPException
 
@@ -39,6 +40,22 @@ class PdfGenController:
         return await PdfGenService.get_new_members_report(session, start_date, end_date)
 
     @staticmethod
+    async def get_extra_payments_catalog_report(
+        session: SessionDep,
+        curr_user_flex: CurrentUserFlexible,
+        start_date: date,
+        end_date: date,
+        only_active: bool,
+    ):
+        if curr_user_flex.role is UserRole.MEMBER:
+            raise HTTPException(detail="user dont have privileges", status_code=401)
+
+        if end_date < start_date:
+            raise HTTPException(status_code=400, detail="invalid date range")
+
+        return await PdfGenService.get_extra_payments_catalog_report(session, start_date, end_date, only_active)
+
+    @staticmethod
     async def get_receipt_extra_payment(
         session: SessionDep, curr_user_flex: CurrentUserFlexible, payment_id: int
     ):
@@ -46,3 +63,13 @@ class PdfGenController:
             raise HTTPException(detail="user dont have privileges", status_code=403)
 
         return await PdfGenService.get_receipt_extra_payment(session, payment_id)
+    
+    @staticmethod
+    async def get_receipt_water_payment(
+        session: SessionDep, 
+        curr_user_flex: CurrentUserFlexible, 
+        payment_ids: List[int]
+    ):
+        if curr_user_flex.role is UserRole.MEMBER:
+             raise HTTPException(detail="user dont have privileges", status_code=403)
+        return await PdfGenService.get_receipt_water_payment(session, payment_ids)
