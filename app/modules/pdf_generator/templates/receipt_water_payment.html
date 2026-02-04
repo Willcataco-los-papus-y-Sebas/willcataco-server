@@ -1,0 +1,97 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+<div class="info-box">
+    {% set member = payments[0].member %}
+    
+    <h2>
+        <strong>Recibo de Agua</strong> 
+        {% if payments|length > 1 %}
+            ({{ payments|length }} Periodos)
+        {% else %}
+            #{{ payments[0].id }}
+        {% endif %}
+    </h2>
+    
+    <p><strong>Fecha de Emisión: </strong>{{ fecha_emision }}</p>
+    <p><strong>Socio: </strong>{{ member.name }} {{ member.last_name }}</p>
+    <p><strong>CI:</strong> {{ member.ci }}</p>
+    <p><strong>Teléfono: </strong>{{ member.phone }}</p>
+</div>
+
+{% if payments|length > 1 %}
+
+    <h3>Detalle de Pagos Realizados</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; text-align: left;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Periodo</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Lecturas (Ant / Act)</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Consumo</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    {{ payment.meter.created_at.strftime('%m/%Y') }}
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd; font-size: 0.9em;">
+                    {{ payment.meter.past_water_reading }} / {{ payment.meter.water_reading }}
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    {{ payment.meter.water_reading - payment.meter.past_water_reading }} m³
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    Bs. {{ payment.amount }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% else %}
+    {% set p = payments[0] %}
+    <h3>Detalle del Consumo ({{ p.meter.created_at.strftime('%m/%Y') }})</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+            <tr style="background-color: #f2f2f2; text-align: left;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Concepto</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Lectura / Detalle</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Lectura Anterior</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ p.meter.past_water_reading }} m³</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Lectura Actual</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{{ p.meter.water_reading }} m³</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>Consumo del Periodo</strong></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>{{ p.meter.water_reading - p.meter.past_water_reading }} m³</strong></td>
+            </tr>
+        </tbody>
+    </table>
+{% endif %}
+
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background-color: #7A2570; color: white; text-align: left;">
+            <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Total Pagado:</th>
+            <th style="padding: 10px; border: 1px solid #ddd; font-size: 1.2em; width: 150px;">Bs. {{ total_amount }}</th>
+        </tr>
+    </thead>
+</table>
+
+<div style="margin-top: 30px; font-size: 0.9em; color: #555; text-align: center;">
+    {% if payments|length > 1 %}
+        <p>Este documento certifica el pago conjunto de {{ payments|length }} periodos.</p>
+    {% else %}
+        <p>Gracias por cumplir con el pago de sus servicios básicos.</p>
+    {% endif %}
+</div>
+{% endblock %}

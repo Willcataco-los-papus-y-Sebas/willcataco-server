@@ -8,10 +8,41 @@ from app.modules.water_meters.meters.model.models import Meter
 from app.modules.water_meters.water_payments.model.schemas import (
     WaterPaymentBase,
     WaterPaymentResponse,
+    WaterPaymentFilter,
 )
-
+from typing import List
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 class WaterPaymentService:
+    @staticmethod
+    async def get_all_water_payments(
+        session: SessionDep,
+        filters: WaterPaymentFilter,
+    ):
+        try:
+            stmt = select(WaterPayment).where(WaterPayment.deleted_at.is_(None))
+
+            if filters.member_id:
+                stmt = stmt.where(WaterPayment.member_id == filters.member_id)
+
+            if filters.status:
+                stmt = stmt.where(WaterPayment.status == filters.status)
+
+            if filters.start_date:
+                stmt = stmt.where(WaterPayment.created_at >= filters.start_date)
+
+            if filters.end_date:
+                stmt = stmt.where(WaterPayment.created_at <= filters.end_date)
+
+            stmt = stmt.limit(filters.limit).offset(filters.offset).order_by(WaterPayment.created_at.desc())
+
+            result = await session.execute(stmt)
+            payments_orm = result.scalars().all()
+            return [WaterPaymentResponse.model_validate(p) for p in payments_orm]
+        except Exception:
+            raise
+
     @staticmethod
     async def get_water_payment_by_id(session: SessionDep, id: int):
         try:
@@ -23,7 +54,6 @@ class WaterPaymentService:
                 return None
             return WaterPaymentResponse.model_validate(payment_orm)
         except Exception:
-            await session.rollback()
             raise
 
     @staticmethod
@@ -89,3 +119,17 @@ class WaterPaymentService:
         except Exception:
             await session.rollback()
             raise
+
+    @staticmethod
+    async def get_payments_by_ids(session: SessionDep, payment_ids: List[int]) -> List[WaterPayment]:
+        result = await session.execute(
+            select(WaterPayment)
+            .options(
+                selectinload(WaterPayment.member), 
+                selectinload(WaterPayment.meter)
+            )
+            .where(WaterPayment.id.in_(payment_ids))
+            .order_by(WaterPayment.id.asc())
+        )
+        payments = result.scalars().all()
+        return payments

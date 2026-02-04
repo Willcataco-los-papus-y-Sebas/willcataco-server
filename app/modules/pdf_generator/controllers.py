@@ -1,4 +1,6 @@
 from datetime import date
+from typing import List
+
 from fastapi import HTTPException
 
 from app.core.database import SessionDep
@@ -77,3 +79,13 @@ class PdfGenController:
             raise HTTPException(detail="user dont have privileges", status_code=403)
 
         return await PdfGenService.get_receipt_extra_payment(session, payment_id)
+    
+    @staticmethod
+    async def get_receipt_water_payment(
+        session: SessionDep, 
+        curr_user_flex: CurrentUserFlexible, 
+        payment_ids: List[int]
+    ):
+        if curr_user_flex.role is UserRole.MEMBER:
+             raise HTTPException(detail="user dont have privileges", status_code=403)
+        return await PdfGenService.get_receipt_water_payment(session, payment_ids)
