@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime,  date
 from zoneinfo import ZoneInfo
 
 BOLIVIA = ZoneInfo("America/La_Paz")
@@ -6,7 +6,7 @@ BOLIVIA = ZoneInfo("America/La_Paz")
 class TimeBolivia:
     
     @staticmethod
-    def format_date(date: datetime):
+    def format_date(date: date):
         to_bolivia = TimeBolivia.__get_time_zone(date)
         return to_bolivia.strftime("%d/%m/%Y")
     
@@ -14,6 +14,11 @@ class TimeBolivia:
     def format_datetime(date: datetime):
         to_bolivia = TimeBolivia.__get_time_zone(date)
         return to_bolivia.strftime("%d/%m/%Y %H:%M")
+    
+    @staticmethod
+    def iso_format_date(date: date):
+        to_bolivia = TimeBolivia.__get_time_zone(date)
+        return to_bolivia.strftime("%Y-%m-%d")
     
     @staticmethod
     def __get_time_zone(time: datetime):
