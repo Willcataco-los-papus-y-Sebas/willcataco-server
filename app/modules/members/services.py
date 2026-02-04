@@ -1,25 +1,21 @@
-from sqlalchemy import (
-    func, 
-    select, 
-    or_, 
-    and_, 
-    extract
-)
+from datetime import date, datetime, time, timedelta
+
+from sqlalchemy import and_, extract, func, or_, select
 from sqlalchemy.orm import selectinload
+
 from app.core.database import SessionDep
+from app.core.enums import PaymentStatus
+from app.modules.extra_payments.payments.model.models import Payment
 from app.modules.members.model.models import Member
 from app.modules.members.model.schemas import (
     MemberBase,
     MemberPatch,
     MemberResponse,
 )
-from app.modules.users.model.models import User 
+from app.modules.users.model.models import User
 from app.modules.water_meters.meters.model.models import Meter
 from app.modules.water_meters.water_payments.model.models import WaterPayment
-from app.modules.extra_payments.payments.model.models import Payment
-from app.core.enums import PaymentStatus
 
-from datetime import date, datetime, time, timedelta
 
 class MemberService:
     @staticmethod
@@ -275,8 +271,6 @@ class MemberService:
             )
 
             members_orm = members.scalars().all()
-            print(members_orm)
-
             period = []
 
             while start_dt < end_exclusive:
