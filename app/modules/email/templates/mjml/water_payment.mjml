@@ -74,6 +74,30 @@
               {{ci_member}}
             </td>
           </tr>
+          </tr>
+          <tr>
+            <td
+              style="
+                width: 40%;
+                text-align: left;
+                padding: 8px 4px;
+                font-size: 14px;
+                white-space: nowrap;
+              "
+            >
+              ID MEDIDOR:
+            </td>
+            <td
+              style="
+                width: 60%;
+                text-align: right;
+                padding: 8px 4px;
+                font-size: 14px;
+              "
+            >
+              {{id_water_measure}}
+            </td>
+          </tr>
           <tr>
             <td
               style="
