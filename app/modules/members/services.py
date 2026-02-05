@@ -217,13 +217,16 @@ class MemberService:
     @staticmethod
     async def get_new_members_between_dates(
         session: SessionDep,
-        start_date: date,
-        end_date: date,
+        start_date: datetime,
+        end_date: datetime,
     ) -> list[MemberResponse]:
         try:
-            start_dt = datetime.combine(start_date, time.min)
+            start_dt = datetime.combine(start_date, time.min) #CAMBIAR
             end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
-
+            print(f'member{start_date}')
+            print(f'member{start_dt}')
+            print(f'member{end_date}')
+            print(f'member{end_exclusive}')
             result = await session.execute(
                 select(Member)
                 .join(User)
@@ -242,10 +245,10 @@ class MemberService:
     
     @staticmethod 
     async def get_members_water_payments(
-        session: SessionDep, start_date: date, end_date: date
+        session: SessionDep, start_date: datetime, end_date: datetime
     ):
         try:
-            start_dt = datetime.combine(start_date, time.min)
+            start_dt = datetime.combine(start_date, time.min)#CAMBIAR
             if end_date.month == 12:
                 end_next_month = end_date.replace(year=end_date.year + 1, month=1)
             else:
@@ -310,7 +313,7 @@ class MemberService:
                                 "status": month_paid.status.value
                             })
                             res = {
-                                "end_date": end_exclusive,
+                                "end_date": end_exclusive.date(),
                                 "period": period
                             }
             return res

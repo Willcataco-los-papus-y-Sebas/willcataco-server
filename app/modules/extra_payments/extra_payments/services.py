@@ -100,9 +100,9 @@ class ExtraPaymentService:
             raise
 
     @staticmethod
-    async def get_between_dates(session: SessionDep, start_date: date, end_date: date, only_active: bool):
+    async def get_between_dates(session: SessionDep, start_date: datetime, end_date: datetime, only_active: bool):
         try:
-            start_dt = datetime.combine(start_date, time.min)
+            start_dt = datetime.combine(start_date, time.min)#CAMBIAR
             end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
 
             query = (

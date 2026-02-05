@@ -3,6 +3,7 @@ from typing import List
 
 from fastapi import HTTPException
 
+from app.core.time import TimeBolivia
 from app.core.database import SessionDep
 from app.core.dependencies import CurrentUserFlexible
 from app.core.enums import UserRole
@@ -35,6 +36,9 @@ class PdfGenController:
 
         if end_date < start_date:
             raise HTTPException(status_code=400, detail="invalid date range")
+        
+        start_date = TimeBolivia.format_correct(start_date)
+        end_date = TimeBolivia.format_correct(end_date)
 
         return await PdfGenService.get_new_members_report(session, start_date, end_date)
     
@@ -49,6 +53,9 @@ class PdfGenController:
             raise HTTPException(detail="member dont have privileges", status_code=401)
         if end_date < start_date:
             raise HTTPException(status_code=400, detail="invalid date range")
+        
+        start_date = TimeBolivia.format_correct(start_date)
+        end_date = TimeBolivia.format_correct(end_date)
         
         return await PdfGenService.generate_members_water_payments_report(session, start_date, end_date)
         
@@ -68,6 +75,9 @@ class PdfGenController:
 
         if end_date < start_date:
             raise HTTPException(status_code=400, detail="invalid date range")
+        
+        start_date = TimeBolivia.format_correct(start_date)
+        end_date = TimeBolivia.format_correct(end_date)
 
         return await PdfGenService.get_extra_payments_catalog_report(session, start_date, end_date, only_active)
 

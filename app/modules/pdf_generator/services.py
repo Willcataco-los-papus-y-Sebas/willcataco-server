@@ -30,15 +30,20 @@ class PdfGenService:
     @staticmethod
     async def get_new_members_report(
         session: SessionDep,
-        start_date: date,
-        end_date: date,
+        start_date: datetime,
+        end_date: datetime,
     ):
         members = await MemberService.get_new_members_between_dates(
             session, start_date, end_date
         )
         total = len(members)
 
+        debug_date=TimeBolivia.format_date(start_date)
+        debug_date2=TimeBolivia.format_date(end_date)
+        print(f'{debug_date}//{debug_date2}')
+
         generated_at = TimeBolivia.format_datetime(datetime.now())
+        print(f'dateNOw: {generated_at}')
 
         html = await TemplateLoader.get_template(
             "pdf/new_members_report.html",
@@ -86,7 +91,7 @@ class PdfGenService:
     
     @staticmethod
     async def generate_members_water_payments_report(
-        session: SessionDep, start_date: date, end_date: date
+        session: SessionDep, start_date: datetime, end_date: datetime
     ):
         res = await MemberService.get_members_water_payments(session, start_date, end_date)
         if not res["period"]:
@@ -94,9 +99,9 @@ class PdfGenService:
         html_string = await TemplateLoader.get_template(
             "pdf/members_water_payments_report.html",
             period= res["period"],
-            start_date = start_date.strftime("%d/%m/%Y"),
-            end_date = res["end_date"].strftime("%d/%m/%Y"),
-            fecha= datetime.now().strftime("%d/%m/%Y %H:%M")
+            start_date = TimeBolivia.format_date(start_date),
+            end_date = TimeBolivia.format_date(res["end_date"]),
+            fecha= datetime.now() #CAMBIAR
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
         filename = f"Reporte_pagos_de_agua_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
@@ -111,8 +116,8 @@ class PdfGenService:
     @staticmethod
     async def get_extra_payments_catalog_report(
         session: SessionDep,
-        start_date: date,
-        end_date: date,
+        start_date: datetime,
+        end_date: datetime,
         only_active: bool,
     ):
         extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, only_active)
