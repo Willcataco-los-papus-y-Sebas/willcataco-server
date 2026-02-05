@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 
 from sqlalchemy import and_, extract, func, or_, select
 from sqlalchemy.orm import selectinload

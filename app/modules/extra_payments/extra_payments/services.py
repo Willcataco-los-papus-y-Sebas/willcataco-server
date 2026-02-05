@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from sqlalchemy import select, update, func
 from app.core.database import SessionDep
 from app.modules.extra_payments.extra_payments.model.models import ExtraPayment
