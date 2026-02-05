@@ -1,0 +1,52 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+<div class="info-box">
+    <h3>Reporte de pagos de agua</h3>
+    <p><strong>Periodo:</strong> {{start_date}} al {{end_date}}</p>
+</div>
+{% for month in period %}
+    <div style="display: flex; gap: 10px; margin: 0; align-items: center;">
+        <hr style="background-color: #7A2570; width: 2px; height: 30px; margin: 0;"/>
+        <h2>Mes: {{month.month}}  Año: {{month.year}}</h2>
+    </div>
+        {% if month.members %}
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Nombre</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Apellido</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Medidor</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Consumo (m³)</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Monto Bs.</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Fecha Cobro</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Fecha Pago</th>
+                    <th style="padding: 8px; border: 1px solid #ddd; text-align: center">Estado de Pago</th>
+                </thead>
+                <tbody>
+                    {% for m in month.members %}
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.name}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.last_name}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.meter_id}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+                            <strong>{{m.consumption}}</strong>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">Bs.{{m.amount}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.charge_date}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{m.payment_date if m.payment_date else '-'}}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+                            {% if m.status == "paid" %}
+                             PAGADO
+                            {% else %}
+                             NO PAGADO
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}         
+            <p colspan="5" class="no-data">Sin registros de pagos en éste periodo</p>
+        {% endif %}
+{% endfor %}
+{% endblock %}
