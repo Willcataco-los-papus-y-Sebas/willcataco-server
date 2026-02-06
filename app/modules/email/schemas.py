@@ -8,6 +8,7 @@ class EmailBase(BaseModel):
     subject: str
 
 class WaterBillEmailParams(EmailBase):
+    id: int
     name: str
     reading_value: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
     date: datetime
