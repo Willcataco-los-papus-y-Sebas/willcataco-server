@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from datetime import datetime, date, timezone, time, timedelta
 from zoneinfo import ZoneInfo
 
@@ -27,5 +29,5 @@ class TimeBolivia:
         if time.tzinfo is None:
             time = time.replace(tzinfo = timezone.utc) 
         if time.tzname() != 'UTC':
-            raise ValueError("Parameter 'time' only can be in format UTC")
+            raise HTTPException(status_code="400",detail="Parameter 'time' only can be in format UTC")
         return time.astimezone(BOLIVIA)
