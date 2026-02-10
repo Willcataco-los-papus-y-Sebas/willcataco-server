@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta
 from sqlalchemy import and_, extract, func, or_, select
 from sqlalchemy.orm import selectinload
 
+from app.core.time import TimeBolivia
 from app.core.database import SessionDep
 from app.core.enums import PaymentStatus
 from app.modules.extra_payments.payments.model.models import Payment
@@ -223,10 +224,6 @@ class MemberService:
         try:
             start_dt = datetime.combine(start_date, time.min) #CAMBIAR
             end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
-            print(f'member{start_date}')
-            print(f'member{start_dt}')
-            print(f'member{end_date}')
-            print(f'member{end_exclusive}')
             result = await session.execute(
                 select(Member)
                 .join(User)
@@ -308,12 +305,12 @@ class MemberService:
                                 "meter_id": month_paid.meter.water_meter.id,
                                 "consumption": month_paid.meter.water_reading - month_paid.meter.past_water_reading,
                                 "amount": month_paid.amount,
-                                "charge_date": month_paid.created_at.strftime("%d/%m/%Y"),
-                                "payment_date": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
+                                "charge_date": TimeBolivia.format_date(month_paid.created_at),
+                                "payment_date": TimeBolivia.format_datetime(month_paid.updated_at) if is_paid else None,
                                 "status": month_paid.status.value
                             })
                             res = {
-                                "end_date": end_exclusive.date(),
+                                "end_date": end_exclusive,
                                 "period": period
                             }
             return res

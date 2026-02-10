@@ -38,18 +38,15 @@ class PdfGenService:
         )
         total = len(members)
 
-        debug_date=TimeBolivia.format_date(start_date)
-        debug_date2=TimeBolivia.format_date(end_date)
-        print(f'{debug_date}//{debug_date2}')
-
         generated_at = TimeBolivia.format_datetime(datetime.now())
-        print(f'dateNOw: {generated_at}')
+        start_date_bol =  TimeBolivia.format_date(start_date)
+        end_date_bol = TimeBolivia.format_date(end_date)
 
         html = await TemplateLoader.get_template(
             "pdf/new_members_report.html",
             fecha=generated_at,
-            start_date=TimeBolivia.format_date(start_date),
-            end_date=TimeBolivia.format_date(end_date),
+            start_date=start_date_bol,
+            end_date=end_date_bol,
             total=total,
             members=members,
         )
@@ -57,7 +54,7 @@ class PdfGenService:
         pdf = HTML(string=html).write_pdf()
 
         filename = (
-            f"new_members_report_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+            f"new_members_report_{start_date_bol}_{end_date_bol}.pdf"
         )
 
         return StreamingResponse(
@@ -96,15 +93,19 @@ class PdfGenService:
         res = await MemberService.get_members_water_payments(session, start_date, end_date)
         if not res["period"]:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not registers payments in those period")
+        
+        start_date_bol =  TimeBolivia.format_date(start_date)
+        end_date_bol = TimeBolivia.format_date(res["end_date"])
+
         html_string = await TemplateLoader.get_template(
             "pdf/members_water_payments_report.html",
             period= res["period"],
-            start_date = TimeBolivia.format_date(start_date),
-            end_date = TimeBolivia.format_date(res["end_date"]),
-            fecha= datetime.now() #CAMBIAR
+            start_date = start_date_bol,
+            end_date = end_date_bol,
+            fecha= TimeBolivia.format_datetime(datetime.now())
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
-        filename = f"Reporte_pagos_de_agua_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        filename = f"Reporte_pagos_de_agua_{start_date_bol}_{end_date_bol}.pdf"
         return StreamingResponse(
             io.BytesIO(pdf_bytes),
             media_type="application/pdf",
@@ -131,11 +132,14 @@ class PdfGenService:
         generated_at = TimeBolivia.format_datetime(datetime.now())
         report_title = "Reporte de Pagos Extras (Activos)" if only_active else "Reporte de Pagos Extras (General)"
 
+        start_date_bol =  TimeBolivia.format_date(start_date)
+        end_date_bol = TimeBolivia.format_date(end_date)
+
         html = await TemplateLoader.get_template(
             "pdf/extra_payments_catalog_report.html",
             fecha=generated_at,
-            start_date=TimeBolivia.format_date(start_date),
-            end_date=TimeBolivia.format_date(end_date),
+            start_date=start_date_bol,
+            end_date=end_date_bol,
             total=total,
             total_amount=str(total_amount),
             extras=extras,
@@ -144,7 +148,7 @@ class PdfGenService:
 
         pdf = HTML(string=html).write_pdf()
 
-        filename = f"extra_payments_catalog_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        filename = f"extra_payments_catalog_{start_date_bol}_{end_date_bol}.pdf"
 
         return StreamingResponse(
             io.BytesIO(pdf),
