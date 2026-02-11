@@ -102,13 +102,13 @@ class ExtraPaymentService:
     @staticmethod
     async def get_between_dates(session: SessionDep, start_date: datetime, end_date: datetime, only_active: bool):
         try:
-            start_dt = datetime.combine(start_date, time.min)#CAMBIAR
+            #start_dt = datetime.combine(start_date, time.min)#CAMBIAR
             end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
 
             query = (
                 select(ExtraPayment)
                 .where(ExtraPayment.deleted_at.is_(None))
-                .where(ExtraPayment.created_at >= start_dt)
+                .where(ExtraPayment.created_at >= start_date)
                 .where(ExtraPayment.created_at < end_exclusive)
                 .order_by(ExtraPayment.created_at.desc(), ExtraPayment.name)
             )

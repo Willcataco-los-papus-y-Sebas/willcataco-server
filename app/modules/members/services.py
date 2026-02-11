@@ -222,14 +222,14 @@ class MemberService:
         end_date: datetime,
     ) -> list[MemberResponse]:
         try:
-            start_dt = datetime.combine(start_date, time.min) #CAMBIAR
+            #start_dt = datetime.combine(start_date, time.min) #CAMBIAR
             end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
             result = await session.execute(
                 select(Member)
                 .join(User)
                 .where(User.is_active)
                 .where(Member.deleted_at.is_(None))
-                .where(Member.created_at >= start_dt)
+                .where(Member.created_at >= start_date)
                 .where(Member.created_at < end_exclusive)
                 .order_by(Member.created_at, Member.last_name, Member.name)
             )
@@ -245,7 +245,7 @@ class MemberService:
         session: SessionDep, start_date: datetime, end_date: datetime
     ):
         try:
-            start_dt = datetime.combine(start_date, time.min)#CAMBIAR
+            #start_dt = datetime.combine(start_date, time.min)#CAMBIAR
             if end_date.month == 12:
                 end_next_month = end_date.replace(year=end_date.year + 1, month=1)
             else:
@@ -263,7 +263,7 @@ class MemberService:
                     selectinload(Meter.water_meter)
                 ).
                 where(User.is_active).
-                where(and_(WaterPayment.created_at >= start_dt, 
+                where(and_(WaterPayment.created_at >= start_date, 
                            WaterPayment.created_at <= end_exclusive)
                 ).
                 distinct().
@@ -273,20 +273,20 @@ class MemberService:
             members_orm = members.scalars().all()
             period = []
 
-            while start_dt < end_exclusive:
+            while start_date < end_exclusive:
                 period.append({
-                    "year": start_dt.year,
-                    "month": start_dt.month,
+                    "year": start_date.year,
+                    "month": start_date.month,
                     "members": []
                 })
 
-                if start_dt.month == 12:
-                    start_dt = start_dt.replace(
-                        year= start_dt.year +1, 
+                if start_date.month == 12:
+                    start_dt = start_date.replace(
+                        year= start_date.year +1, 
                         month= 1
                     )
                 else:
-                    start_dt= start_dt.replace(month= start_dt.month +1)
+                    start_dt= start_date.replace(month= start_dt.month +1)
 
             for period_data in period:
                 year = period_data["year"]
