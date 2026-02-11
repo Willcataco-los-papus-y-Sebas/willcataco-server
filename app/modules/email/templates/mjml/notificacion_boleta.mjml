@@ -1,0 +1,45 @@
+<mjml>
+  <mj-include path="./head.mjml" />
+  <mj-body>
+    <mj-include path="./header.mjml" />
+    <!--aqui empiezan a editar-->
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" font-weight="bold" color="#333333">Hola {{ name }},</mj-text>
+        <mj-text font-size="16px" color="#555555">
+          Se ha registrado una nueva lectura de agua en tu medidor.
+        </mj-text>
+        
+        <mj-divider border-color="#581056" border-width="1px" />
+        
+        <mj-table>
+          <tr style="border-bottom:1px solid #581056;text-align:left;padding:15px 0;">
+            <th style="padding: 0 15px 0 0;">ID</th>
+            <th style="padding: 0 15px 0 0;">Fecha</th>
+            <th style="padding: 0 15px;">Lectura</th>
+            <th style="padding: 0 0 0 15px;">Meses Deuda</th>
+          </tr>
+          <tr>
+            <td style="padding: 0 15px 0 0;">#{{ id }}</td>
+            <td style="padding: 0 15px 0 0;">{{ date }}</td>
+            <td style="padding: 0 15px;">{{ reading_value }} m3</td>
+            <td style="padding: 0 0 0 15px; color: #d9534f; font-weight: bold;">{{ months_owed }}</td>
+          </tr>
+        </mj-table>
+
+        <mj-spacer height="20px" />
+
+        <mj-text font-size="14px" color="#888888">
+          Recuerda que puedes ver más detalles y realizar pagos en nuestra plataforma.
+        </mj-text>
+
+        <mj-button href="#" background-color="#581056" color="white" border-radius="5px">
+          Ver Detalle
+        </mj-button>
+        
+      </mj-column>
+    </mj-section>
+    <!--hasta aqui-->
+    <mj-include path="./footer.mjml" />
+  </mj-body>
+</mjml>

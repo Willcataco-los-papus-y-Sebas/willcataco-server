@@ -1,0 +1,133 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+<div class="info-box">
+    <h3>Información del Socio</h3>
+    <p><strong>Nombre:</strong> {{ member.name }} {{ member.last_name }}</p>
+    <p><strong>CI:</strong> {{ member.ci }}</p>
+</div>
+
+<h3>1. Historial de Pagos de Agua</h3>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+    <thead>
+        <tr style="background-color: #f2f2f2; text-align: left;">
+            <th style="padding: 8px; border: 1px solid #ddd;">Periodo</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Consumo (m³)</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Monto</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Estado</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Fecha de Pago</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in member.water_payments %}
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.meter %}
+                    {{ payment.meter.created_at.strftime('%m/%Y') }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.meter %}
+                    <strong>{{ payment.meter.water_reading - payment.meter.past_water_reading }} m³</strong>
+                    <br>
+                    <span style="font-size: 0.8em; color: #666;">
+                        (Lect Act: {{ payment.meter.water_reading }} / Lect Ant: {{ payment.meter.past_water_reading }})
+                    </span>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                Bs. {{ payment.amount }}
+            </td>
+            
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
+                    <span style="color: green; font-weight: bold;">PAGADO</span>
+                {% else %}
+                    <span style="color: red; font-weight: bold;">PENDIENTE</span>
+                {% endif %}
+            </td>
+            
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
+                    {# Si está pagado, mostramos updated_at (fecha de modificación/pago) #}
+                    {{ payment.updated_at.strftime('%d/%m/%Y') }}
+                {% else %}
+                    {# Si está pendiente, mostramos un guion #}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" style="padding: 20px; text-align: center; border: 1px solid #ddd;">
+                No hay pagos de agua registrados.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>2. Pagos Extras / Aportes</h3>
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background-color: #f2f2f2; text-align: left;">
+            <th style="padding: 8px; border: 1px solid #ddd;">Descripción</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Monto</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Estado</th>
+            <th style="padding: 8px; border: 1px solid #ddd;">Fecha de Pago</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in member.payments %}
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.extra_payment %}
+                    <strong>{{ payment.extra_payment.name }}</strong><br>
+                    <span style="font-size: 0.9em; color: #555;">{{ payment.extra_payment.description }}</span>
+                {% else %}
+                    Sin descripción
+                {% endif %}
+            </td>
+
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.extra_payment %}
+                    Bs. {{ payment.extra_payment.amount }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
+                    <span style="color: green; font-weight: bold;">PAGADO</span>
+                {% else %}
+                    <span style="color: red; font-weight: bold;">PENDIENTE</span>
+                {% endif %}
+            </td>
+
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
+                    {# Si está pagado, mostramos la fecha real del pago #}
+                    {{ payment.updated_at.strftime('%d/%m/%Y') }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" style="padding: 20px; text-align: center; border: 1px solid #ddd;">
+                No hay aportes extras registrados.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

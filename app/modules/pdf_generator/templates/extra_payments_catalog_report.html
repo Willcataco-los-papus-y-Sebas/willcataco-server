@@ -1,0 +1,42 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+  <div class="info-box">
+    <h2>{{ report_title }}</h2>
+    
+    <p><strong>entre fechas:</strong> del {{ start_date }} al {{ end_date }}</p>
+    
+    <p><strong>cantidad de registros:</strong> {{ total }}</p>
+    
+    <p><strong>total activos:</strong> {{ total_amount }}</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>nombre</th>
+        <th>descripcion</th>
+        <th>monto</th>
+        <th>activo</th>
+        <th>fecha de creacion</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if extras %}
+        {% for e in extras %}
+          <tr>
+            <td>{{ e.name }}</td>
+            <td>{{ e.description or "" }}</td>
+            <td>{{ e.amount }}</td>
+            <td>{{ "si" if e.is_active else "no" }}</td>
+            <td>{{ e.created_at.strftime("%d/%m/%Y") }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="5" class="no-data">Sin pagos extras entre las fechas</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}
