@@ -15,6 +15,7 @@ class WaterBillEmailParams(EmailBase):
     months_owed: int = Field(ge=0)
 
 class EmailWaterReceiptBase(BaseModel):
+    id_member: int
     name_member: str
     last_name_member: str
     ci_member: str
