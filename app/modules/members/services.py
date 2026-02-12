@@ -281,12 +281,12 @@ class MemberService:
                 })
 
                 if start_date.month == 12:
-                    start_dt = start_date.replace(
+                    start_date = start_date.replace(
                         year= start_date.year +1, 
                         month= 1
                     )
                 else:
-                    start_dt= start_date.replace(month= start_dt.month +1)
+                    start_date= start_date.replace(month= start_date.month +1)
 
             for period_data in period:
                 year = period_data["year"]
