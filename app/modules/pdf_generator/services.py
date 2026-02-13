@@ -1,5 +1,5 @@
 import io
-from datetime import date, datetime
+from datetime import datetime
 from typing import List
 from decimal import Decimal
 
@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from fastapi.responses import StreamingResponse
 from weasyprint import HTML
 
+from app.core.time import TimeBolivia
 from app.core.database import SessionDep
 from app.core.enums import PaymentStatus
 from app.core.templates import TemplateLoader
@@ -29,21 +30,23 @@ class PdfGenService:
     @staticmethod
     async def get_new_members_report(
         session: SessionDep,
-        start_date: date,
-        end_date: date,
+        start_date: datetime,
+        end_date: datetime,
     ):
         members = await MemberService.get_new_members_between_dates(
             session, start_date, end_date
         )
         total = len(members)
 
-        generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
+        generated_at = TimeBolivia.format_datetime(datetime.now())
+        start_date_bol =  TimeBolivia.format_date(start_date)
+        end_date_bol = TimeBolivia.format_date(end_date)
 
         html = await TemplateLoader.get_template(
             "pdf/new_members_report.html",
             fecha=generated_at,
-            start_date=start_date.strftime("%d/%m/%Y"),
-            end_date=end_date.strftime("%d/%m/%Y"),
+            start_date=start_date_bol,
+            end_date=end_date_bol,
             total=total,
             members=members,
         )
@@ -51,7 +54,7 @@ class PdfGenService:
         pdf = HTML(string=html).write_pdf()
 
         filename = (
-            f"new_members_report_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+            f"new_members_report_{start_date_bol}_{end_date_bol}.pdf"
         )
 
         return StreamingResponse(
@@ -70,7 +73,7 @@ class PdfGenService:
         html_string = await TemplateLoader.get_template(
             "pdf/member_report.html",
             member=member,
-            fecha=datetime.now().strftime("%d/%m/%Y %H:%M"),
+            fecha= TimeBolivia.format_datetime(datetime.now()),
             titulo=f"Extracto de Socio: {member.name} {member.last_name}",
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
@@ -85,20 +88,24 @@ class PdfGenService:
     
     @staticmethod
     async def generate_members_water_payments_report(
-        session: SessionDep, start_date: date, end_date: date
+        session: SessionDep, start_date: datetime, end_date: datetime
     ):
         res = await MemberService.get_members_water_payments(session, start_date, end_date)
         if not res["period"]:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not registers payments in those period")
+        
+        start_date_bol =  TimeBolivia.format_date(start_date)
+        end_date_bol = TimeBolivia.format_date(res["end_date"])
+
         html_string = await TemplateLoader.get_template(
             "pdf/members_water_payments_report.html",
             period= res["period"],
-            start_date = start_date.strftime("%d/%m/%Y"),
-            end_date = res["end_date"].strftime("%d/%m/%Y"),
-            fecha= datetime.now().strftime("%d/%m/%Y %H:%M")
+            start_date = start_date_bol,
+            end_date = end_date_bol,
+            fecha= TimeBolivia.format_datetime(datetime.now())
         )
         pdf_bytes = HTML(string=html_string).write_pdf()
-        filename = f"Reporte_pagos_de_agua_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        filename = f"Reporte_pagos_de_agua_{start_date_bol}_{end_date_bol}.pdf"
         return StreamingResponse(
             io.BytesIO(pdf_bytes),
             media_type="application/pdf",
@@ -110,8 +117,8 @@ class PdfGenService:
     @staticmethod
     async def get_extra_payments_catalog_report(
         session: SessionDep,
-        start_date: date,
-        end_date: date,
+        start_date: datetime,
+        end_date: datetime,
         only_active: bool,
     ):
         extras = await ExtraPaymentService.get_between_dates(session, start_date, end_date, only_active)
@@ -122,14 +129,17 @@ class PdfGenService:
             if e.amount is not None and e.is_active:
                 total_amount += e.amount
 
-        generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
+        generated_at = TimeBolivia.format_datetime(datetime.now())
         report_title = "Reporte de Pagos Extras (Activos)" if only_active else "Reporte de Pagos Extras (General)"
+
+        start_date_bol =  TimeBolivia.format_date(start_date)
+        end_date_bol = TimeBolivia.format_date(end_date)
 
         html = await TemplateLoader.get_template(
             "pdf/extra_payments_catalog_report.html",
             fecha=generated_at,
-            start_date=start_date.strftime("%d/%m/%Y"),
-            end_date=end_date.strftime("%d/%m/%Y"),
+            start_date=start_date_bol,
+            end_date=end_date_bol,
             total=total,
             total_amount=str(total_amount),
             extras=extras,
@@ -138,7 +148,7 @@ class PdfGenService:
 
         pdf = HTML(string=html).write_pdf()
 
-        filename = f"extra_payments_catalog_{start_date.isoformat()}_{end_date.isoformat()}.pdf"
+        filename = f"extra_payments_catalog_{start_date_bol}_{end_date_bol}.pdf"
 
         return StreamingResponse(
             io.BytesIO(pdf),
@@ -155,12 +165,12 @@ class PdfGenService:
             raise HTTPException(detail="payment is unpaid", status_code=400)
         extra = await ExtraPaymentService.get_by_id(session, payment.extra_payment_id)
         member = await MemberService.get_member_by_id(session, payment.member_id)
-        fecha = payment.created_at.strftime("%d/%m/%Y %H:%M")
+        fecha = TimeBolivia.format_datetime(payment.created_at)
         html_string = await TemplateLoader.get_template(
             "pdf/receipt_extra_payment.html",
             member=member,
             extra=extra,
-            fecha=datetime.now().strftime("%d/%m/%Y %H:%M"),
+            fecha= TimeBolivia.format_datetime(datetime.now()),
             date=fecha,
             payment=payment,
         )
@@ -187,7 +197,7 @@ class PdfGenService:
             if p.status == PaymentStatus.UNPAID:
                 raise HTTPException(detail=f"Payment {p.id} is unpaid", status_code=400)
             total_amount += p.amount
-        fecha_emision = datetime.now().strftime("%d/%m/%Y %H:%M")
+        fecha_emision = TimeBolivia.format_datetime(datetime.now())
         html_string = await TemplateLoader.get_template(
             "pdf/receipt_water_payment.html",
             payments=payments,

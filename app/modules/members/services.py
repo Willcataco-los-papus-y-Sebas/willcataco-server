@@ -1,8 +1,9 @@
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 
 from sqlalchemy import and_, extract, func, or_, select
 from sqlalchemy.orm import selectinload
 
+from app.core.time import TimeBolivia
 from app.core.database import SessionDep
 from app.core.enums import PaymentStatus
 from app.modules.extra_payments.payments.model.models import Payment
@@ -217,19 +218,18 @@ class MemberService:
     @staticmethod
     async def get_new_members_between_dates(
         session: SessionDep,
-        start_date: date,
-        end_date: date,
+        start_date: datetime,
+        end_date: datetime,
     ) -> list[MemberResponse]:
         try:
-            start_dt = datetime.combine(start_date, time.min)
+            #start_dt = datetime.combine(start_date, time.min) #CAMBIAR
             end_exclusive = datetime.combine(end_date + timedelta(days=1), time.min)
-
             result = await session.execute(
                 select(Member)
                 .join(User)
                 .where(User.is_active)
                 .where(Member.deleted_at.is_(None))
-                .where(Member.created_at >= start_dt)
+                .where(Member.created_at >= start_date)
                 .where(Member.created_at < end_exclusive)
                 .order_by(Member.created_at, Member.last_name, Member.name)
             )
@@ -242,10 +242,10 @@ class MemberService:
     
     @staticmethod 
     async def get_members_water_payments(
-        session: SessionDep, start_date: date, end_date: date
+        session: SessionDep, start_date: datetime, end_date: datetime
     ):
         try:
-            start_dt = datetime.combine(start_date, time.min)
+            #start_dt = datetime.combine(start_date, time.min)#CAMBIAR
             if end_date.month == 12:
                 end_next_month = end_date.replace(year=end_date.year + 1, month=1)
             else:
@@ -263,7 +263,7 @@ class MemberService:
                     selectinload(Meter.water_meter)
                 ).
                 where(User.is_active).
-                where(and_(WaterPayment.created_at >= start_dt, 
+                where(and_(WaterPayment.created_at >= start_date, 
                            WaterPayment.created_at <= end_exclusive)
                 ).
                 distinct().
@@ -273,20 +273,20 @@ class MemberService:
             members_orm = members.scalars().all()
             period = []
 
-            while start_dt < end_exclusive:
+            while start_date < end_exclusive:
                 period.append({
-                    "year": start_dt.year,
-                    "month": start_dt.month,
+                    "year": start_date.year,
+                    "month": start_date.month,
                     "members": []
                 })
 
-                if start_dt.month == 12:
-                    start_dt = start_dt.replace(
-                        year= start_dt.year +1, 
+                if start_date.month == 12:
+                    start_date = start_date.replace(
+                        year= start_date.year +1, 
                         month= 1
                     )
                 else:
-                    start_dt= start_dt.replace(month= start_dt.month +1)
+                    start_date= start_date.replace(month= start_date.month +1)
 
             for period_data in period:
                 year = period_data["year"]
@@ -305,8 +305,8 @@ class MemberService:
                                 "meter_id": month_paid.meter.water_meter.id,
                                 "consumption": month_paid.meter.water_reading - month_paid.meter.past_water_reading,
                                 "amount": month_paid.amount,
-                                "charge_date": month_paid.created_at.strftime("%d/%m/%Y"),
-                                "payment_date": month_paid.updated_at.strftime("%d/%m/%Y %H:%M") if is_paid else None,
+                                "charge_date": TimeBolivia.format_date(month_paid.created_at),
+                                "payment_date": TimeBolivia.format_datetime(month_paid.updated_at) if is_paid else None,
                                 "status": month_paid.status.value
                             })
                             res = {
