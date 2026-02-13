@@ -14,11 +14,13 @@
         
         <mj-table>
           <tr style="border-bottom:1px solid #581056;text-align:left;padding:15px 0;">
+            <th style="padding: 0 15px 0 0;">ID</th>
             <th style="padding: 0 15px 0 0;">Fecha</th>
             <th style="padding: 0 15px;">Lectura</th>
             <th style="padding: 0 0 0 15px;">Meses Deuda</th>
           </tr>
           <tr>
+            <td style="padding: 0 15px 0 0;">#{{ id }}</td>
             <td style="padding: 0 15px 0 0;">{{ date }}</td>
             <td style="padding: 0 15px;">{{ reading_value }} m3</td>
             <td style="padding: 0 0 0 15px; color: #d9534f; font-weight: bold;">{{ months_owed }}</td>
