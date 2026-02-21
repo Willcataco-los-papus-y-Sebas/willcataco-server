@@ -11,6 +11,7 @@
 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
     <thead>
         <tr style="background-color: #f2f2f2; text-align: left;">
+            <th style="padding: 8px; border: 1px solid #ddd;">ID Lectura</th>
             <th style="padding: 8px; border: 1px solid #ddd;">Periodo</th>
             <th style="padding: 8px; border: 1px solid #ddd;">Consumo (m³)</th>
             <th style="padding: 8px; border: 1px solid #ddd;">Monto</th>
@@ -21,6 +22,9 @@
     <tbody>
         {% for payment in member.water_payments %}
         <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;">
+                {{ payment.meter.water_meter_id if payment.meter else '-' }}
+            </td>
             <td style="padding: 8px; border: 1px solid #ddd;">
                 {% if payment.meter %}
                     {{ payment.meter.created_at.strftime('%m/%Y') }}
@@ -55,17 +59,15 @@
             
             <td style="padding: 8px; border: 1px solid #ddd;">
                 {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
-                    {# Si está pagado, mostramos updated_at (fecha de modificación/pago) #}
                     {{ payment.updated_at.strftime('%d/%m/%Y') }}
                 {% else %}
-                    {# Si está pendiente, mostramos un guion #}
                     -
                 {% endif %}
             </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="5" style="padding: 20px; text-align: center; border: 1px solid #ddd;">
+            <td colspan="6" style="padding: 20px; text-align: center; border: 1px solid #ddd;">
                 No hay pagos de agua registrados.
             </td>
         </tr>
@@ -113,7 +115,6 @@
 
             <td style="padding: 8px; border: 1px solid #ddd;">
                 {% if payment.status.name == 'PAID' or payment.status.value == 'PAID' or payment.status|string == 'PaymentStatus.PAID' or payment.status == 'PAID' %}
-                    {# Si está pagado, mostramos la fecha real del pago #}
                     {{ payment.updated_at.strftime('%d/%m/%Y') }}
                 {% else %}
                     -
